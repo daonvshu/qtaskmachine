@@ -7,6 +7,7 @@
 struct SelectState {
     QAbstractState* positive = nullptr;
     QAbstractState* negative = nullptr;
+    QAbstractState* timeout = nullptr;
 
     std::function<bool()> condition = nullptr;
 };
@@ -24,7 +25,11 @@ public:
 
     void setNext(QAbstractState* positive, QAbstractState* negative);
 
+    void setTimeoutNext(QAbstractState* timeoutState);
+
     void setCondition(const std::function<bool()>& condition);
+
+    void setInstantCondition(bool condition);
 
     void setRunLoopSize(int size);
 
@@ -34,6 +39,7 @@ public:
 
 signals:
     void stateRetry(QPrivateSignal);
+    void stateTimeout();
 
 protected:
     void clearTransitions();

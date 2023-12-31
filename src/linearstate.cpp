@@ -27,8 +27,18 @@ void LinearState::setNext(QAbstractState *positive, QAbstractState *negative) {
     selectState.negative = negative;
 }
 
+void LinearState::setTimeoutNext(QAbstractState *timeoutState) {
+    selectState.timeout = timeoutState;
+}
+
 void LinearState::setCondition(const std::function<bool()> &condition) {
     selectState.condition = condition;
+}
+
+void LinearState::setInstantCondition(bool condition) {
+    setCondition([=] {
+        return condition;
+    });
 }
 
 void LinearState::setRunLoopSize(int size) {
@@ -59,6 +69,9 @@ void LinearState::onEntry(QEvent *event) {
             Q_ASSERT(delayMs != 0);
             timeoutCheckTimer->start(delayMs);
             addNewTargetTransition(getSignalTransition());
+            if (selectState.timeout != nullptr && retryCount == 0) {
+                addTransition(timeoutCheckTimer, &QTimer::timeout, selectState.timeout);
+            }
             break;
         case Directly:
             addNewImmediatelyTransitionTarget();
@@ -81,6 +94,7 @@ void LinearState::onExit(QEvent *event) {
     if (timeoutCheckTimer->isActive()) {
         timeoutCheckTimer->stop();
     }
+    clearTransitions();
 }
 
 LinearState::TransitionType LinearState::getTransitionType() {
@@ -92,12 +106,12 @@ void LinearState::timeoutCheck() {
         onStateRetry();
         stateRetry(QPrivateSignal());
     } else {
+        emit stateTimeout();
         timeoutHandler();
     }
 }
 
 void LinearState::timeoutHandler() {
-    clearTransitions();
 }
 
 void LinearState::onStateRetry() {

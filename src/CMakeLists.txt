@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(qtaskmachine_lib)
+project(task_machines_lib)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -20,6 +20,9 @@ add_library(${PROJECT_NAME}
 
     groupstate.h
     groupstate.cpp
+
+    directstate.h
+    directstate.cpp
 
     staterecovery.h
     staterecovery.cpp
