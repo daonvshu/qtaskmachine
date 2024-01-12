@@ -1,0 +1,99 @@
+#include "demos.h"
+
+#include "highlighter.h"
+
+#include <qdebug.h>
+#include <qfile.h>
+#include <qdatetime.h>
+
+QPointer<Demos> appPtr;
+
+void customMessageHandle(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    if (appPtr) {
+        QString log("[%1] -> %2");
+        log = log.arg(QDateTime::currentDateTime().toString("HH:mm:ss.zzz"), msg);
+        appPtr->appendLog(log);
+    }
+}
+
+Demos::Demos(QWidget *parent)
+    : QWidget(parent)
+{
+    ui.setupUi(this);
+    appPtr = this;
+
+    qInstallMessageHandler(customMessageHandle);
+
+    new CppHighlighter(ui.code->document());
+
+    treeModel = new QStandardItemModel(this);
+    ui.treeView->setModel(treeModel);
+
+    auto baseStateGroup = new QStandardItem(u8"基础状态");
+    treeModel->appendRow(baseStateGroup);
+    {
+        auto item = new QStandardItem(u8"直接状态机");
+        item->setData("DirectStateTest", Qt::UserRole + 1);
+        baseStateGroup->appendRow(item);
+    }
+
+    connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);
+    ui.treeView->expandAll();
+}
+
+void Demos::loadPage(const QModelIndex &index) {
+    auto pageClass = index.data(Qt::UserRole + 1).toByteArray();
+
+    int type = QMetaType::type(pageClass + '*');
+    const auto metaObj = QMetaType::metaObjectForType(type);
+    if (metaObj == nullptr) {
+        return;
+    }
+
+    auto obj = metaObj->newInstance(Q_ARG(QObject*, this));
+    auto widget = dynamic_cast<PageLoadInterface*>(obj);
+    if (widget == nullptr) {
+        return;
+    }
+
+    delete innerPage;
+    innerPage = widget;
+    rendPage();
+
+    ui.label_title->setText(index.data().toString());
+}
+
+void Demos::rendPage() {
+    ui.description->setText(innerPage->getDescription());
+    fitHeight(ui.description);
+
+    QFile file(innerPage->getCodeFile());
+    file.open(QIODevice::ReadOnly);
+    ui.code->setText(file.readAll());
+    fitHeight(ui.code);
+    file.close();
+
+    ui.log->clear();
+}
+
+void Demos::appendLog(const QString &log) {
+    ui.log->append(log);
+    fitHeight(ui.log);
+}
+
+void Demos::on_btn_run_clicked() {
+    ui.log->clear();
+    if (innerPage) {
+        innerPage->run();
+    }
+}
+
+void Demos::fitHeight(QTextBrowser *browser) {
+    browser->setFixedHeight(floor(browser->document()->size().height()) + 12);
+}
+
+void Demos::showEvent(QShowEvent *event) {
+    auto firstIndex = treeModel->indexFromItem(treeModel->item(0)->child(0));
+    ui.treeView->setCurrentIndex(firstIndex);
+    loadPage(firstIndex);
+}

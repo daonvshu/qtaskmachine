@@ -9,17 +9,25 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (WIN32)
-    #编译使用utf8文件
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 endif()
 
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/modules)
+add_compile_definitions(STATE_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/states")
 
 add_executable(${PROJECT_NAME} WIN32
     main.cpp
+
+    demos.h
+    demos.cpp
+
+    highlighter.h
+    highlighter.cpp
+
+    states/directstatetest.h
+    states/directstatetest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -27,5 +35,5 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::Gui
     Qt5::Widgets
 
-    qtaskmachine_lib
+    task_machines_lib
 )
