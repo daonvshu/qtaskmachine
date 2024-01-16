@@ -4,7 +4,6 @@
 #include <qpointer.h>
 #include <qstatemachine.h>
 
-#include "directstate.h"
 #include "../pageloadinterface.h"
 
 class DirectStateTest : public PageLoadInterface {
@@ -18,6 +17,8 @@ public:
     QString getCodeFile() override;
 
     void run() override;
+
+    QWidget * getExtraInputWidgets() override;
 
 private:
     static int id;

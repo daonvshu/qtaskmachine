@@ -6,18 +6,14 @@
 
 class TargetSignalTransition : public QSignalTransition
 {
-    Q_OBJECT
 public:
     using QSignalTransition::QSignalTransition;
 
-    void setSignalTriggeredSize(int size);
-
-signals:
-    void signalTriggered(const QList<QVariant>& arguments);
+    void setSignalDataHandler(const std::function<bool(const QVariantList&)>& handler);
 
 protected:
     bool eventTest(QEvent *event) override;
 
 private:
-    int signalTriggeredSize = 0;
+    std::function<bool(const QVariantList&)> signalTester = nullptr;
 };

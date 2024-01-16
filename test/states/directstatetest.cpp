@@ -9,7 +9,7 @@ DirectStateTest::DirectStateTest(QObject *parent)
 }
 
 QString DirectStateTest::getDescription() {
-    return R"(<span style="font-size:14px;">直接顺序执行状态机)";
+    return u8"直接顺序执行状态机，不会等待任何事件，entered与exited事件会立即顺序触发。";
 }
 
 QString DirectStateTest::getCodeFile() {
@@ -22,4 +22,8 @@ void DirectStateTest::run() {
     }
     delete stateMachine;
     stateMachine = DirectStateRun::run();
+}
+
+QWidget *DirectStateTest::getExtraInputWidgets() {
+    return nullptr;
 }

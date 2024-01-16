@@ -26,6 +26,7 @@ private:
 private slots:
     void loadPage(const QModelIndex& index);
     void rendPage();
+    void loadExtraInputUi();
 
     static void fitHeight(QTextBrowser* browser);
 

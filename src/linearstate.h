@@ -2,20 +2,8 @@
 
 #include <qstate.h>
 #include <functional>
-#include <qtimer.h>
 
-struct SelectState {
-    QAbstractState* positive = nullptr;
-    QAbstractState* negative = nullptr;
-    QAbstractState* timeout = nullptr;
-
-    std::function<bool()> condition = nullptr;
-};
-
-class TargetSignalTransition;
 class LinearState : public QState {
-    Q_OBJECT
-
 public:
     explicit LinearState(QState* parent = nullptr);
 
@@ -25,67 +13,21 @@ public:
 
     void setNext(QAbstractState* positive, QAbstractState* negative);
 
-    void setTimeoutNext(QAbstractState* timeoutState);
-
     void setCondition(const std::function<bool()>& condition);
 
     void setInstantCondition(bool condition);
 
-    void setRunLoopSize(int size);
-
-    void setStateTimeout(int ms);
-
-    void setTimeoutRetrySize(int size);
-
-signals:
-    void stateRetry(QPrivateSignal);
-    void stateTimeout();
-
 protected:
     void clearTransitions();
+    QAbstractState* getTargetState();
 
-    void onEntry(QEvent *event) override;
+protected:
+    struct SelectState {
+        QAbstractState* positive = nullptr;
+        QAbstractState* negative = nullptr;
 
-    void onExit(QEvent *event) override;
-
-    enum TransitionType {
-        IgnoreFeedbackWithDelay,
-        CheckFeedbackWithTimeout,
-        Directly,
-        WaitForFinished,
-        WaitForTarget,
-        None,
+        std::function<bool()> condition = nullptr;
     };
 
-    virtual TransitionType getTransitionType();
-
-    void timeoutCheck();
-
-    virtual void timeoutHandler();
-
-    virtual void onStateRetry();
-
-    virtual TargetSignalTransition* getSignalTransition();
-
-    virtual void signalArgumentsHandler(const QList<QVariant>& arguments);
-
-protected:
     SelectState selectState;
-
-    int delayMs;
-    int loopCount = 0;
-    int retryCount = 0;
-
-    QTimer* timeoutCheckTimer;
-
-protected:
-    void addNewTargetTransition(TargetSignalTransition* transition);
-
-    void addNewImmediatelyTransitionTarget();
-
-    void addDelayToTargetTransition();
-
-    void addWaitForSelfFinishTransition();
-
-    QAbstractState* getTargetState();
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "directstate.h"
+#include <state/directstate.h>
 
 #include <qstatemachine.h>
 #include <qfinalstate.h>

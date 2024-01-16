@@ -7,12 +7,15 @@ bool TargetSignalTransition::eventTest(QEvent *event) {
     if (!QSignalTransition::eventTest(event)) {
         return false;
     }
-    auto se = dynamic_cast<QStateMachine::SignalEvent*>(event);
-    emit signalTriggered(se->arguments());
 
-    return --signalTriggeredSize <= 0;
+    if (signalTester == nullptr) {
+        return true;
+    }
+
+    auto se = dynamic_cast<QStateMachine::SignalEvent*>(event);
+    return signalTester(se->arguments());
 }
 
-void TargetSignalTransition::setSignalTriggeredSize(int size) {
-    signalTriggeredSize = size;
+void TargetSignalTransition::setSignalDataHandler(const std::function<bool(const QVariantList &)> &handler) {
+    signalTester = handler;
 }

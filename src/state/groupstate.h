@@ -10,7 +10,5 @@ public:
     explicit GroupState(QState *parent = nullptr);
 
 protected:
-    TargetSignalTransition * getSignalTransition() override;
-
-    TransitionType getTransitionType() override;
+    void onEntry(QEvent *event) override;
 };

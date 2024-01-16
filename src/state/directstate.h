@@ -9,7 +9,5 @@ public:
     explicit DirectState(QState *parent = nullptr);
 
 protected:
-    TransitionType getTransitionType() override;
-
-    TargetSignalTransition * getSignalTransition() override;
+    void onEntry(QEvent *event) override;
 };

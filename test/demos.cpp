@@ -20,6 +20,11 @@ Demos::Demos(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
+
+    auto font = ui.description->font();
+    font.setPixelSize(14);
+    ui.description->setFont(font);
+
     appPtr = this;
 
     qInstallMessageHandler(customMessageHandle);
@@ -55,10 +60,14 @@ void Demos::loadPage(const QModelIndex &index) {
     if (widget == nullptr) {
         return;
     }
+    widget->requestCodeReload = [&] {
+        rendPage();
+    };
 
     delete innerPage;
     innerPage = widget;
     rendPage();
+    loadExtraInputUi();
 
     ui.label_title->setText(index.data().toString());
 }
@@ -74,6 +83,16 @@ void Demos::rendPage() {
     file.close();
 
     ui.log->clear();
+}
+
+void Demos::loadExtraInputUi() {
+    while (auto item = ui.extra_params_layout->takeAt(0)) {
+        delete item->widget();
+        delete item;
+    }
+    if (auto widget = innerPage->getExtraInputWidgets()) {
+        ui.extra_params_layout->addWidget(widget);
+    }
 }
 
 void Demos::appendLog(const QString &log) {
