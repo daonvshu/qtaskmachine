@@ -3,6 +3,9 @@
 #include <qwidget.h>
 #include <functional>
 
+#include <qpointer.h>
+#include <qstatemachine.h>
+
 class PageLoadInterface : public QObject {
 public:
     using QObject::QObject;
@@ -14,4 +17,7 @@ public:
     virtual QWidget* getExtraInputWidgets() = 0;
 
     std::function<void()> requestCodeReload = nullptr;
+
+protected:
+    QPointer<QStateMachine> stateMachine;
 };

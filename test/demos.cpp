@@ -37,8 +37,12 @@ Demos::Demos(QWidget *parent)
     auto baseStateGroup = new QStandardItem(u8"基础状态");
     treeModel->appendRow(baseStateGroup);
     {
-        auto item = new QStandardItem(u8"直接状态机");
+        auto item = new QStandardItem(u8"直接状态");
         item->setData("DirectStateTest", Qt::UserRole + 1);
+        baseStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"延时状态");
+        item->setData("DelayStateTest", Qt::UserRole + 1);
         baseStateGroup->appendRow(item);
     }
 

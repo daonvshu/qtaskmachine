@@ -1,8 +1,6 @@
 #pragma once
 
 #include <qwidget.h>
-#include <qpointer.h>
-#include <qstatemachine.h>
 
 #include "../pageloadinterface.h"
 
@@ -22,8 +20,6 @@ public:
 
 private:
     static int id;
-
-    QPointer<QStateMachine> stateMachine;
 };
 
 Q_DECLARE_METATYPE(DirectStateTest*)
