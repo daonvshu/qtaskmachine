@@ -53,6 +53,11 @@ CppHighlighter::CppHighlighter(QTextDocument *parent) : QSyntaxHighlighter(paren
     rule.pattern = QRegularExpression(R"(q[a-zA-Z]+)");
     rules << rule;
 
+    //signals/Q_OBJECT
+    rule.format.setForeground(QColor(0x9E880D));
+    rule.pattern = QRegularExpression(R"(signals|Q_OBJECT)");
+    rules << rule;
+
     //number
     rule.format.setForeground(QColor(0x2AACB8));
     rule.pattern = QRegularExpression(R"((?<=\b|\s|^)(?i)(?:(?:(?:(?:(?:\d+(?:'\d+)*)?\.(?:\d+(?:'\d+)*)(?:e[+-]?(?:\d+(?:'\d+)*))?)|(?:(?:\d+(?:'\d+)*)\.(?:e[+-]?(?:\d+(?:'\d+)*))?)|(?:(?:\d+(?:'\d+)*)(?:e[+-]?(?:\d+(?:'\d+)*)))|(?:0x(?:[0-9a-f]+(?:'[0-9a-f]+)*)?\.(?:[0-9a-f]+(?:'[0-9a-f]+)*)(?:p[+-]?(?:\d+(?:'\d+)*)))|(?:0x(?:[0-9a-f]+(?:'[0-9a-f]+)*)\.?(?:p[+-]?(?:\d+(?:'\d+)*))))[lf]?)|(?:(?:(?:[1-9]\d*(?:'\d+)*)|(?:0[0-7]*(?:'[0-7]+)*)|(?:0x[0-9a-f]+(?:'[0-9a-f]+)*)|(?:0b[01]+(?:'[01]+)*))(?:u?l{0,2}|l{0,2}u?)))(?=\b|\s|$))");

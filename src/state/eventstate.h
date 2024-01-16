@@ -75,4 +75,6 @@ private:
     int retryCount;
     int curRetrySize;
     int timeoutMs;
+
+    bool transferBySelf;
 };

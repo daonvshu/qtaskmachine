@@ -30,6 +30,9 @@ add_executable(${PROJECT_NAME} WIN32
     states/directstatetest.cpp
     states/delaystatetest.h
     states/delaystatetest.cpp
+    states/eventstaterun.h
+    states/eventstatetest.h
+    states/eventstatetest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

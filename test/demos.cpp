@@ -5,6 +5,7 @@
 #include <qdebug.h>
 #include <qfile.h>
 #include <qdatetime.h>
+#include <qmath.h>
 
 QPointer<Demos> appPtr;
 
@@ -43,6 +44,10 @@ Demos::Demos(QWidget *parent)
 
         item = new QStandardItem(u8"延时状态");
         item->setData("DelayStateTest", Qt::UserRole + 1);
+        baseStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"事件触发状态");
+        item->setData("EventStateTest", Qt::UserRole + 1);
         baseStateGroup->appendRow(item);
     }
 
@@ -83,7 +88,6 @@ void Demos::rendPage() {
     QFile file(innerPage->getCodeFile());
     file.open(QIODevice::ReadOnly);
     ui.code->setText(file.readAll());
-    fitHeight(ui.code);
     file.close();
 
     ui.log->clear();
@@ -101,7 +105,7 @@ void Demos::loadExtraInputUi() {
 
 void Demos::appendLog(const QString &log) {
     ui.log->append(log);
-    fitHeight(ui.log);
+    fitHeight(ui.log, ui.log->minimumHeight());
 }
 
 void Demos::on_btn_run_clicked() {
@@ -111,12 +115,17 @@ void Demos::on_btn_run_clicked() {
     }
 }
 
-void Demos::fitHeight(QTextBrowser *browser) {
-    browser->setFixedHeight(floor(browser->document()->size().height()) + 12);
+void Demos::fitHeight(QTextBrowser *browser, int minHeight) {
+    browser->setFixedHeight(qMax(minHeight, qFloor(browser->document()->size().height()) + 12));
 }
 
 void Demos::showEvent(QShowEvent *event) {
     auto firstIndex = treeModel->indexFromItem(treeModel->item(0)->child(0));
     ui.treeView->setCurrentIndex(firstIndex);
     loadPage(firstIndex);
+}
+
+void Demos::resizeEvent(QResizeEvent *event) {
+    fitHeight(ui.description);
+    fitHeight(ui.log, ui.log->minimumHeight());
 }

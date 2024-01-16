@@ -7,8 +7,9 @@ EventState::EventState(QState *parent)
     , signalTransition(nullptr)
     , failState(nullptr)
     , retryCount(0)
-    , curRetrySize(0)
+    , curRetrySize(-1)
     , timeoutMs(0)
+    , transferBySelf(false)
 {
     timeoutCheckTimer = new QTimer(this);
     timeoutCheckTimer->setSingleShot(true);
@@ -22,7 +23,6 @@ void EventState::setTimeout(int ms) {
 
 void EventState::setRetrySize(int count) {
     retryCount = count;
-    curRetrySize = 0;
 }
 
 void EventState::setFailState(QAbstractState *state) {
@@ -31,6 +31,12 @@ void EventState::setFailState(QAbstractState *state) {
 
 void EventState::onEntry(QEvent *event) {
     clearTransitions();
+
+    if (!transferBySelf) {
+        curRetrySize = retryCount;
+    } else {
+        transferBySelf = false;
+    };
 
     Q_ASSERT(selectState.positive != nullptr);
     Q_ASSERT(signalTransition != nullptr);
@@ -67,11 +73,8 @@ bool EventState::testFinishBySignalData(const QVariantList &data) {
 }
 
 void EventState::timeoutHandler() {
-    if (curRetrySize <= 0) {
-        curRetrySize = retryCount;
-    }
-
-    if (--curRetrySize > 0) {
+    if (--curRetrySize >= 0) {
+        transferBySelf = true;
         stateRetry(QPrivateSignal());
     } else {
         emit triggerSignalFail();

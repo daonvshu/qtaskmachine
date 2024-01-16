@@ -17,6 +17,7 @@ public:
 
 protected:
     void showEvent(QShowEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     Ui::Demos ui;
@@ -28,7 +29,7 @@ private slots:
     void rendPage();
     void loadExtraInputUi();
 
-    static void fitHeight(QTextBrowser* browser);
+    static void fitHeight(QTextBrowser* browser, int minHeight = 0);
 
     void on_btn_run_clicked();
 };
