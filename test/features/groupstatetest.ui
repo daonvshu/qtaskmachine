@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ConditionalStateTest</class>
- <widget class="QWidget" name="ConditionalStateTest">
+ <class>GroupStateTest</class>
+ <widget class="QWidget" name="GroupStateTest">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>135</height>
+    <width>434</width>
+    <height>96</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
      <item>
       <widget class="QPushButton" name="btn_type1">
        <property name="text">
-        <string>选择性切换</string>
+        <string>分组管理子状态</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -47,23 +47,7 @@
      <item>
       <widget class="QPushButton" name="btn_type2">
        <property name="text">
-        <string>延迟选择</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_type3">
-       <property name="text">
-        <string>多目标切换</string>
+        <string>子状态继承状态转移</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -92,80 +76,39 @@
     </layout>
    </item>
    <item>
-    <widget class="QWidget" name="bool_selector_box" native="true">
+    <widget class="QWidget" name="trigger_box" native="true">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
-       <widget class="QRadioButton" name="btn_positive">
+       <widget class="QPushButton" name="btn_finish">
         <property name="text">
-         <string>positive</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string>触发父状态完成</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="btn_negative">
+       <widget class="QPushButton" name="btn_fail">
         <property name="text">
-         <string>negative</string>
+         <string>触发父状态失败</string>
         </property>
        </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="index_selector_box" native="true">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>目标index：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="index_selector">
-        <item>
-         <property name="text">
-          <string>s1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>s2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>s3</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>s4</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

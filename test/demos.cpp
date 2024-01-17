@@ -49,16 +49,16 @@ Demos::Demos(QWidget *parent)
         item = new QStandardItem(u8"事件触发状态");
         item->setData("EventStateTest", Qt::UserRole + 1);
         baseStateGroup->appendRow(item);
-
-        item = new QStandardItem(u8"分组状态");
-        item->setData("GroupStateTest", Qt::UserRole + 1);
-        baseStateGroup->appendRow(item);
     }
 
     auto featureStateGroup = new QStandardItem(u8"功能性");
     treeModel->appendRow(featureStateGroup);
     {
-        auto item = new QStandardItem(u8"可选择性的目标状态");
+        auto item = new QStandardItem(u8"状态分组");
+        item->setData("GroupStateTest", Qt::UserRole + 1);
+        featureStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"可选择性的目标状态");
         item->setData("ConditionalStateTest", Qt::UserRole + 1);
         featureStateGroup->appendRow(item);
     }

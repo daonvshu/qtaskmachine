@@ -55,6 +55,11 @@ void EventState::onEntry(QEvent *event) {
     //重试信号转移
     addTransition(this, &EventState::stateRetry, this);
 
+    //子状态转移
+    if (hasChild) {
+        addTransition(this, &QState::finished, getTargetState());
+    }
+
     //超时检测开始
     if (timeoutMs != 0) {
         timeoutCheckTimer->start(timeoutMs);

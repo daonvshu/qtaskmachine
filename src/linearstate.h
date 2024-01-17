@@ -39,4 +39,5 @@ protected:
     };
 
     SelectState selectState;
+    bool hasChild;
 };

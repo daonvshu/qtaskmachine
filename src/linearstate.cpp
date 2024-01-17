@@ -6,7 +6,12 @@
 
 LinearState::LinearState(QState *parent)
     : QState(parent)
-{}
+    , hasChild(false)
+{
+    if (auto parentLinear = dynamic_cast<LinearState*>(parent)) {
+        parentLinear->hasChild = true;
+    }
+}
 
 LinearState &LinearState::operator>>(LinearState *nextState) {
     return target(nextState);
