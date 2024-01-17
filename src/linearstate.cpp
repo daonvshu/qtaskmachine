@@ -9,27 +9,50 @@ LinearState::LinearState(QState *parent)
 {}
 
 LinearState &LinearState::operator>>(LinearState *nextState) {
-    selectState.positive = nextState;
+    return target(nextState);
+}
+
+LinearState& LinearState::operator>>(QAbstractState *nextState) {
+    return target(nextState);
+}
+
+LinearState &LinearState::target(LinearState *nextState) {
+    target((QAbstractState*)nextState);
     return *nextState;
 }
 
-void LinearState::operator>>(QAbstractState *nextState) {
-    selectState.positive = nextState;
+LinearState &LinearState::target(QAbstractState *nextState) {
+    if (selectState.targetStates.isEmpty()) {
+        selectState.targetStates << nextState;
+    } else {
+        for (auto target : selectState.targetStates) {
+            if (auto linearTag = dynamic_cast<LinearState*>(target)) {
+                linearTag->target(nextState);
+            } else if (auto state = dynamic_cast<QState*>(target)) {
+                state->addTransition(nextState);
+            }
+        }
+    }
+    return *this;
 }
 
-void LinearState::setNext(QAbstractState *positive, QAbstractState *negative) {
-    selectState.positive = positive;
-    selectState.negative = negative;
+LinearState &LinearState::operator<<(QAbstractState* conditionState) {
+    return next(conditionState);
 }
 
-void LinearState::setCondition(const std::function<bool()> &condition) {
-    selectState.condition = condition;
+LinearState &LinearState::next(QAbstractState *conditionState) {
+    selectState.targetStates << conditionState;
+    return *this;
 }
 
-void LinearState::setInstantCondition(bool condition) {
+void LinearState::setCondition(int condition) {
     setCondition([=] {
         return condition;
     });
+}
+
+void LinearState::setCondition(const std::function<int()> &condition) {
+    selectState.condition = condition;
 }
 
 void LinearState::clearTransitions() {
@@ -40,9 +63,13 @@ void LinearState::clearTransitions() {
 }
 
 QAbstractState *LinearState::getTargetState() {
+    Q_ASSERT(!selectState.targetStates.isEmpty());
+
     if (selectState.condition != nullptr) {
-        return selectState.condition() ? selectState.positive : selectState.negative;
-    } else {
-        return selectState.positive;
+        int targetIndex = selectState.condition();
+        if (targetIndex >= 0 && targetIndex < selectState.targetStates.size()) {
+            return selectState.targetStates[targetIndex];
+        }
     }
+    return selectState.targetStates[0];
 }

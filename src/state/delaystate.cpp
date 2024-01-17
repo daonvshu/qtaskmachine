@@ -11,8 +11,6 @@ DelayState::DelayState(int delayMs, QState *parent)
 void DelayState::onEntry(QEvent *event) {
     clearTransitions();
 
-    Q_ASSERT(selectState.positive != nullptr);
-
     if (delayMs <= 0) {
         addTransition(getTargetState());
     } else {

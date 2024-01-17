@@ -38,7 +38,6 @@ void EventState::onEntry(QEvent *event) {
         transferBySelf = false;
     };
 
-    Q_ASSERT(selectState.positive != nullptr);
     Q_ASSERT(signalTransition != nullptr);
 
     //目标信号触发转移

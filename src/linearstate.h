@@ -7,15 +7,26 @@ class LinearState : public QState {
 public:
     explicit LinearState(QState* parent = nullptr);
 
+    /**
+     * @brief 添加状态切换目标
+     * @param nextState 下一个状态
+     * @return 下一个状态
+     */
     LinearState& operator>>(LinearState* nextState);
+    LinearState& operator>>(QAbstractState* nextState);
+    LinearState& target(LinearState* nextState);
+    LinearState& target(QAbstractState* nextState);
 
-    void operator>>(QAbstractState* nextState);
+    /**
+     * @brief 添加条件状态切换目标
+     * @param conditionState 条件状态
+     * @return 本身状态
+     */
+    LinearState& operator<<(QAbstractState* conditionState);
+    LinearState& next(QAbstractState* conditionState);
 
-    void setNext(QAbstractState* positive, QAbstractState* negative);
-
-    void setCondition(const std::function<bool()>& condition);
-
-    void setInstantCondition(bool condition);
+    void setCondition(int condition);
+    void setCondition(const std::function<int()>& condition);
 
 protected:
     void clearTransitions();
@@ -23,10 +34,8 @@ protected:
 
 protected:
     struct SelectState {
-        QAbstractState* positive = nullptr;
-        QAbstractState* negative = nullptr;
-
-        std::function<bool()> condition = nullptr;
+        QList<QAbstractState*> targetStates;
+        std::function<int()> condition = nullptr;
     };
 
     SelectState selectState;
