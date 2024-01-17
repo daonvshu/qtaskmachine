@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1056</width>
-    <height>649</height>
+    <width>1138</width>
+    <height>674</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,6 +27,11 @@ border-color:#c6e2ff;
 background:#ecf5ff;
 }
 QPushButton:pressed{
+border-color:#409EFF;
+}
+QPushButton:checked{
+color:#409EFF;
+background:#ecf5ff;
 border-color:#409EFF;
 }</string>
   </property>
@@ -50,7 +55,7 @@ border-color:#409EFF;
     <widget class="QTreeView" name="treeView">
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>200</width>
        <height>16777215</height>
       </size>
      </property>
@@ -80,8 +85,8 @@ border:none;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>453</width>
-        <height>649</height>
+        <width>469</width>
+        <height>674</height>
        </rect>
       </property>
       <property name="styleSheet">

@@ -16,6 +16,7 @@ endif()
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 
 add_compile_definitions(STATE_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/states")
+add_compile_definitions(FEATURES_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/features")
 
 add_executable(${PROJECT_NAME} WIN32
     main.cpp
@@ -35,6 +36,9 @@ add_executable(${PROJECT_NAME} WIN32
     states/eventstatetest.cpp
     states/groupstatetest.h
     states/groupstatetest.cpp
+
+    features/conditionalstatetest.h
+    features/conditionalstatetest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

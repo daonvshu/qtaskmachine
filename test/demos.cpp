@@ -55,6 +55,14 @@ Demos::Demos(QWidget *parent)
         baseStateGroup->appendRow(item);
     }
 
+    auto featureStateGroup = new QStandardItem(u8"功能性");
+    treeModel->appendRow(featureStateGroup);
+    {
+        auto item = new QStandardItem(u8"可选择性的目标状态");
+        item->setData("ConditionalStateTest", Qt::UserRole + 1);
+        featureStateGroup->appendRow(item);
+    }
+
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);
     ui.treeView->expandAll();
 }
@@ -79,8 +87,8 @@ void Demos::loadPage(const QModelIndex &index) {
 
     delete innerPage;
     innerPage = widget;
-    rendPage();
     loadExtraInputUi();
+    rendPage();
 
     ui.label_title->setText(index.data().toString());
 }
