@@ -49,6 +49,10 @@ Demos::Demos(QWidget *parent)
         item = new QStandardItem(u8"事件触发状态");
         item->setData("EventStateTest", Qt::UserRole + 1);
         baseStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"分组状态");
+        item->setData("GroupStateTest", Qt::UserRole + 1);
+        baseStateGroup->appendRow(item);
     }
 
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);

@@ -33,6 +33,8 @@ add_executable(${PROJECT_NAME} WIN32
     states/eventstaterun.h
     states/eventstatetest.h
     states/eventstatetest.cpp
+    states/groupstatetest.h
+    states/groupstatetest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
