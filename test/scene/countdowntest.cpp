@@ -7,7 +7,7 @@ CountDownTest::CountDownTest(QObject *parent)
 }
 
 QString CountDownTest::getDescription() {
-    return QString();
+    return u8"倒计时状态，基于事件触发状态，通过定时器触发检查当前是否到达指定秒数，到达时通过自身信号触发状态切换。";
 }
 
 QString CountDownTest::getCodeFile() {
