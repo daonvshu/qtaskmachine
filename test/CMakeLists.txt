@@ -48,6 +48,9 @@ add_executable(${PROJECT_NAME} WIN32
     scene/countdownrun.h
     scene/countdowntest.h
     scene/countdowntest.cpp
+    scene/signalpsceventtrigger.h
+    scene/signalparamschecktest.h
+    scene/signalparamschecktest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

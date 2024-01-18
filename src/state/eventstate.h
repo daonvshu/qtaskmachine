@@ -67,6 +67,11 @@ protected:
      */
     virtual void timeoutHandler();
 
+    /**
+     * @brief 重置超时检查
+     */
+    void resetTimeoutCheck();
+
 private:
     TargetSignalTransition* signalTransition;
     QTimer* timeoutCheckTimer;

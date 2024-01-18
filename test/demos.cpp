@@ -73,6 +73,10 @@ Demos::Demos(QWidget *parent)
         auto item = new QStandardItem(u8"倒计时状态");
         item->setData("CountDownTest", Qt::UserRole + 1);
         sceneStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"事件触发参数检查");
+        item->setData("SignalParamsCheckTest", Qt::UserRole + 1);
+        sceneStateGroup->appendRow(item);
     }
 
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);

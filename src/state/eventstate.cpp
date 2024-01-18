@@ -88,3 +88,9 @@ void EventState::timeoutHandler() {
         emit triggerSignalFail();
     }
 }
+
+void EventState::resetTimeoutCheck() {
+    if (timeoutMs != 0) {
+        timeoutCheckTimer->start(timeoutMs);
+    }
+}
