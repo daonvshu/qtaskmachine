@@ -43,7 +43,6 @@ public:
         connect(trigger, &GroupEventTrigger::fail, machine, [=] {
             groupState->triggerSignalFail();
         });
-        groupState->setFailState(failState);
         connect(groupState, &QState::entered, machine, [&] {
             qDebug() << "group state entered...";
         });
@@ -87,6 +86,7 @@ public:
         });
 
         //状态切换
+        groupState->setFailState(failState);
         *beginState >> groupState >> nextState >> finalState;
         *failState >> finalState;
 

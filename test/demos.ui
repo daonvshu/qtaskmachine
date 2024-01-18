@@ -36,6 +36,11 @@ border-color:#409EFF;
 }
 QPushButton:disabled{
 color:#DCDFE6;
+}
+
+QComboBox{
+padding:8px 4px;
+border:1px solid #DCDFE6;
 }</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">

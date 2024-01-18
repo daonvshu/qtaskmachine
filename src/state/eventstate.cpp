@@ -36,16 +36,25 @@ void EventState::onEntry(QEvent *event) {
         curRetrySize = retryCount;
     } else {
         transferBySelf = false;
-    };
+    }
 
-    Q_ASSERT(signalTransition != nullptr);
+    if (signalTransition != nullptr) {
+        //目标信号触发转移
+        signalTransition->setTargetState(getTargetState());
+        signalTransition->setSignalDataHandler([&](const QVariantList &data) {
+            return testFinishBySignalData(data);
+        });
+        addTransition(signalTransition);
+    } else {
+        if (!hasChild) {
+            addTransition(getTargetState());
+        }
+    }
 
-    //目标信号触发转移
-    signalTransition->setTargetState(getTargetState());
-    signalTransition->setSignalDataHandler([&] (const QVariantList& data) {
-        return testFinishBySignalData(data);
-    });
-    addTransition(signalTransition);
+    //子状态转移
+    if (hasChild) {
+        addTransition(this, &QState::finished, getTargetState());
+    }
 
     //失败信号转移
     if (failState != nullptr) {
@@ -54,11 +63,6 @@ void EventState::onEntry(QEvent *event) {
 
     //重试信号转移
     addTransition(this, &EventState::stateRetry, this);
-
-    //子状态转移
-    if (hasChild) {
-        addTransition(this, &QState::finished, getTargetState());
-    }
 
     //超时检测开始
     if (timeoutMs != 0) {

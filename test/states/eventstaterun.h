@@ -42,8 +42,6 @@ public:
         eventState->setTimeout(timeoutMs);
         //设置超时重试
         eventState->setRetrySize(retryCount);
-        //设置失败切换状态
-        eventState->setFailState(failState);
         //进入状态监听
         connect(eventState, &EventState::entered, machine, [&] {
             qDebug() << "event state entered...";
@@ -67,6 +65,8 @@ public:
         });
 
         //状态切换
+        //设置失败切换状态
+        eventState->setFailState(failState);
         *beginState >> eventState >> finalState;
         *failState >> finalState;
 

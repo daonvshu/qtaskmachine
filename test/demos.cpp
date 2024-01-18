@@ -61,6 +61,10 @@ Demos::Demos(QWidget *parent)
         item = new QStandardItem(u8"可选择性的目标状态");
         item->setData("ConditionalStateTest", Qt::UserRole + 1);
         featureStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"状态恢复");
+        item->setData("RecoverStateTest", Qt::UserRole + 1);
+        featureStateGroup->appendRow(item);
     }
 
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);

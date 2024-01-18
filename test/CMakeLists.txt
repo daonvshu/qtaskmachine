@@ -40,6 +40,9 @@ add_executable(${PROJECT_NAME} WIN32
     features/groupstatetest.cpp
     features/conditionalstatetest.h
     features/conditionalstatetest.cpp
+    features/recoverstaterun.h
+    features/recoverstatetest.h
+    features/recoverstatetest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
