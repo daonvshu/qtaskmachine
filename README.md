@@ -1,0 +1,1 @@
+cmake环境变量中启用`QTASK_MACHINE_BUILD_TEST`，启动`taskmachine-test`程序查看示例。
