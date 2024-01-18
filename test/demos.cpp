@@ -67,6 +67,14 @@ Demos::Demos(QWidget *parent)
         featureStateGroup->appendRow(item);
     }
 
+    auto sceneStateGroup = new QStandardItem(u8"场景示例");
+    treeModel->appendRow(sceneStateGroup);
+    {
+        auto item = new QStandardItem(u8"倒计时状态");
+        item->setData("CountDownTest", Qt::UserRole + 1);
+        sceneStateGroup->appendRow(item);
+    }
+
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);
     ui.treeView->expandAll();
 }
