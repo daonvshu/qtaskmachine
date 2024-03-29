@@ -4,6 +4,7 @@
 #include "targetsignaltransition.h"
 
 #include <qobject.h>
+#include <qtimer.h>
 
 class EventState : public LinearState {
     Q_OBJECT
