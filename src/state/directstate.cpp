@@ -5,6 +5,8 @@ DirectState::DirectState(QState *parent) : LinearState(parent) {
 }
 
 void DirectState::onEntry(QEvent *event) {
+    LinearState::onEntry(event);
+
     clearTransitions();
 
     //子状态转移

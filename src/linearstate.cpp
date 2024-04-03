@@ -2,8 +2,6 @@
 
 #include "targetsignaltransition.h"
 
-#include <qdebug.h>
-
 LinearState::LinearState(QState *parent)
     : QState(parent)
     , hasChild(false)
@@ -31,6 +29,9 @@ LinearState &LinearState::target(QAbstractState *nextState) {
         selectState.targetStates << nextState;
     } else {
         for (auto target : selectState.targetStates) {
+            if (target == nextState) {
+                continue;
+            }
             if (auto linearTag = dynamic_cast<LinearState*>(target)) {
                 linearTag->target(nextState);
             } else if (auto state = dynamic_cast<QState*>(target)) {
@@ -60,6 +61,11 @@ void LinearState::setCondition(const std::function<int()> &condition) {
     selectState.condition = condition;
 }
 
+void LinearState::setStateName(const QString &name, LoggingCategoryPtr categoryPtr) {
+    stateName = name;
+    debugPtr = categoryPtr;
+}
+
 void LinearState::clearTransitions() {
     auto oldTransitions = transitions();
     for (auto tr : oldTransitions) {
@@ -77,4 +83,18 @@ QAbstractState *LinearState::getTargetState() {
         }
     }
     return selectState.targetStates[0];
+}
+
+void LinearState::onEntry(QEvent *event) {
+    QState::onEntry(event);
+    if (debugPtr && !stateName.isEmpty()) {
+        qCInfo(debugPtr).nospace() << "state '" << stateName << "' enter!";
+    }
+}
+
+void LinearState::onExit(QEvent *event) {
+    QState::onExit(event);
+    if (debugPtr && !stateName.isEmpty()) {
+        qCInfo(debugPtr).nospace() << "state '" << stateName << "' exit!";
+    }
 }

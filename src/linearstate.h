@@ -2,6 +2,9 @@
 
 #include <qstate.h>
 #include <functional>
+#include <qloggingcategory.h>
+
+typedef const QLoggingCategory& (*LoggingCategoryPtr)();
 
 class LinearState : public QState {
 public:
@@ -28,9 +31,19 @@ public:
     void setCondition(int condition);
     void setCondition(const std::function<int()>& condition);
 
+    /**
+     * @brief 设置当前状态名称，如果设置了category，则会在进入和离开时打印
+     * @param name
+     * @param categoryPtr
+     */
+    void setStateName(const QString& name, LoggingCategoryPtr categoryPtr = nullptr);
+
 protected:
     void clearTransitions();
     QAbstractState* getTargetState();
+
+    void onEntry(QEvent *event) override;
+    void onExit(QEvent *event) override;
 
 protected:
     struct SelectState {
@@ -40,4 +53,7 @@ protected:
 
     SelectState selectState;
     bool hasChild;
+
+    QString stateName;
+    LoggingCategoryPtr debugPtr = nullptr;
 };

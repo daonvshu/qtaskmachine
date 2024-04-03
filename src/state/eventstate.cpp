@@ -30,6 +30,8 @@ void EventState::setFailState(QAbstractState *state) {
 }
 
 void EventState::onEntry(QEvent *event) {
+    LinearState::onEntry(event);
+
     clearTransitions();
 
     if (!transferBySelf) {
@@ -71,6 +73,8 @@ void EventState::onEntry(QEvent *event) {
 }
 
 void EventState::onExit(QEvent *event) {
+    LinearState::onEntry(event);
+
     if (timeoutCheckTimer->isActive()) {
         timeoutCheckTimer->stop();
     }

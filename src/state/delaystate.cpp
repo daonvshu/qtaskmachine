@@ -9,6 +9,8 @@ DelayState::DelayState(int delayMs, QState *parent)
 }
 
 void DelayState::onEntry(QEvent *event) {
+    LinearState::onEntry(event);
+
     clearTransitions();
 
     if (delayMs <= 0) {

@@ -65,6 +65,10 @@ Demos::Demos(QWidget *parent)
         item = new QStandardItem(u8"状态恢复");
         item->setData("RecoverStateTest", Qt::UserRole + 1);
         featureStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"调试打印");
+        item->setData("DebugStateTest", Qt::UserRole + 1);
+        featureStateGroup->appendRow(item);
     }
 
     auto sceneStateGroup = new QStandardItem(u8"场景示例");

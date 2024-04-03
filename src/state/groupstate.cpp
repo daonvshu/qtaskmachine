@@ -7,6 +7,7 @@ GroupState::GroupState(QState *parent)
 }
 
 void GroupState::onEntry(QEvent *event) {
+    LinearState::onEntry(event);
     clearTransitions();
     addTransition(this, &QState::finished, getTargetState());
 }

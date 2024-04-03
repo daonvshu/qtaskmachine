@@ -44,6 +44,8 @@ add_executable(${PROJECT_NAME} WIN32
     features/recoverstaterun.h
     features/recoverstatetest.h
     features/recoverstatetest.cpp
+    features/debugstatetest.h
+    features/debugstatetest.cpp
 
     scene/countdownrun.h
     scene/countdowntest.h
