@@ -40,22 +40,24 @@ void EventState::onEntry(QEvent *event) {
         transferBySelf = false;
     }
 
+    auto target = getTargetState();
     if (signalTransition != nullptr) {
         //目标信号触发转移
-        signalTransition->setTargetState(getTargetState());
+        signalTransition->setTargetState(target);
         signalTransition->setSignalDataHandler([&](const QVariantList &data) {
             return testFinishBySignalData(data);
         });
         addTransition(signalTransition);
     } else {
         if (!hasChild) {
-            addTransition(getTargetState());
+            Q_ASSERT(target != this);
+            addTransition(target);
         }
     }
 
     //子状态转移
     if (hasChild) {
-        addTransition(this, &QState::finished, getTargetState());
+        addTransition(this, &QState::finished, target);
     }
 
     //失败信号转移

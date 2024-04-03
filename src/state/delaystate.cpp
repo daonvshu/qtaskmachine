@@ -14,7 +14,9 @@ void DelayState::onEntry(QEvent *event) {
     clearTransitions();
 
     if (delayMs <= 0) {
-        addTransition(getTargetState());
+        auto target = getTargetState();
+        Q_ASSERT(target != this);
+        addTransition(target);
     } else {
         auto timer = new QTimer(this);
         timer->setSingleShot(true);

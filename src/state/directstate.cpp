@@ -9,10 +9,12 @@ void DirectState::onEntry(QEvent *event) {
 
     clearTransitions();
 
+    auto target = getTargetState();
     //子状态转移
     if (hasChild) {
-        addTransition(this, &QState::finished, getTargetState());
+        addTransition(this, &QState::finished, target);
     } else {
-        addTransition(getTargetState());
+        Q_ASSERT(target != this);
+        addTransition(target);
     }
 }

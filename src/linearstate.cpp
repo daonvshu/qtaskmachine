@@ -74,13 +74,14 @@ void LinearState::clearTransitions() {
 }
 
 QAbstractState *LinearState::getTargetState() {
-    Q_ASSERT(!selectState.targetStates.isEmpty());
-
     if (selectState.condition != nullptr) {
         int targetIndex = selectState.condition();
         if (targetIndex >= 0 && targetIndex < selectState.targetStates.size()) {
             return selectState.targetStates[targetIndex];
         }
+    }
+    if (selectState.targetStates.isEmpty()) {
+        return this;
     }
     return selectState.targetStates[0];
 }
