@@ -3,6 +3,7 @@
 #include "conditionalstaterun1.h"
 #include "conditionalstaterun2.h"
 #include "conditionalstaterun3.h"
+#include "conditionalstaterun4.h"
 
 int ConditionalStateTest::id = qRegisterMetaType<ConditionalStateTest*>();
 ConditionalStateTest::ConditionalStateTest(QObject *parent)
@@ -35,6 +36,9 @@ void ConditionalStateTest::run() {
         case 2:
             stateMachine = ConditionalStateRun3::run(ui.index_selector->currentIndex());
             break;
+        case 3:
+            stateMachine = ConditionalStateRun4::run(ui.btn_positive->isChecked());
+            break;
     }
 }
 
@@ -42,7 +46,7 @@ QWidget *ConditionalStateTest::getExtraInputWidgets() {
     auto widget = new QWidget;
     ui.setupUi(widget);
     connect(ui.buttonGroup, qOverload<QAbstractButton*>(&QButtonGroup::buttonClicked), this, [&] (QAbstractButton* btn) {
-        if (btn == ui.btn_type1 || btn == ui.btn_type2) {
+        if (btn == ui.btn_type1 || btn == ui.btn_type2 || btn == ui.btn_type4) {
             ui.bool_selector_box->setEnabled(true);
             ui.index_selector_box->setEnabled(false);
         } else {
@@ -62,6 +66,8 @@ int ConditionalStateTest::getTypeIndex() const {
         index = 1;
     } else if (ui.btn_type3->isChecked()) {
         index = 2;
+    } else if (ui.btn_type4->isChecked()) {
+        index = 3;
     }
     return index;
 }
