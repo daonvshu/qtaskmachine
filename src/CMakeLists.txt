@@ -28,6 +28,8 @@ add_library(${PROJECT_NAME}
     state/eventstate.cpp
     state/groupstate.h
     state/groupstate.cpp
+    state/multieventstate.h
+    state/multieventstate.cpp
     )
 
 target_link_libraries(${PROJECT_NAME}

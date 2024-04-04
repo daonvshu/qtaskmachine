@@ -35,6 +35,9 @@ add_executable(${PROJECT_NAME} WIN32
     states/eventstaterun.h
     states/eventstatetest.h
     states/eventstatetest.cpp
+    states/multieventstaterun.h
+    states/multieventstatetest.h
+    states/multieventstatetest.cpp
 
     features/groupstaterun2.h
     features/groupstatetest.h

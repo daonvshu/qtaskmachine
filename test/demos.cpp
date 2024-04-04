@@ -49,6 +49,10 @@ Demos::Demos(QWidget *parent)
         item = new QStandardItem(u8"事件触发状态");
         item->setData("EventStateTest", Qt::UserRole + 1);
         baseStateGroup->appendRow(item);
+
+        item = new QStandardItem(u8"多事件触发状态");
+        item->setData("MultiEventStateTest", Qt::UserRole + 1);
+        baseStateGroup->appendRow(item);
     }
 
     auto featureStateGroup = new QStandardItem(u8"功能性");
