@@ -90,6 +90,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="btn_type5">
+       <property name="text">
+        <string>延迟切换</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

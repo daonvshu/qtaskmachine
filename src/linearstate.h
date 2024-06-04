@@ -38,12 +38,19 @@ public:
      */
     void setStateName(const QString& name, LoggingCategoryPtr categoryPtr = nullptr);
 
+    /**
+     * @brief 延迟条件切换目标，等同于在onExit时检查条件并切换目标，需要在设置切换和条件前调用
+     */
+    void setConditionDeferrable();
+
 protected:
     void clearTransitions();
     QAbstractState* getTargetState();
 
     void onEntry(QEvent *event) override;
     void onExit(QEvent *event) override;
+
+    static void appendTarget(QList<QAbstractState*>& group, QAbstractState* nextState);
 
 protected:
     struct SelectState {
@@ -56,4 +63,6 @@ protected:
 
     QString stateName;
     LoggingCategoryPtr debugPtr = nullptr;
+
+    LinearState* conditionalState = nullptr;
 };

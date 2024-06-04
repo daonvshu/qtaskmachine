@@ -1,4 +1,5 @@
 #include "linearstate.h"
+#include "state/directstate.h"
 
 #include "targetsignaltransition.h"
 
@@ -25,10 +26,19 @@ LinearState &LinearState::target(LinearState *nextState) {
 }
 
 LinearState &LinearState::target(QAbstractState *nextState) {
-    if (selectState.targetStates.isEmpty()) {
-        selectState.targetStates << nextState;
+    if (conditionalState != nullptr) {
+        conditionalState->target(nextState);
     } else {
-        for (auto target : selectState.targetStates) {
+        appendTarget(selectState.targetStates, nextState);
+    }
+    return *this;
+}
+
+void LinearState::appendTarget(QList<QAbstractState *> &group, QAbstractState* nextState) {
+    if (group.isEmpty()) {
+        group << nextState;
+    } else {
+        for (auto target : group) {
             if (target == nextState) {
                 continue;
             }
@@ -39,7 +49,6 @@ LinearState &LinearState::target(QAbstractState *nextState) {
             }
         }
     }
-    return *this;
 }
 
 LinearState &LinearState::operator<<(QAbstractState* conditionState) {
@@ -47,18 +56,30 @@ LinearState &LinearState::operator<<(QAbstractState* conditionState) {
 }
 
 LinearState &LinearState::next(QAbstractState *conditionState) {
-    selectState.targetStates << conditionState;
+    if (conditionalState != nullptr) {
+        conditionalState->next(conditionState);
+    } else {
+        selectState.targetStates << conditionState;
+    }
     return *this;
 }
 
 void LinearState::setCondition(int condition) {
-    setCondition([=] {
-        return condition;
-    });
+    if (conditionalState != nullptr) {
+        conditionalState->setCondition(condition);
+    } else {
+        setCondition([=] {
+            return condition;
+        });
+    }
 }
 
 void LinearState::setCondition(const std::function<int()> &condition) {
-    selectState.condition = condition;
+    if (conditionalState != nullptr) {
+        conditionalState->setCondition(condition);
+    } else {
+        selectState.condition = condition;
+    }
 }
 
 void LinearState::setStateName(const QString &name, LoggingCategoryPtr categoryPtr) {
@@ -70,6 +91,9 @@ void LinearState::clearTransitions() {
     auto oldTransitions = transitions();
     for (auto tr : oldTransitions) {
         removeTransition(tr);
+    }
+    if (conditionalState != nullptr) {
+        conditionalState->clearTransitions();
     }
 }
 
@@ -98,4 +122,12 @@ void LinearState::onExit(QEvent *event) {
     if (debugPtr && !stateName.isEmpty()) {
         qCInfo(debugPtr).nospace() << "state '" << stateName << "' exit!";
     }
+}
+
+void LinearState::setConditionDeferrable() {
+    if (conditionalState != nullptr) {
+        qFatal("condition already set to deferrable!");
+    }
+    conditionalState = new DirectState(this->parentState());
+    selectState.targetStates << conditionalState;
 }
