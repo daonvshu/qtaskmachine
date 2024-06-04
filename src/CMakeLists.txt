@@ -1,16 +1,19 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(task_machines_lib)
+project(qtask_machines VERSION 1.0.3)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
 if (WIN32)
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
     add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 endif()
+
+set(CMAKE_DEBUG_POSTFIX "d")
 
 add_library(${PROJECT_NAME}
 
@@ -32,8 +35,39 @@ add_library(${PROJECT_NAME}
     state/multieventstate.cpp
     )
 
-target_link_libraries(${PROJECT_NAME}
-    Qt5::Core
-    )
+target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::Core)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
+
+include(CMakePackageConfigHelpers)
+
+install(TARGETS ${PROJECT_NAME}
+    EXPORT QTaskMachinesTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
+)
+
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/QTaskMachinesConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/QTaskMachinesConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/QTaskMachines
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/QTaskMachinesConfig.cmake"
+    DESTINATION lib/cmake/QTaskMachines
+)
+
+install(EXPORT QTaskMachinesTargets
+    FILE QTaskMachinesTargets.cmake
+    DESTINATION lib/cmake/QTaskMachines
+)
