@@ -14,12 +14,12 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto secondState = new DirectState(machine);
-        connect(secondState, &QState::entered, machine, [&] {
+        secondState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "second state run...";
         });
 

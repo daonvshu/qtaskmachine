@@ -6,6 +6,11 @@
 
 typedef const QLoggingCategory& (*LoggingCategoryPtr)();
 
+enum class TaskStateType {
+    State_Enter,
+    State_Exit,
+};
+
 class LinearState : public QState {
 public:
     explicit LinearState(QState* parent = nullptr);
@@ -43,6 +48,17 @@ public:
      */
     void setConditionDeferrable();
 
+    template<typename T>
+    void bindState(TaskStateType stateType, T* context, void(T::*callback)());
+
+    template<typename T>
+    void bindState(TaskStateType stateType, T* context, void(T::*callback)() const);
+
+    template<typename T>
+    void bindState(TaskStateType stateType, T* context, const std::function<void()>& callback);
+
+    void bindState(TaskStateType stateType, const std::function<void()>& callback);
+
 protected:
     void clearTransitions();
     QAbstractState* getTargetState();
@@ -66,3 +82,40 @@ protected:
 
     LinearState* conditionalState = nullptr;
 };
+
+template<typename T>
+inline void LinearState::bindState(TaskStateType stateType, T *context, void(T::*callback)()) {
+    bindState(stateType, context, [=] {
+        (context->*callback)();
+    });
+}
+
+template<typename T>
+inline void LinearState::bindState(TaskStateType stateType, T *context, void(T::*callback)() const) {
+    bindState(stateType, context, [=] {
+        (context->*callback)();
+    });
+}
+
+template<typename T>
+inline void LinearState::bindState(TaskStateType stateType, T *context, const std::function<void()> &callback)  {
+    switch (stateType) {
+        case TaskStateType::State_Enter:
+            connect(this, &QState::entered, context, callback);
+            break;
+        case TaskStateType::State_Exit:
+            connect(this, &QState::exited, context, callback);
+            break;
+    }
+}
+
+inline void LinearState::bindState(TaskStateType stateType, const std::function<void()> &callback) {
+    switch (stateType) {
+        case TaskStateType::State_Enter:
+            connect(this, &QState::entered, callback);
+            break;
+        case TaskStateType::State_Exit:
+            connect(this, &QState::exited, callback);
+            break;
+    }
+}

@@ -15,15 +15,15 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto delayState = new DelayState(delayMs, machine);
-        connect(delayState, &QState::entered, machine, [&] {
+        delayState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "delay before...";
         });
-        connect(delayState, &QState::exited, machine, [&] {
+        delayState->bindState(TaskStateType::State_Exit, machine, [&] {
             qDebug() << "delay after...";
         });
 

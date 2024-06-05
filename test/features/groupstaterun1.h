@@ -15,26 +15,26 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto groupState = new GroupState(machine);
-        connect(groupState, &QState::entered, machine, [&] {
+        groupState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "group state entered...";
         });
-        connect(groupState, &QState::exited, machine, [&] {
+        groupState->bindState(TaskStateType::State_Exit, machine, [&] {
             qDebug() << "group state exited...";
         });
 
         {
             auto s1 = new DirectState(groupState);
-            connect(s1, &QState::entered, machine, [&] {
+            s1->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "group s1 enter...";
             });
 
             auto s2 = new DirectState(groupState);
-            connect(s2, &QState::entered, machine, [&] {
+            s2->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "group s2 enter...";
             });
 

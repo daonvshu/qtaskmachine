@@ -30,7 +30,7 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
@@ -51,16 +51,16 @@ public:
         //子状态组历史状态
         auto childGroupHistory = new QHistoryState(QHistoryState::DeepHistory, mainGroupState);
 
-        connect(mainGroupState, &QState::entered, machine, [&] {
+        mainGroupState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "main group state entered...";
         });
-        connect(mainGroupState, &QState::exited, machine, [&] {
+        mainGroupState->bindState(TaskStateType::State_Exit, machine, [&] {
             qDebug() << "main group state exited...";
         });
 
         {
             auto s1 = new DirectState(mainGroupState);
-            connect(s1, &QState::entered, machine, [&] {
+            s1->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "group s1 enter...";
             });
             //设置历史默认状态
@@ -68,32 +68,32 @@ public:
             childGroupHistory->setDefaultState(s1);
 
             auto s2 = new DelayState(5000, mainGroupState);
-            connect(s2, &QState::entered, machine, [&] {
+            s2->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "group s2 enter...";
             });
-            connect(s2, &QState::exited, machine, [&] {
+            s2->bindState(TaskStateType::State_Exit, machine, [&] {
                 qDebug() << "group s2 exited...";
             });
 
             auto childGroup = new GroupState(mainGroupState);
-            connect(childGroup, &QState::entered, machine, [&] {
+            childGroup->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "child group enter...";
             });
-            connect(childGroup, &QState::exited, machine, [&] {
+            childGroup->bindState(TaskStateType::State_Exit, machine, [&] {
                 qDebug() << "child group exited...";
             });
 
             {
                 auto s11 = new DirectState(childGroup);
-                connect(s11, &QState::entered, machine, [&] {
+                s11->bindState(TaskStateType::State_Enter, machine, [&] {
                     qDebug() << "group s11 enter...";
                 });
 
                 auto s12 = new DelayState(5000, childGroup);
-                connect(s12, &QState::entered, machine, [&] {
+                s12->bindState(TaskStateType::State_Enter, machine, [&] {
                     qDebug() << "group s12 enter...";
                 });
-                connect(s12, &QState::exited, machine, [&] {
+                s12->bindState(TaskStateType::State_Exit, machine, [&] {
                     qDebug() << "group s12 exited...";
                 });
 
@@ -120,7 +120,7 @@ public:
         }
 
         auto nextState = new DirectState(machine);
-        connect(nextState, &QState::entered, machine, [&] {
+        nextState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "next state enter...";
         });
 

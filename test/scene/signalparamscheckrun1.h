@@ -38,13 +38,13 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto waitForTargetState = new WaitForTargetValueState(10, machine);
         waitForTargetState->setSignal(trigger, &SignalParamsCheckEventTrigger::trigger);
-        connect(waitForTargetState, &QState::entered, machine, [&] {
+        waitForTargetState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "wait for target state run...";
         });
 

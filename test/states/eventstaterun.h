@@ -26,12 +26,12 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto failState = new DirectState(machine);
-        connect(failState, &QState::entered, machine, [&] {
+        failState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "fail state enter...";
         });
 
@@ -43,11 +43,11 @@ public:
         //设置超时重试
         eventState->setRetrySize(retryCount);
         //进入状态监听
-        connect(eventState, &EventState::entered, machine, [&] {
+        eventState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "event state entered...";
         });
         //退出状态监听
-        connect(eventState, &EventState::exited, machine, [&] {
+        eventState->bindState(TaskStateType::State_Exit, machine, [&] {
             qDebug() << "event state exited...";
         });
         //监听超时重试

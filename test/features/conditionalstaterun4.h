@@ -13,22 +13,22 @@ public:
         auto machine = new QStateMachine;
 
         auto conditionalState = new DirectState(machine);
-        connect(conditionalState, &QState::entered, machine, [&] {
+        conditionalState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "conditional state run...";
         });
 
         auto defaultState = new DirectState(machine);
-        connect(defaultState, &QState::entered, machine, [&] {
+        defaultState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "default state run...";
         });
 
         auto selectState = new DirectState(machine);
-        connect(selectState, &QState::entered, machine, [&] {
+        selectState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "select state run...";
         });
 
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [=] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [=] {
             qDebug() << "begin state run...";
             //在selectState进入前设置条件
             selectState->setCondition(positive);

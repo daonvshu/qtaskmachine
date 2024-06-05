@@ -13,22 +13,22 @@ public:
         auto machine = new QStateMachine;
 
         auto s1 = new DirectState(machine);
-        connect(s1, &QState::entered, machine, [&] {
+        s1->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "s1 state run...";
         });
 
         auto s2 = new DirectState(machine);
-        connect(s2, &QState::entered, machine, [&] {
+        s2->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "s2 state run...";
         });
 
         auto s3 = new DirectState(machine);
-        connect(s3, &QState::entered, machine, [&] {
+        s3->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "s3 state run...";
         });
 
         auto s4 = new DirectState(machine);
-        connect(s4, &QState::entered, machine, [&] {
+        s4->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "s4 state run...";
         });
 
@@ -37,12 +37,12 @@ public:
         selectState->setCondition([=] {
             return targetIndex;
         });
-        connect(selectState, &QState::entered, machine, [&] {
+        selectState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "select state run...";
         });
 
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [=] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [=] {
             qDebug() << "begin state run...";
         });
 

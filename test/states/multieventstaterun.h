@@ -27,7 +27,7 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
@@ -37,11 +37,11 @@ public:
         eventState->addSignal(trigger, &MultiEventTrigger::event2);
         eventState->addSignal(trigger, &MultiEventTrigger::event3);
         //进入状态监听
-        connect(eventState, &QState::entered, machine, [&] {
+        eventState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "event state entered...";
         });
         //退出状态监听
-        connect(eventState, &QState::exited, machine, [&] {
+        eventState->bindState(TaskStateType::State_Exit, machine, [&] {
             qDebug() << "event state exited...";
         });
 

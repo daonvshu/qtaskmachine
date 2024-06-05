@@ -27,12 +27,12 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto failState = new DirectState(machine);
-        connect(failState, &QState::entered, machine, [&] {
+        failState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "fail state run...";
         });
 
@@ -43,24 +43,24 @@ public:
         connect(trigger, &GroupEventTrigger::fail, machine, [=] {
             groupState->triggerSignalFail();
         });
-        connect(groupState, &QState::entered, machine, [&] {
+        groupState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "group state entered...";
         });
-        connect(groupState, &QState::exited, machine, [&] {
+        groupState->bindState(TaskStateType::State_Exit, machine, [&] {
             qDebug() << "group state exited...";
         });
 
         {
             auto s1 = new DirectState(groupState);
-            connect(s1, &QState::entered, machine, [&] {
+            s1->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "group s1 enter...";
             });
 
             auto s2 = new DelayState(5000, groupState);
-            connect(s2, &QState::entered, machine, [&] {
+            s2->bindState(TaskStateType::State_Enter, machine, [&] {
                 qDebug() << "group s2 enter...";
             });
-            connect(s2, &QState::exited, machine, [&] {
+            s2->bindState(TaskStateType::State_Exit, machine, [&] {
                 qDebug() << "group s2 exited...";
             });
 
@@ -76,7 +76,7 @@ public:
         }
 
         auto nextState = new DirectState(machine);
-        connect(nextState, &QState::entered, machine, [&] {
+        nextState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "next state enter...";
         });
 

@@ -34,7 +34,7 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
@@ -43,7 +43,7 @@ public:
         switch (trigger->targetLessType) {
             case TargetLessType::Type_Delay: { //延时类型
                 auto delayState = new DelayState(1000, targetLessGroup);
-                connect(delayState, &QState::entered, [] {
+                delayState->bindState(TaskStateType::State_Enter, [] {
                     qDebug() << "delay state enter...";
                 });
                 targetLessGroup->setInitialState(delayState);
@@ -52,7 +52,7 @@ public:
             case TargetLessType::Type_Event: { //事件触发类型
                 auto eventState = new EventState(targetLessGroup);
                 eventState->setSignal(trigger, &TargetLessEventTrigger::trigger);
-                connect(eventState, &QState::entered, [] {
+                eventState->bindState(TaskStateType::State_Enter, [] {
                     qDebug() << "event state enter...";
                 });
                 targetLessGroup->setInitialState(eventState);
@@ -60,12 +60,12 @@ public:
                 break;
             case TargetLessType::Type_SubGroup: { //子状态组类型
                 auto groupState = new GroupState(targetLessGroup);
-                connect(groupState, &QState::entered, [] {
+                groupState->bindState(TaskStateType::State_Enter, [] {
                     qDebug() << "group state enter...";
                 });
                 {
                     auto delayState = new DelayState(2000, groupState);
-                    connect(delayState, &QState::entered, [] {
+                    delayState->bindState(TaskStateType::State_Enter, [] {
                         qDebug() << "delay state in group state enter...";
                     });
 

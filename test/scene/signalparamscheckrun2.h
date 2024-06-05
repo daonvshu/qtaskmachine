@@ -44,16 +44,16 @@ public:
 
         //状态定义
         auto beginState = new DirectState(machine);
-        connect(beginState, &QState::entered, machine, [&] {
+        beginState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "begin state run...";
         });
 
         auto waitForTimesState = new WaitForTimesState(machine);
         waitForTimesState->setSignal(trigger, &SignalParamsCheckEventTrigger::trigger);
-        connect(waitForTimesState, &QState::entered, machine, [&] {
+        waitForTimesState->bindState(TaskStateType::State_Enter, machine, [&] {
             qDebug() << "wait for times state run...";
         });
-        connect(waitForTimesState, &QState::exited, machine, [=] {
+        waitForTimesState->bindState(TaskStateType::State_Exit, machine, [=] {
             qDebug() << "wait for times state exit..., data sum:" << waitForTimesState->getSum();
         });
 
