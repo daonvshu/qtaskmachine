@@ -17,7 +17,11 @@ int main(int argc, char* argv[]) {
     hr = SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0);
     if (hr != 0) {
         auto font = QApplication::font();
-        font.setFamily(QString::fromLocal8Bit(ncm.lfMenuFont.lfFaceName));
+#ifdef QT_FEATURE_cxx17
+        font.setFamily(QString::fromStdWString(ncm.lfMenuFont.lfFaceName));
+#else
+        font.setFamily(QString::fromStdString(ncm.lfMenuFont.lfFaceName));
+#endif
         QApplication::setFont(font);
     }
 #endif

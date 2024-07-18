@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(qtask_machines VERSION 1.0.3)
+project(qtask_machines VERSION 1.0.4)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+
+if (Qt6_FOUND)
+    find_package(Qt6 REQUIRED COMPONENTS StateMachine)
+endif ()
 
 if (WIN32)
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -36,6 +40,10 @@ add_library(${PROJECT_NAME}
     )
 
 target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::Core)
+
+if (Qt6_FOUND)
+    target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::StateMachine)
+endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
