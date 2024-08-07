@@ -34,6 +34,10 @@ public:
 
     int getConnectedLineSize() const;
 
+    virtual bool acceptableConnectLine();
+
+    virtual bool creatableConnectLine();
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 

@@ -48,9 +48,13 @@ struct FlowChartItemData {
     int flowId = -1; //存储和运行前更新一次
 
     FlowChartItemData() = default;
-    FlowChartItemData(QString text, qint64 taskId)
+    explicit FlowChartItemData(FlowChartNodeType nodeType)
+        : nodeType(nodeType)
+    {}
+    FlowChartItemData(QString text, qint64 taskId, FlowChartNodeType nodeType)
         : text(std::move(text))
         , taskId(taskId)
+        , nodeType(nodeType)
     {}
 
     bool operator==(const FlowChartItemData& other) const {
@@ -74,14 +78,14 @@ inline QDataStream& operator>>(QDataStream& in, FlowChartItemData& data) {
 
 class FlowChartMimeData : public QMimeData {
 public:
-    explicit FlowChartMimeData(FlowChartNodeType nodeType);
+    explicit FlowChartMimeData(const FlowChartItemData& itemData);
 
     static QString mimeType() {
         return "application/flowchart-item-data";
     }
 
-    static FlowChartNodeType unpack(const QMimeData* mimeData);
+    static FlowChartItemData unpack(const QMimeData* mimeData);
 
 private:
-    void setCustomData(FlowChartNodeType nodeType);
+    void setCustomData(const FlowChartItemData& itemData);
 };

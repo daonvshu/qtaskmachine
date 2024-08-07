@@ -47,7 +47,7 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             //x y
             flowExecutor.fromScenePos(executor->rect().topLeft());
             //type
-            flowExecutor.fromType(FlowChartNodeType::Node_Normal);
+            flowExecutor.fromType(executor->itemData.nodeType);
             data.executors().append(flowExecutor);
         } else if (auto condition = dynamic_cast<FcConditionalItem*>(item)) {
             ConfigFlowExecutor flowConditional;
@@ -94,6 +94,8 @@ void App::saveConfigToFile() {
     auto data = QJsonDocument(obj).toJson(QJsonDocument::Indented);
     file.write(data);
     file.close();
+
+    QMessageBox::information(nullptr, QStringLiteral("提示"), QStringLiteral("OK!"));
 }
 
 void App::refreshConfigPathLabel() {
@@ -156,15 +158,15 @@ void App::reloadFlowConfig(int rowIndex) {
     QHash<int, FlowChartExecutorItem*> idMap;
     for (const auto& executor : flow.executors()) {
         switch (executor.itemType()) {
-            case FlowChartNodeType::Node_Normal: {
-                auto item = new FcExecutorItem(FlowChartItemData(executor.text(), executor.taskId()));
+            case FlowChartNodeType::Node_Condition: {
+                auto item = new FcConditionalItem;
                 item->setTopLeftPos(executor.scenePos(), scene);
                 scene->addItem(item);
                 idMap[executor.id()] = item;
             }
                 break;
-            case FlowChartNodeType::Node_Condition: {
-                auto item = new FcConditionalItem;
+            default: {
+                auto item = new FcExecutorItem(FlowChartItemData(executor.text(), executor.taskId(), executor.itemType()));
                 item->setTopLeftPos(executor.scenePos(), scene);
                 scene->addItem(item);
                 idMap[executor.id()] = item;
@@ -189,10 +191,20 @@ void App::reloadFlowConfig(int rowIndex) {
 }
 
 void App::nodeSelected(FlowChartExecutorItem *item) {
+    ui.state_common_prop->setVisible(item != nullptr);
+
     if (item == nullptr) {
         ui.stackedWidget->setCurrentIndex(0);
         return;
     }
 
-
+    if (auto executor = dynamic_cast<FcExecutorItem*>(item)) {
+        auto nodeType = executor->itemData.nodeType;
+        if (nodeType == FlowChartNodeType::Node_Begin ||
+            nodeType == FlowChartNodeType::Node_End ||
+            nodeType == FlowChartNodeType::Node_Normal
+        ) {
+            ui.stackedWidget->setCurrentIndex(0);
+        }
+    }
 }

@@ -270,3 +270,11 @@ void FlowChartExecutorItem::beginConnectLineMove() {
     }
 }
 
+bool FlowChartExecutorItem::acceptableConnectLine() {
+    return true;
+}
+
+bool FlowChartExecutorItem::creatableConnectLine() {
+    return true;
+}
+

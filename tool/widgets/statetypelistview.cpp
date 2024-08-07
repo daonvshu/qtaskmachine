@@ -43,14 +43,18 @@ void StateTypeListView::startDrag(Qt::DropActions supportedActions) {
                 case FlowChartNodeType::Node_Condition:
                     FcConditionalItem::drawItemBox(&painter, pixmap.rect());
                     break;
-                case FlowChartNodeType::Node_History:
-                    break;
                 default:
                     FcExecutorItem::drawItemBox(&painter, pixmap.rect(), nodeType);
                     break;
             }
 
-            auto mimeData = new FlowChartMimeData(nodeType);
+            FlowChartItemData itemData(nodeType);
+            if (nodeType == FlowChartNodeType::Node_Begin) {
+                itemData.text = QStringLiteral("开始");
+            } else if (nodeType == FlowChartNodeType::Node_End) {
+                itemData.text = QStringLiteral("结束");
+            }
+            auto mimeData = new FlowChartMimeData(itemData);
 
             auto drag = new QDrag(this);
             drag->setPixmap(pixmap);
@@ -76,61 +80,14 @@ void StateTypeListItemDelegate::paint(QPainter *painter, const QStyleOptionViewI
     boxDrawRect.setBottom(textRect.top());
     boxDrawRect.adjust(12, 8, -12, 0);
 
-    QRect boxRect(0, 0, 80, 32);
+    QRect boxRect(0, 0, 60, 42);
     boxRect.moveCenter(boxDrawRect.center());
 
     auto nodeType = FlowChartNodeType(index.data(Qt::UserRole + 1).toInt());
+    FcExecutorItem::drawItemBox(painter, boxRect, nodeType, QString());
+
     painter->setPen(Qt::white);
     painter->drawText(textRect, Qt::AlignCenter, nodeTypeToString(nodeType));
-    painter->setPen(Qt::NoPen);
-
-    switch (nodeType) {
-        case FlowChartNodeType::Node_Begin:
-        case FlowChartNodeType::Node_End:
-            painter->setBrush(QColor(0x13D185));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            break;
-        case FlowChartNodeType::Node_Normal:
-            painter->setBrush(QColor(0x598EF3));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            break;
-        case FlowChartNodeType::Node_Delay:
-            painter->setBrush(QColor(0x58BCF2));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            painter->drawPixmap(boxRect.right() - 12, boxRect.bottom() - 12, QPixmap(":/res/time.svg"));
-            break;
-        case FlowChartNodeType::Node_Event:
-            painter->setBrush(QColor(0x58BCF2));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            painter->drawPixmap(boxRect.right() - 12, boxRect.bottom() - 12, QPixmap(":/res/signal_right.svg"));
-            break;
-        case FlowChartNodeType::Node_MultiEvent:
-            painter->setBrush(QColor(0x58BCF2));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            painter->drawPixmap(boxRect.right() - 14, boxRect.bottom() - 10, QPixmap(":/res/multi_signal_right.svg"));
-            break;
-        case FlowChartNodeType::Node_EventCheck:
-            painter->setBrush(QColor(0x58BCF2));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            painter->drawPixmap(boxRect.right() - 12, boxRect.bottom() - 12, QPixmap(":/res/check.svg"));
-            break;
-        case FlowChartNodeType::Node_Condition: {
-            painter->setBrush(QColor(0xF18F01));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            QPixmap icon(":/res/conditional.svg");
-            auto iconRect = icon.rect();
-            iconRect.moveCenter(boxRect.center());
-            painter->drawPixmap(iconRect, icon);
-        }
-            break;
-        case FlowChartNodeType::Node_History: {
-            QPixmap icon(":/res/circle.svg");
-            auto iconRect = icon.rect();
-            iconRect.moveCenter(boxRect.center());
-            painter->drawPixmap(iconRect, icon);
-        }
-            break;
-    }
 }
 
 QSize StateTypeListItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {

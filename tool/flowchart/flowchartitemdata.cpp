@@ -1,20 +1,20 @@
 #include "flowchartitemdata.h"
 
-FlowChartMimeData::FlowChartMimeData(FlowChartNodeType nodeType)  {
-    setCustomData(nodeType);
+FlowChartMimeData::FlowChartMimeData(const FlowChartItemData& itemData)  {
+    setCustomData(itemData);
 }
 
-FlowChartNodeType FlowChartMimeData::unpack(const QMimeData *mimeData) {
+FlowChartItemData FlowChartMimeData::unpack(const QMimeData *mimeData) {
     auto data = mimeData->data(mimeType());
     QDataStream stream(&data, QIODevice::ReadOnly);
-    int nodeType;
-    stream >> nodeType;
-    return FlowChartNodeType(nodeType);
+    FlowChartItemData itemData;
+    stream >> itemData;
+    return itemData;
 }
 
-void FlowChartMimeData::setCustomData(FlowChartNodeType nodeType) {
+void FlowChartMimeData::setCustomData(const FlowChartItemData& itemData) {
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
-    out << (int)nodeType;
+    out << itemData;
     setData(mimeType(), byteArray);
 }

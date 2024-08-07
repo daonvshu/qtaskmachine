@@ -17,6 +17,8 @@ App::App(QWidget *parent)
     ui.flow_list->setModel(flowsMode = new QStandardItemModel(this));
     ui.flow_list->setResizeMode(QListView::Adjust);
 
+    ui.state_common_prop->setVisible(false);
+
     connect(ui.flow_view, &FlowChartWidget::nodeSelected, this, &App::nodeSelected);
 
     refreshConfigPathLabel();

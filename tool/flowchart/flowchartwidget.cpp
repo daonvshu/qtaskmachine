@@ -109,17 +109,21 @@ void FlowChartScene::dropEvent(QGraphicsSceneDragDropEvent *event) {
     if (acceptDrag) {
         event->acceptProposedAction();
         auto mimeData = event->mimeData();
-        auto nodeType = FlowChartMimeData::unpack(mimeData);
+        auto itemData = FlowChartMimeData::unpack(mimeData);
 
-        switch (nodeType) {
-            case FlowChartNodeType::Node_Normal: {
-                auto item = new FcExecutorItem(FlowChartItemData());
-                item->setPos(event->scenePos(), this);
-                addItem(item);
+        switch (itemData.nodeType) {
+            case FlowChartNodeType::Node_History: {
+
             }
                 break;
             case FlowChartNodeType::Node_Condition: {
                 auto item = new FcConditionalItem;
+                item->setPos(event->scenePos(), this);
+                addItem(item);
+            }
+                break;
+            default: {
+                auto item = new FcExecutorItem(itemData);
                 item->setPos(event->scenePos(), this);
                 addItem(item);
             }
@@ -156,10 +160,8 @@ void FlowChartScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         if (auto i = dynamic_cast<FlowChartExecutorItem*>(item)) {
             auto p = i->testInConnectPoint(event->pos());
             if (!p.isNull()) {
-                if (dynamic_cast<FcExecutorItem*>(item)) {
-                    if (i->getConnectedLineSize() >= 1) { //限制节点只能连接一个
-                        break;
-                    }
+                if (!i->creatableConnectLine()) {
+                    break;
                 }
 
                 isConnectPointClicked = true;
@@ -192,8 +194,12 @@ void FlowChartScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
                 lastHoverItem->setIsHoverState(false);
             }
             if (auto fcItem = dynamic_cast<FlowChartExecutorItem*>(item)) {
-                lastHoverItem = fcItem;
-                lastHoverItem->setIsHoverState(true);
+                if (fcItem->acceptableConnectLine()) {
+                    lastHoverItem = fcItem;
+                    lastHoverItem->setIsHoverState(true);
+                } else {
+                    lastHoverItem = nullptr;
+                }
             }
         }
 

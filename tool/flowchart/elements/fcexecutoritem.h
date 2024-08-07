@@ -10,6 +10,10 @@ public:
 
     static void drawItemBox(QPainter* painter, const QRectF& rect, FlowChartNodeType nodeType, const QString& text = QString());
 
+    bool acceptableConnectLine() override;
+
+    bool creatableConnectLine() override;
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
