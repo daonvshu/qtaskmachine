@@ -46,6 +46,11 @@ add_executable(${PROJECT_NAME} WIN32
     widgets/statetypelistview.h
     widgets/statetypelistview.cpp
 
+    subpage/commonpropmanager.h
+    subpage/commonpropmanager.cpp
+    subpage/configdelaystate.h
+    subpage/configdelaystate.cpp
+
     utils/curvemovecontrol.h
     utils/curvemovecontrol.cpp
     utils/xmath.h

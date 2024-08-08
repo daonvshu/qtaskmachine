@@ -4,6 +4,8 @@
 #include "flowchart/elements/fcbranchitem.h"
 #include "flowchart/elements/fcconnectline.h"
 
+#include "subpage/stateconfiginterface.h"
+
 #include <qfile.h>
 #include <qmessagebox.h>
 
@@ -48,6 +50,12 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             flowExecutor.fromScenePos(executor->rect().topLeft());
             //type
             flowExecutor.fromType(executor->itemData.nodeType);
+            //function
+            flowExecutor.enter = executor->itemData.functionEnter;
+            flowExecutor.exit = executor->itemData.functionExit;
+            //delay
+            flowExecutor.delay = executor->itemData.delayMs;
+
             data.executors().append(flowExecutor);
         } else if (auto condition = dynamic_cast<FcConditionalItem*>(item)) {
             ConfigFlowExecutor flowConditional;
@@ -166,7 +174,11 @@ void App::reloadFlowConfig(int rowIndex) {
             }
                 break;
             default: {
-                auto item = new FcExecutorItem(FlowChartItemData(executor.text(), executor.taskId(), executor.itemType()));
+                FlowChartItemData itemData(executor.text(), executor.taskId(), executor.itemType());
+                itemData.functionEnter = executor.enter();
+                itemData.functionExit = executor.exit();
+                itemData.delayMs = executor.delay();
+                auto item = new FcExecutorItem(itemData);
                 item->setTopLeftPos(executor.scenePos(), scene);
                 scene->addItem(item);
                 idMap[executor.id()] = item;
@@ -191,20 +203,42 @@ void App::reloadFlowConfig(int rowIndex) {
 }
 
 void App::nodeSelected(FlowChartExecutorItem *item) {
-    ui.state_common_prop->setVisible(item != nullptr);
 
     if (item == nullptr) {
         ui.stackedWidget->setCurrentIndex(0);
+        ui.state_common_prop->setVisible(false);
         return;
     }
 
     if (auto executor = dynamic_cast<FcExecutorItem*>(item)) {
         auto nodeType = executor->itemData.nodeType;
-        if (nodeType == FlowChartNodeType::Node_Begin ||
-            nodeType == FlowChartNodeType::Node_End ||
-            nodeType == FlowChartNodeType::Node_Normal
-        ) {
-            ui.stackedWidget->setCurrentIndex(0);
+        switch (nodeType) {
+            case FlowChartNodeType::Node_Begin:
+            case FlowChartNodeType::Node_End:
+            case FlowChartNodeType::Node_Normal:
+                ui.stackedWidget->setCurrentIndex(0);
+                break;
+            case FlowChartNodeType::Node_Delay:
+                ui.stackedWidget->setCurrentIndex(1);
+                break;
+            case FlowChartNodeType::Node_Event:
+                break;
+            case FlowChartNodeType::Node_MultiEvent:
+                break;
+            case FlowChartNodeType::Node_EventCheck:
+                break;
+            case FlowChartNodeType::Node_Condition:
+                break;
+            case FlowChartNodeType::Node_History:
+                break;
         }
+        ui.state_common_prop->setVisible(true);
+        commonPropManager->loadItemBaseData(executor);
+        auto i = dynamic_cast<StateConfigInterface*>(ui.stackedWidget->currentWidget());
+        if (i) {
+            i->setActiveItem(item);
+        }
+    } else {
+        ui.state_common_prop->setVisible(false);
     }
 }

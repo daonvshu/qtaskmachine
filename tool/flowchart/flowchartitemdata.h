@@ -47,6 +47,11 @@ struct FlowChartItemData {
     qint64 taskId = -1;
     int flowId = -1; //存储和运行前更新一次
 
+    QString functionEnter; //进入函数
+    QString functionExit; //退出函数
+
+    int delayMs = 0; //延时
+
     FlowChartItemData() = default;
     explicit FlowChartItemData(FlowChartNodeType nodeType)
         : nodeType(nodeType)
@@ -65,13 +70,17 @@ struct FlowChartItemData {
 Q_DECLARE_METATYPE(FlowChartItemData)
 
 inline QDataStream& operator<<(QDataStream& out, const FlowChartItemData& data) {
-    out << data.text << (int)data.nodeType << data.taskId;
+    out << data.text << (int)data.nodeType << data.taskId
+        << data.functionEnter << data.functionExit
+        << data.delayMs;
     return out;
 }
 
 inline QDataStream& operator>>(QDataStream& in, FlowChartItemData& data) {
     int nodeType;
-    in >> data.text >> nodeType >> data.taskId;
+    in >> data.text >> nodeType >> data.taskId
+       >> data.functionEnter >> data.functionExit
+       >> data.delayMs;
     data.nodeType = FlowChartNodeType(nodeType);
     return in;
 }

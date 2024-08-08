@@ -9,6 +9,8 @@
 
 #include "flowchart/elements/flowchartexecutoritem.h"
 
+#include "subpage/commonpropmanager.h"
+
 class App : public QWidget {
     Q_OBJECT
 
@@ -20,6 +22,8 @@ private:
 
     ConfigFlowGroup flowGroup;
     QStandardItemModel* flowsMode;
+
+    CommonPropManager* commonPropManager;
 
     QString configFilePath;
 

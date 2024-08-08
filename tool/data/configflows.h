@@ -16,6 +16,11 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(qreal, y); //scene位置y
     DATA_KEY(int, type); //类型 -> Type
 
+    DATA_KEY(QString, enter); //进入函数
+    DATA_KEY(QString, exit); //退出函数
+
+    DATA_KEY(int, delay); //延时
+
     FlowChartNodeType itemType() const {
         return FlowChartNodeType(type());
     }
@@ -34,7 +39,8 @@ struct ConfigFlowExecutor : DataDumpInterface {
     }
 
     QList<DataReadInterface *> prop() override {
-        return { &id, &text, &taskId, &x, &y, &type };
+        return { &id, &text, &taskId, &x, &y, &type,
+                 &enter, &exit, &delay };
     }
 };
 

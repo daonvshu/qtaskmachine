@@ -2,6 +2,8 @@
 
 #include "widgets/flowlistitemdelegate.h"
 
+#include "subpage/configdelaystate.h"
+
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
 
@@ -22,6 +24,9 @@ App::App(QWidget *parent)
     connect(ui.flow_view, &FlowChartWidget::nodeSelected, this, &App::nodeSelected);
 
     refreshConfigPathLabel();
+
+    commonPropManager = new CommonPropManager(&ui, this);
+    ui.stackedWidget->addWidget(new ConfigDelayState(this));
 }
 
 void App::on_btn_new_config_clicked() {
