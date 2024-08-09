@@ -278,3 +278,20 @@ bool FlowChartExecutorItem::creatableConnectLine() {
     return true;
 }
 
+int FlowChartExecutorItem::getConnectFromSize() const {
+    int size  = 0;
+    for (int i = 0; i < connectPoints.size(); i++) {
+        size += connectFrom[i].size();
+    }
+    return size;
+}
+
+int FlowChartExecutorItem::getConnectToSize() const {
+    int size  = 0;
+    for (int i = 0; i < connectPoints.size(); i++) {
+        size += connectTo[i].size();
+    }
+    return size;
+}
+
+

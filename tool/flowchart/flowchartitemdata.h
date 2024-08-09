@@ -52,6 +52,9 @@ struct FlowChartItemData {
 
     int delayMs = 0; //延时
 
+    int timeoutMs = 0; //超时
+    int timeoutRetry = 0; //重试次数
+
     FlowChartItemData() = default;
     explicit FlowChartItemData(FlowChartNodeType nodeType)
         : nodeType(nodeType)

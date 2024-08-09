@@ -91,8 +91,23 @@ bool FcExecutorItem::acceptableConnectLine() {
 }
 
 bool FcExecutorItem::creatableConnectLine() {
-    if (itemData.nodeType == FlowChartNodeType::Node_End) {
-        return false;
+    switch (itemData.nodeType) {
+        case FlowChartNodeType::Node_End:
+            return false;
+        case FlowChartNodeType::Node_Begin:
+        case FlowChartNodeType::Node_Normal:
+        case FlowChartNodeType::Node_Delay:
+            return getConnectToSize() < 1;
+        case FlowChartNodeType::Node_Event:
+            return getConnectToSize() < 2;
+        case FlowChartNodeType::Node_MultiEvent:
+            break;
+        case FlowChartNodeType::Node_EventCheck:
+            break;
+        case FlowChartNodeType::Node_Condition:
+            break;
+        case FlowChartNodeType::Node_History:
+            break;
     }
     return FlowChartExecutorItem::creatableConnectLine();
 }

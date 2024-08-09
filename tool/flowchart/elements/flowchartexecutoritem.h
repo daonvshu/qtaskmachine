@@ -51,6 +51,9 @@ protected:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
+    int getConnectFromSize() const;
+    int getConnectToSize() const;
+
 protected:
     virtual QSizeF itemSize() const = 0;
 

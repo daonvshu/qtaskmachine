@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true">*{
 background:#35363C;
-font-size:10pt;
+font-size:14px;
 color:white;
 }
 QLineEdit {
@@ -500,43 +500,12 @@ background:#00D1FF;
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">#state_common_prop{border-bottom:1px solid #26282D}</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>状态进入时调用：</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>状态名称：</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="input_func_exit">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLineEdit{
+            <string notr="true">#state_common_prop{
+border-bottom:1px solid #26282D;
+}
+QLineEdit{
 border:none;
+border-bottom:1px solid #5A636C;
 padding-left:8px;
 padding-right:8px;
 }
@@ -545,7 +514,22 @@ background:#4C4E56;
 }
 QLineEdit:focus{
 border:1px solid #02BFFF;
+}
+QLabel[mstyle=&quot;hint&quot;]{
+font-size:12px;color:#A0C2D3;
 }</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="input_func_enter">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
               </property>
               <property name="maxLength">
                <number>36</number>
@@ -564,25 +548,45 @@ border:1px solid #02BFFF;
                <enum>Qt::ClickFocus</enum>
               </property>
               <property name="styleSheet">
-               <string notr="true">QLineEdit{
-border:none;
-padding-left:8px;
-padding-right:8px;
-}
-QLineEdit:hover{
-background:#4C4E56;
-}
-QLineEdit:focus{
-border:1px solid #02BFFF;
-}</string>
+               <string notr="true"/>
               </property>
               <property name="maxLength">
                <number>36</number>
               </property>
              </widget>
             </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>状态进入时调用：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>状态退出时调用：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="input_func_enter">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>*设置打印时的名称</string>
+              </property>
+              <property name="mstyle" stdset="0">
+               <string>hint</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLineEdit" name="input_func_exit">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -592,31 +596,38 @@ border:1px solid #02BFFF;
               <property name="focusPolicy">
                <enum>Qt::ClickFocus</enum>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QLineEdit{
-border:none;
-padding-left:8px;
-padding-right:8px;
-}
-QLineEdit:hover{
-background:#4C4E56;
-}
-QLineEdit:focus{
-border:1px solid #02BFFF;
-}</string>
-              </property>
               <property name="maxLength">
                <number>36</number>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_5">
+            <item row="3" column="1">
+             <widget class="QLabel" name="label_7">
               <property name="text">
-               <string>状态退出时调用：</string>
+               <string>*设置entered绑定的槽函数</string>
+              </property>
+              <property name="mstyle" stdset="0">
+               <string>hint</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>状态名称：</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>*设置exited绑定的槽函数</string>
+              </property>
+              <property name="mstyle" stdset="0">
+               <string>hint</string>
               </property>
              </widget>
             </item>
