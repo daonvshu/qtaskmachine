@@ -47,11 +47,6 @@ void FcExecutorItem::drawItemBox(QPainter *painter, const QRectF& rect, FlowChar
             painter->drawRoundedRect(boxRect, 4, 4);
             painter->drawPixmap(boxRect.right() - 14, boxRect.bottom() - 10, QPixmap(":/res/multi_signal_right.svg"));
             break;
-        case FlowChartNodeType::Node_EventCheck:
-            painter->setBrush(QColor(0x58BCF2));
-            painter->drawRoundedRect(boxRect, 4, 4);
-            painter->drawPixmap(boxRect.right() - 12, boxRect.bottom() - 12, QPixmap(":/res/check.svg"));
-            break;
         case FlowChartNodeType::Node_Condition: {
             painter->setBrush(QColor(0xF18F01));
             painter->drawRoundedRect(boxRect, 4, 4);
@@ -101,8 +96,6 @@ bool FcExecutorItem::creatableConnectLine() {
         case FlowChartNodeType::Node_Event:
             return getConnectToSize() < 2;
         case FlowChartNodeType::Node_MultiEvent:
-            break;
-        case FlowChartNodeType::Node_EventCheck:
             break;
         case FlowChartNodeType::Node_Condition:
             break;

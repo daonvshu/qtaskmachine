@@ -39,7 +39,17 @@ font-size:12px;color:#A0C2D3;
    <item>
     <widget class="QWidget" name="line_config_box" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="2" column="1">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>分支id：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
        <widget class="QLineEdit" name="input_signal_check">
         <property name="minimumSize">
          <size>
@@ -75,7 +85,7 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>信号参数检查：</string>
@@ -85,7 +95,7 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="5" column="1">
        <widget class="QLabel" name="label_11">
         <property name="text">
          <string>*设置信号参数检查函数，返回true时表示信号有效</string>
@@ -105,14 +115,37 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="input_branch_id">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
        <widget class="QLabel" name="label_12">
         <property name="text">
          <string>*函数签名：
-Q_INVOKABLE bool function(int signalIndex,const QVariantList&amp; data)</string>
+Q_INVOKABLE bool function(int branchId,const QVariantList&amp; data)</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
+        </property>
+        <property name="mstyle" stdset="0">
+         <string>hint</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>*用于区分分支</string>
         </property>
         <property name="mstyle" stdset="0">
          <string>hint</string>

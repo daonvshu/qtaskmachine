@@ -19,6 +19,7 @@ public:
 private slots:
     void on_input_trigger_func_editingFinished();
     void on_input_signal_check_editingFinished();
+    void on_input_branch_id_editingFinished();
 
 private:
     Ui::ConfigMultiEventState ui;

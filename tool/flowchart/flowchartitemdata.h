@@ -12,7 +12,6 @@ enum class FlowChartNodeType {
     Node_Delay,             //延时状态
     Node_Event,             //事件触发状态
     Node_MultiEvent,        //复合事件状态
-    Node_EventCheck,        //事件检查状态
     Node_Condition,         //条件分支状态
     Node_History,           //恢复点
 };
@@ -31,8 +30,6 @@ inline QString nodeTypeToString(FlowChartNodeType nodeType) {
             return QStringLiteral("事件触发状态");
         case FlowChartNodeType::Node_MultiEvent:
             return QStringLiteral("复合事件状态");
-        case FlowChartNodeType::Node_EventCheck:
-            return QStringLiteral("事件检查状态");
         case FlowChartNodeType::Node_Condition:
             return QStringLiteral("条件分支状态");
         case FlowChartNodeType::Node_History:
@@ -94,6 +91,7 @@ inline QDataStream& operator>>(QDataStream& in, FlowChartItemData& data) {
 struct FlowChartLineData {
     QString functionTrigger; //信号触发函数
     QString functionCheck; //检查函数
+    int branchId = -1; //分支id
     bool failBranch = false; //失败分支
 };
 

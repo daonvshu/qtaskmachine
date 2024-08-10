@@ -91,6 +91,7 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             connectLine.trigger = line->lineData.functionTrigger;
             connectLine.checkFunc = line->lineData.functionCheck;
             connectLine.failBranch = line->lineData.failBranch;
+            connectLine.branchId = line->lineData.branchId;
 
             data.lines().append(connectLine);
         }
@@ -214,6 +215,7 @@ void App::reloadFlowConfig(int rowIndex) {
         connectLine->lineData.functionTrigger = line.trigger();
         connectLine->lineData.functionCheck = line.checkFunc();
         connectLine->lineData.failBranch = line.failBranch();
+        connectLine->lineData.branchId = line.branchId();
         scene->addItem(connectLine);
     }
 }
@@ -242,8 +244,6 @@ void App::nodeSelected(QGraphicsItem *item) {
                 break;
             case FlowChartNodeType::Node_MultiEvent:
                 ui.stackedWidget->setCurrentIndex(3);
-                break;
-            case FlowChartNodeType::Node_EventCheck:
                 break;
             case FlowChartNodeType::Node_Condition:
                 break;
@@ -274,8 +274,6 @@ void App::nodeSelected(QGraphicsItem *item) {
                     break;
                 case FlowChartNodeType::Node_MultiEvent:
                     ui.stackedWidget->setCurrentIndex(3);
-                    break;
-                case FlowChartNodeType::Node_EventCheck:
                     break;
                 case FlowChartNodeType::Node_Condition:
                     break;
