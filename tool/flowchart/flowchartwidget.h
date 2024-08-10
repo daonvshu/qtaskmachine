@@ -26,6 +26,8 @@ public:
 
     int getSelectedNodeId() const;
 
+    void updateSelectedNodeGeometry();
+
     void clear();
 
 signals:

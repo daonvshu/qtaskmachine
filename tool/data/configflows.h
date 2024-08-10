@@ -62,6 +62,7 @@ struct ConfigFlowConnectLine : DataDumpInterface {
     DATA_KEY(QString, checkFunc); //检查函数
     DATA_KEY(int, branchId); //分支// id
     DATA_KEY(bool, failBranch); //失败分支
+    DATA_KEY(bool, subBranch); //子流程分支
 
     QPointF controlPos() const {
         return { ctlPx(), ctlPy() };
@@ -74,7 +75,7 @@ struct ConfigFlowConnectLine : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
-                 &trigger, &checkFunc, &branchId, &failBranch };
+                 &trigger, &checkFunc, &branchId, &failBranch, &subBranch };
     }
 };
 

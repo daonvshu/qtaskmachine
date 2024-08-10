@@ -13,6 +13,7 @@ enum class FlowChartNodeType {
     Node_Event,             //事件触发状态
     Node_MultiEvent,        //复合事件状态
     Node_Condition,         //条件分支状态
+    Node_Group,             //分组
     Node_History,           //恢复点
 };
 
@@ -32,6 +33,8 @@ inline QString nodeTypeToString(FlowChartNodeType nodeType) {
             return QStringLiteral("复合事件状态");
         case FlowChartNodeType::Node_Condition:
             return QStringLiteral("条件分支状态");
+        case FlowChartNodeType::Node_Group:
+            return QStringLiteral("子状态组");
         case FlowChartNodeType::Node_History:
             return QStringLiteral("恢复点");
     }
@@ -101,6 +104,7 @@ struct FlowChartLineData {
     QString functionCheck; //检查函数
     int branchId = -1; //分支id
     bool failBranch = false; //失败分支
+    bool subBranch = false; //子流程分支
 };
 
 class FlowChartMimeData : public QMimeData {

@@ -24,8 +24,11 @@ void FcExecutorItem::drawItemBox(QPainter *painter, const QRectF& rect, FlowChar
     auto boxRect = drawRect.toRect();
     switch (nodeType) {
         case FlowChartNodeType::Node_Begin:
-        case FlowChartNodeType::Node_End:
             painter->setBrush(QColor(0x13D185));
+            painter->drawRoundedRect(boxRect, 4, 4);
+            break;
+        case FlowChartNodeType::Node_End:
+            painter->setBrush(QColor(0x588774));
             painter->drawRoundedRect(boxRect, 4, 4);
             break;
         case FlowChartNodeType::Node_Normal:
@@ -56,6 +59,10 @@ void FcExecutorItem::drawItemBox(QPainter *painter, const QRectF& rect, FlowChar
             painter->drawPixmap(iconRect, icon);
         }
             break;
+        case FlowChartNodeType::Node_Group:
+            painter->setBrush(QColor(0xD165A2));
+            painter->drawRoundedRect(boxRect, 4, 4);
+            break;
         case FlowChartNodeType::Node_History: {
             QPixmap icon(":/res/circle.svg");
             auto iconRect = icon.rect();
@@ -82,6 +89,9 @@ bool FcExecutorItem::acceptableConnectLine() {
     if (itemData.nodeType == FlowChartNodeType::Node_Begin) {
         return false;
     }
+    if (itemData.nodeType == FlowChartNodeType::Node_History) {
+        return getConnectToSize() < 1;
+    }
     return FlowChartExecutorItem::acceptableConnectLine();
 }
 
@@ -96,11 +106,12 @@ bool FcExecutorItem::creatableConnectLine() {
         case FlowChartNodeType::Node_Event:
             return getConnectToSize() < 2;
         case FlowChartNodeType::Node_MultiEvent:
-            break;
         case FlowChartNodeType::Node_Condition:
-            break;
+            return true;
+        case FlowChartNodeType::Node_Group:
+            return getConnectToSize() < 3;
         case FlowChartNodeType::Node_History:
-            break;
+            return false;
     }
     return FlowChartExecutorItem::creatableConnectLine();
 }

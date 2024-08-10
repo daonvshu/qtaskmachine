@@ -58,5 +58,6 @@ void ConfigEventState::on_input_signal_check_editingFinished() {
 void ConfigEventState::on_check_fail_branch_stateChanged(int state) {
     if (!activeLine) return;
     activeLine->lineData.failBranch = state == Qt::Checked;
+    viewChanged();
 }
 

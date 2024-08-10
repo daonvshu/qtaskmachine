@@ -96,6 +96,15 @@ int FlowChartWidget::getSelectedNodeId() const {
     return id;
 }
 
+void FlowChartWidget::updateSelectedNodeGeometry() {
+    auto items = scene->selectedItems();
+    for (const auto& item : items) {
+        if (auto ei = dynamic_cast<FcExecutorItem*>(item)) {
+            ei->updateGeometry(scene);
+        }
+    }
+}
+
 void FlowChartWidget::clear() {
     scene->clear();
 }
@@ -112,10 +121,6 @@ void FlowChartScene::dropEvent(QGraphicsSceneDragDropEvent *event) {
         auto itemData = FlowChartMimeData::unpack(mimeData);
 
         switch (itemData.nodeType) {
-            case FlowChartNodeType::Node_History: {
-
-            }
-                break;
             case FlowChartNodeType::Node_Condition: {
                 auto item = new FcConditionalItem;
                 item->setPos(event->scenePos(), this);

@@ -97,6 +97,7 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             connectLine.checkFunc = line->lineData.functionCheck;
             connectLine.failBranch = line->lineData.failBranch;
             connectLine.branchId = line->lineData.branchId;
+            connectLine.subBranch = line->lineData.subBranch;
 
             data.lines().append(connectLine);
         }
@@ -225,6 +226,7 @@ void App::reloadFlowConfig(int rowIndex) {
         connectLine->lineData.functionCheck = line.checkFunc();
         connectLine->lineData.failBranch = line.failBranch();
         connectLine->lineData.branchId = line.branchId();
+        connectLine->lineData.subBranch = line.subBranch();
         scene->addItem(connectLine);
     }
 }
@@ -243,6 +245,8 @@ void App::nodeSelected(QGraphicsItem *item) {
             case FlowChartNodeType::Node_Begin:
             case FlowChartNodeType::Node_End:
             case FlowChartNodeType::Node_Normal:
+            case FlowChartNodeType::Node_Group:
+            case FlowChartNodeType::Node_History:
                 ui.stackedWidget->setCurrentIndex(0);
                 break;
             case FlowChartNodeType::Node_Delay:
@@ -253,8 +257,6 @@ void App::nodeSelected(QGraphicsItem *item) {
                 break;
             case FlowChartNodeType::Node_MultiEvent:
                 ui.stackedWidget->setCurrentIndex(3);
-                break;
-            case FlowChartNodeType::Node_History:
                 break;
             default:
                 break;
@@ -273,6 +275,7 @@ void App::nodeSelected(QGraphicsItem *item) {
                 case FlowChartNodeType::Node_End:
                 case FlowChartNodeType::Node_Normal:
                 case FlowChartNodeType::Node_Delay:
+                case FlowChartNodeType::Node_History:
                     ui.stackedWidget->setCurrentIndex(0);
                     break;
                 case FlowChartNodeType::Node_Event:
@@ -281,7 +284,8 @@ void App::nodeSelected(QGraphicsItem *item) {
                 case FlowChartNodeType::Node_MultiEvent:
                     ui.stackedWidget->setCurrentIndex(3);
                     break;
-                case FlowChartNodeType::Node_History:
+                case FlowChartNodeType::Node_Group:
+                    ui.stackedWidget->setCurrentIndex(5);
                     break;
                 default:
                     break;

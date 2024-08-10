@@ -34,6 +34,7 @@ void CommonPropManager::nameEditFinished() {
     if (activeConditionalItem) {
         activeConditionalItem->conditionData.text = appUi->input_name->text();
     }
+    emit nameChanged();
 }
 
 void CommonPropManager::funcEnterEditFinished() {

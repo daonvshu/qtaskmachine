@@ -11,11 +11,16 @@ namespace Ui {
 }
 
 class CommonPropManager : public QObject {
+    Q_OBJECT
+
 public:
     explicit CommonPropManager(Ui::App* appUi, QObject *parent = nullptr);
 
     void loadItemBaseData(FcExecutorItem* item);
     void loadItemBaseData(FcConditionalItem* item);
+
+signals:
+    void nameChanged();
 
 private slots:
     void nameEditFinished();

@@ -56,6 +56,8 @@ add_executable(${PROJECT_NAME} WIN32
     subpage/configmultieventstate.cpp
     subpage/configconditionstate.h
     subpage/configconditionstate.cpp
+    subpage/configgroupstate.h
+    subpage/configgroupstate.cpp
 
     utils/curvemovecontrol.h
     utils/curvemovecontrol.cpp

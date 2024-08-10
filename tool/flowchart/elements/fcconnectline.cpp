@@ -24,7 +24,7 @@ void FcConnectLine::refreshConnectPath(bool updateControlPoint) {
 
 void FcConnectLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(lineData.failBranch ? 0xD60035 : 0xD2C5B6);
+    painter->setPen(lineData.failBranch ? 0xD60035 : (lineData.subBranch ? 0xD165A2 : 0xD2C5B6));
     painter->drawPath(path());
 
     if (option->state.testFlag(QStyle::State_Selected)) {

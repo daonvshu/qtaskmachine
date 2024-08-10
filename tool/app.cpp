@@ -6,6 +6,7 @@
 #include "subpage/configeventstate.h"
 #include "subpage/configmultieventstate.h"
 #include "subpage/configconditionstate.h"
+#include "subpage/configgroupstate.h"
 
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
@@ -29,10 +30,25 @@ App::App(QWidget *parent)
     refreshConfigPathLabel();
 
     commonPropManager = new CommonPropManager(&ui, this);
+    connect(commonPropManager, &CommonPropManager::nameChanged, ui.flow_view, &FlowChartWidget::updateSelectedNodeGeometry);
+
     ui.stackedWidget->addWidget(new ConfigDelayState(this));
     ui.stackedWidget->addWidget(new ConfigEventState(this));
     ui.stackedWidget->addWidget(new ConfigMultiEventState(this));
     ui.stackedWidget->addWidget(new ConfigConditionState(this));
+    ui.stackedWidget->addWidget(new ConfigGroupState(this));
+
+    for (int i = 0; i < ui.stackedWidget->count(); i++) {
+        auto widget = ui.stackedWidget->widget(i);
+        if (auto config = dynamic_cast<StateConfigInterface*>(widget)) {
+            config->geometryChanged = [this] {
+                ui.flow_view->updateSelectedNodeGeometry();
+            };
+            config->viewChanged = [this] {
+                ui.flow_view->repaint();
+            };
+        }
+    }
 }
 
 void App::on_btn_new_config_clicked() {
