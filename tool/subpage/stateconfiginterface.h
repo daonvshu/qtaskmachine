@@ -1,5 +1,6 @@
 #pragma once
 
+#include "flowchart/elements/fcbranchitem.h"
 #include "flowchart/elements/fciconitem.h"
 #include "flowchart/elements/fcexecutoritem.h"
 #include "flowchart/elements/fcconnectline.h"

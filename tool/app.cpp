@@ -5,6 +5,7 @@
 #include "subpage/configdelaystate.h"
 #include "subpage/configeventstate.h"
 #include "subpage/configmultieventstate.h"
+#include "subpage/configconditionstate.h"
 
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
@@ -31,6 +32,7 @@ App::App(QWidget *parent)
     ui.stackedWidget->addWidget(new ConfigDelayState(this));
     ui.stackedWidget->addWidget(new ConfigEventState(this));
     ui.stackedWidget->addWidget(new ConfigMultiEventState(this));
+    ui.stackedWidget->addWidget(new ConfigConditionState(this));
 }
 
 void App::on_btn_new_config_clicked() {

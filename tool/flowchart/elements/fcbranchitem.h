@@ -2,6 +2,8 @@
 
 #include "fciconitem.h"
 
+#include "../flowchartitemdata.h"
+
 class FcConditionalItem : public FcIconItem {
 public:
     explicit FcConditionalItem(QGraphicsItem *parent = nullptr);
@@ -12,4 +14,7 @@ public:
 
 protected:
     QColor backgroundColor() override;
+
+public:
+    FlowChartConditionData conditionData;
 };

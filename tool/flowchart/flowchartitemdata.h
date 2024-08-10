@@ -88,6 +88,14 @@ inline QDataStream& operator>>(QDataStream& in, FlowChartItemData& data) {
     return in;
 }
 
+struct FlowChartConditionData {
+    QString text;
+    QString functionEnter; //进入函数
+    QString functionExit; //退出函数
+
+    QString functionCondition; //条件函数
+};
+
 struct FlowChartLineData {
     QString functionTrigger; //信号触发函数
     QString functionCheck; //检查函数

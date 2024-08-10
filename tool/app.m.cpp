@@ -71,6 +71,11 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             flowConditional.fromScenePos(condition->rect().topLeft());
             //type
             flowConditional.fromType(FlowChartNodeType::Node_Condition);
+            //data
+            flowConditional.text = condition->conditionData.text;
+            flowConditional.enter = condition->conditionData.functionEnter;
+            flowConditional.exit = condition->conditionData.functionExit;
+            flowConditional.condition = condition->conditionData.functionCondition;
             data.executors().append(flowConditional);
         }
     }
@@ -180,6 +185,10 @@ void App::reloadFlowConfig(int rowIndex) {
             case FlowChartNodeType::Node_Condition: {
                 auto item = new FcConditionalItem;
                 item->setTopLeftPos(executor.scenePos(), scene);
+                item->conditionData.text = executor.text();
+                item->conditionData.functionEnter = executor.enter();
+                item->conditionData.functionExit = executor.exit();
+                item->conditionData.functionCondition = executor.condition();
                 scene->addItem(item);
                 idMap[executor.id()] = item;
             }
@@ -245,9 +254,9 @@ void App::nodeSelected(QGraphicsItem *item) {
             case FlowChartNodeType::Node_MultiEvent:
                 ui.stackedWidget->setCurrentIndex(3);
                 break;
-            case FlowChartNodeType::Node_Condition:
-                break;
             case FlowChartNodeType::Node_History:
+                break;
+            default:
                 break;
         }
         ui.state_common_prop->setVisible(true);
@@ -258,10 +267,7 @@ void App::nodeSelected(QGraphicsItem *item) {
         }
     } else if (auto connectLine = dynamic_cast<FcConnectLine*>(item)) {
         ui.state_common_prop->setVisible(false);
-        auto prevItem = dynamic_cast<FcExecutorItem*>(connectLine->connectFrom);
-        if (prevItem == nullptr) {
-            ui.stackedWidget->setCurrentIndex(0);
-        } else {
+        if (auto prevItem = dynamic_cast<FcExecutorItem*>(connectLine->connectFrom)) {
             switch (prevItem->itemData.nodeType) {
                 case FlowChartNodeType::Node_Begin:
                 case FlowChartNodeType::Node_End:
@@ -275,15 +281,32 @@ void App::nodeSelected(QGraphicsItem *item) {
                 case FlowChartNodeType::Node_MultiEvent:
                     ui.stackedWidget->setCurrentIndex(3);
                     break;
-                case FlowChartNodeType::Node_Condition:
-                    break;
                 case FlowChartNodeType::Node_History:
+                    break;
+                default:
                     break;
             }
             auto i = dynamic_cast<StateConfigInterface*>(ui.stackedWidget->currentWidget());
             if (i) {
                 i->setActiveLine(connectLine);
             }
+
+        } else if (auto prevCondition = dynamic_cast<FcConditionalItem*>(connectLine->connectFrom)) {
+            ui.stackedWidget->setCurrentIndex(4);
+            auto i = dynamic_cast<StateConfigInterface*>(ui.stackedWidget->currentWidget());
+            if (i) {
+                i->setActiveLine(connectLine);
+            }
+        } else {
+            ui.stackedWidget->setCurrentIndex(0);
+        }
+    } else if (auto condition = dynamic_cast<FcConditionalItem*>(item)) {
+        ui.stackedWidget->setCurrentIndex(4);
+        ui.state_common_prop->setVisible(true);
+        commonPropManager->loadItemBaseData(condition);
+        auto i = dynamic_cast<StateConfigInterface*>(ui.stackedWidget->currentWidget());
+        if (i) {
+            i->setActiveItem(condition);
         }
     } else {
         qCritical() << "unexpected flowchart item type!";

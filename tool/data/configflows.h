@@ -24,6 +24,8 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(int, retry); //重试
     DATA_KEY(QString, funcRetry); //重试槽函数
 
+    DATA_KEY(QString, condition); //条件检查函数
+
     FlowChartNodeType itemType() const {
         return FlowChartNodeType(type());
     }
@@ -43,7 +45,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &id, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &delay, &timeout, &retry, &funcRetry };
+                 &enter, &exit, &delay, &timeout, &retry, &funcRetry, &condition };
     }
 };
 

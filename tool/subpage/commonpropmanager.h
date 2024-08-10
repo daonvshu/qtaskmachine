@@ -4,6 +4,7 @@
 #include <qpointer.h>
 
 #include "flowchart/elements/fcexecutoritem.h"
+#include "flowchart/elements/fcbranchitem.h"
 
 namespace Ui {
     class App;
@@ -14,6 +15,7 @@ public:
     explicit CommonPropManager(Ui::App* appUi, QObject *parent = nullptr);
 
     void loadItemBaseData(FcExecutorItem* item);
+    void loadItemBaseData(FcConditionalItem* item);
 
 private slots:
     void nameEditFinished();
@@ -23,4 +25,5 @@ private slots:
 private:
     Ui::App* appUi;
     FcExecutorItem* activeItem = nullptr;
+    FcConditionalItem* activeConditionalItem = nullptr;
 };
