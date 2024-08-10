@@ -24,7 +24,7 @@ void FcConnectLine::refreshConnectPath(bool updateControlPoint) {
 
 void FcConnectLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(0xFF8C00);
+    painter->setPen(lineData.failBranch ? 0xD60035 : 0xD2C5B6);
     painter->drawPath(path());
 
     if (option->state.testFlag(QStyle::State_Selected)) {
@@ -39,7 +39,7 @@ void FcConnectLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     }
 
     if (isHover) {
-        painter->setBrush(QBrush(0xFF8C00));
+        painter->setBrush(QBrush(0xD2C5B6));
         painter->drawEllipse(ctl.targetControl, 4, 4);
     }
 

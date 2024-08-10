@@ -4,6 +4,7 @@
 #include <qgraphicsitem.h>
 
 #include "utils/curvemovecontrol.h"
+#include "../flowchartitemdata.h"
 
 class FlowChartExecutorItem;
 class FcConnectLine : public QGraphicsPathItem {
@@ -16,7 +17,9 @@ public:
     FlowChartExecutorItem* connectFrom = nullptr;
     FlowChartExecutorItem* connectTo = nullptr;
 
-    CurveMoveControl ctl;
+    CurveMoveControl ctl;\
+
+    FlowChartLineData lineData;
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

@@ -22,8 +22,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(int, delay); //延时
     DATA_KEY(int, timeout); //超时
     DATA_KEY(int, retry); //重试
-
-    DATA_KEY(QList<int>, branchIds); //分支节点id
+    DATA_KEY(QString, funcRetry); //重试槽函数
 
     FlowChartNodeType itemType() const {
         return FlowChartNodeType(type());
@@ -44,7 +43,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &id, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &delay, &timeout, &retry, &branchIds };
+                 &enter, &exit, &delay, &timeout, &retry, &funcRetry };
     }
 };
 
@@ -57,6 +56,9 @@ struct ConfigFlowConnectLine : DataDumpInterface {
     DATA_KEY(qreal, ctlPx); //控制点x
     DATA_KEY(qreal, ctlPy); //控制点y
 
+    DATA_KEY(QString, trigger); //信号触发函数
+    DATA_KEY(bool, failBranch); //失败分支
+
     QPointF controlPos() const {
         return { ctlPx(), ctlPy() };
     }
@@ -67,7 +69,8 @@ struct ConfigFlowConnectLine : DataDumpInterface {
     }
 
     QList<DataReadInterface *> prop() override {
-        return { &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy };
+        return { &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
+                 &trigger, &failBranch };
     }
 };
 

@@ -29,7 +29,7 @@ public:
     void clear();
 
 signals:
-    void nodeSelected(FlowChartExecutorItem* item);
+    void nodeSelected(QGraphicsItem* item);
 
 private:
     FlowChartScene* scene;

@@ -15,3 +15,6 @@ void ConfigDelayState::setActiveItem(FlowChartExecutorItem *item) {
 void ConfigDelayState::on_input_delay_ms_editingFinished() {
     activeItem->itemData.delayMs = ui.input_delay_ms->text().toInt();
 }
+
+void ConfigDelayState::setActiveLine(FcConnectLine *line) {
+}

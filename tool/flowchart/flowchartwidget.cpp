@@ -27,7 +27,7 @@ FlowChartWidget::FlowChartWidget(QWidget *parent)
         if (items.isEmpty()) {
             emit nodeSelected(nullptr);
         } else {
-            emit nodeSelected(dynamic_cast<FlowChartExecutorItem*>(items.first()));
+            emit nodeSelected(items.first());
         }
     });
 }

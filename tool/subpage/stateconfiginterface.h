@@ -7,4 +7,5 @@
 class StateConfigInterface {
 public:
     virtual void setActiveItem(FlowChartExecutorItem *item) = 0;
+    virtual void setActiveLine(FcConnectLine *line) = 0;
 };

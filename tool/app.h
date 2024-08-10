@@ -46,5 +46,5 @@ private:
     void reloadFlowList();
     void reloadFlowConfig(int rowIndex);
 
-    void nodeSelected(FlowChartExecutorItem* item);
+    void nodeSelected(QGraphicsItem* item);
 };

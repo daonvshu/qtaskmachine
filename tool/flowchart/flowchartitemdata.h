@@ -54,6 +54,7 @@ struct FlowChartItemData {
 
     int timeoutMs = 0; //超时
     int timeoutRetry = 0; //重试次数
+    QString functionRetry; //重试触发槽函数
 
     FlowChartItemData() = default;
     explicit FlowChartItemData(FlowChartNodeType nodeType)
@@ -75,7 +76,8 @@ Q_DECLARE_METATYPE(FlowChartItemData)
 inline QDataStream& operator<<(QDataStream& out, const FlowChartItemData& data) {
     out << data.text << (int)data.nodeType << data.taskId
         << data.functionEnter << data.functionExit
-        << data.delayMs;
+        << data.delayMs
+        << data.timeoutMs << data.timeoutRetry << data.functionRetry;
     return out;
 }
 
@@ -83,10 +85,16 @@ inline QDataStream& operator>>(QDataStream& in, FlowChartItemData& data) {
     int nodeType;
     in >> data.text >> nodeType >> data.taskId
        >> data.functionEnter >> data.functionExit
-       >> data.delayMs;
+       >> data.delayMs
+       >> data.timeoutMs >> data.timeoutRetry >> data.functionRetry;
     data.nodeType = FlowChartNodeType(nodeType);
     return in;
 }
+
+struct FlowChartLineData {
+    QString functionTrigger; //信号触发函数
+    bool failBranch = false; //失败分支
+};
 
 class FlowChartMimeData : public QMimeData {
 public:

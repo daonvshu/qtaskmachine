@@ -55,8 +55,13 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             flowExecutor.exit = executor->itemData.functionExit;
             //delay
             flowExecutor.delay = executor->itemData.delayMs;
+            //event
+            flowExecutor.timeout = executor->itemData.timeoutMs;
+            flowExecutor.retry = executor->itemData.timeoutRetry;
+            flowExecutor.funcRetry = executor->itemData.functionRetry;
 
             data.executors().append(flowExecutor);
+
         } else if (auto condition = dynamic_cast<FcConditionalItem*>(item)) {
             ConfigFlowExecutor flowConditional;
             //id
@@ -82,6 +87,10 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             Q_ASSERT(connectLine.connectToPIndex() != -1);
             //control point
             connectLine.fromControlPos(line->ctl.targetControl);
+            //data
+            connectLine.trigger = line->lineData.functionTrigger;
+            connectLine.failBranch = line->lineData.failBranch;
+
             data.lines().append(connectLine);
         }
     }
@@ -178,6 +187,9 @@ void App::reloadFlowConfig(int rowIndex) {
                 itemData.functionEnter = executor.enter();
                 itemData.functionExit = executor.exit();
                 itemData.delayMs = executor.delay();
+                itemData.timeoutMs = executor.timeout();
+                itemData.timeoutRetry = executor.retry();
+                itemData.functionRetry = executor.funcRetry();
                 auto item = new FcExecutorItem(itemData);
                 item->setTopLeftPos(executor.scenePos(), scene);
                 scene->addItem(item);
@@ -198,11 +210,13 @@ void App::reloadFlowConfig(int rowIndex) {
         FlowChartScene::addConnectLineFor(beginItem, endItem, connectLine);
         connectLine->ctl.targetControl = line.controlPos();
         connectLine->refreshConnectPath();
+        connectLine->lineData.functionTrigger = line.trigger();
+        connectLine->lineData.failBranch = line.failBranch();
         scene->addItem(connectLine);
     }
 }
 
-void App::nodeSelected(FlowChartExecutorItem *item) {
+void App::nodeSelected(QGraphicsItem *item) {
 
     if (item == nullptr) {
         ui.stackedWidget->setCurrentIndex(0);
@@ -222,6 +236,7 @@ void App::nodeSelected(FlowChartExecutorItem *item) {
                 ui.stackedWidget->setCurrentIndex(1);
                 break;
             case FlowChartNodeType::Node_Event:
+                ui.stackedWidget->setCurrentIndex(2);
                 break;
             case FlowChartNodeType::Node_MultiEvent:
                 break;
@@ -236,9 +251,39 @@ void App::nodeSelected(FlowChartExecutorItem *item) {
         commonPropManager->loadItemBaseData(executor);
         auto i = dynamic_cast<StateConfigInterface*>(ui.stackedWidget->currentWidget());
         if (i) {
-            i->setActiveItem(item);
+            i->setActiveItem(executor);
+        }
+    } else if (auto connectLine = dynamic_cast<FcConnectLine*>(item)) {
+        ui.state_common_prop->setVisible(false);
+        auto prevItem = dynamic_cast<FcExecutorItem*>(connectLine->connectFrom);
+        if (prevItem == nullptr) {
+            ui.stackedWidget->setCurrentIndex(0);
+        } else {
+            switch (prevItem->itemData.nodeType) {
+                case FlowChartNodeType::Node_Begin:
+                case FlowChartNodeType::Node_End:
+                case FlowChartNodeType::Node_Normal:
+                case FlowChartNodeType::Node_Delay:
+                    ui.stackedWidget->setCurrentIndex(0);
+                    break;
+                case FlowChartNodeType::Node_Event:
+                    ui.stackedWidget->setCurrentIndex(2);
+                    break;
+                case FlowChartNodeType::Node_MultiEvent:
+                    break;
+                case FlowChartNodeType::Node_EventCheck:
+                    break;
+                case FlowChartNodeType::Node_Condition:
+                    break;
+                case FlowChartNodeType::Node_History:
+                    break;
+            }
+            auto i = dynamic_cast<StateConfigInterface*>(ui.stackedWidget->currentWidget());
+            if (i) {
+                i->setActiveLine(connectLine);
+            }
         }
     } else {
-        ui.state_common_prop->setVisible(false);
+        qCritical() << "unexpected flowchart item type!";
     }
 }

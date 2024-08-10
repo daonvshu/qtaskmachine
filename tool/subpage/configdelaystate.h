@@ -14,6 +14,8 @@ public:
 
     void setActiveItem(FlowChartExecutorItem *item) override;
 
+    void setActiveLine(FcConnectLine *line) override;
+
 private slots:
     void on_input_delay_ms_editingFinished();
 
