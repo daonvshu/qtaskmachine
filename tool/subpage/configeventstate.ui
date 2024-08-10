@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>406</width>
+    <width>461</width>
     <height>445</height>
    </rect>
   </property>
@@ -51,8 +51,18 @@ font-size:12px;color:#A0C2D3;
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="input_retry_signal_func">
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>*未设置时一直等待信号触发</string>
+        </property>
+        <property name="mstyle" stdset="0">
+         <string>hint</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="input_retry">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -61,6 +71,59 @@ font-size:12px;color:#A0C2D3;
         </property>
         <property name="focusPolicy">
          <enum>Qt::ClickFocus</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>超时时间（ms）：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>*重试触发时调用的槽函数</string>
+        </property>
+        <property name="mstyle" stdset="0">
+         <string>hint</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="focusPolicy">
+         <enum>Qt::TabFocus</enum>
+        </property>
+        <property name="text">
+         <string>触发重试时调用：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>重试次数：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>*失败时重新进入自身并触发重试信号</string>
+        </property>
+        <property name="mstyle" stdset="0">
+         <string>hint</string>
         </property>
        </widget>
       </item>
@@ -80,8 +143,8 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="input_retry">
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="input_retry_signal_func">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -93,79 +156,32 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>*重试触发时调用的槽函数</string>
-        </property>
-        <property name="mstyle" stdset="0">
-         <string>hint</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>超时时间（ms）：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="focusPolicy">
-         <enum>Qt::TabFocus</enum>
-        </property>
-        <property name="text">
-         <string>触发重试时调用：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>*失败时重新进入自身并触发重试信号</string>
-        </property>
-        <property name="mstyle" stdset="0">
-         <string>hint</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>重试次数：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>*未设置时一直等待信号触发</string>
-        </property>
-        <property name="mstyle" stdset="0">
-         <string>hint</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
    <item>
     <widget class="QWidget" name="line_config_box" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="input_signal_check">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
          <string>触发信号：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -182,6 +198,26 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>信号参数检查：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>*设置信号参数检查函数，返回true时表示信号有效</string>
+        </property>
+        <property name="mstyle" stdset="0">
+         <string>hint</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="QLabel" name="label_8">
         <property name="text">
@@ -192,7 +228,17 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>标记为：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
        <widget class="QCheckBox" name="check_fail_branch">
         <property name="minimumSize">
          <size>
@@ -205,13 +251,14 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_9">
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_12">
         <property name="text">
-         <string>标记为：</string>
+         <string>*函数签名：
+Q_INVOKABLE bool function(const QVariantList&amp; data)</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="mstyle" stdset="0">
+         <string>hint</string>
         </property>
        </widget>
       </item>

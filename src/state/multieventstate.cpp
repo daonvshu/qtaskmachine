@@ -15,8 +15,8 @@ void MultiEventState::onEntry(QEvent *event) {
         auto signalTransition = signalTransitions.at(i);
         //目标信号触发转移
         signalTransition->setTargetState(selectState.targetStates.at(i));
-        signalTransition->setSignalDataHandler([&](const QVariantList &data) {
-            return testFinishBySignalData(data);
+        signalTransition->setSignalDataHandler([&, i](const QVariantList &data) {
+            return testFinishBySignalData(i, data);
         });
         addTransition(signalTransition);
     }
@@ -29,6 +29,6 @@ void MultiEventState::onEntry(QEvent *event) {
     }
 }
 
-bool MultiEventState::testFinishBySignalData(const QVariantList &data) {
+bool MultiEventState::testFinishBySignalData(int signalIndex, const QVariantList &data) {
     return true;
 }

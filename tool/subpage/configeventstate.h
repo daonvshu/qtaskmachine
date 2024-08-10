@@ -21,6 +21,7 @@ private slots:
     void on_input_retry_editingFinished();
     void on_input_retry_signal_func_editingFinished();
     void on_input_trigger_func_editingFinished();
+    void on_input_signal_check_editingFinished();
     void on_check_fail_branch_stateChanged(int state);
 
 private:

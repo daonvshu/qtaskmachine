@@ -493,12 +493,6 @@ background:#00D1FF;
          </property>
          <item>
           <widget class="QWidget" name="state_common_prop" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>100</height>
-            </size>
-           </property>
            <property name="styleSheet">
             <string notr="true">#state_common_prop{
 border-bottom:1px solid #26282D;

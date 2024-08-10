@@ -23,6 +23,7 @@ void ConfigEventState::setActiveLine(FcConnectLine *line) {
     activeItem = nullptr;
 
     ui.input_trigger_func->setText(activeLine->lineData.functionTrigger);
+    ui.input_signal_check->setText(activeLine->lineData.functionCheck);
     ui.check_fail_branch->setChecked(activeLine->lineData.failBranch);
 
     ui.item_config_box->setVisible(false);
@@ -47,6 +48,11 @@ void ConfigEventState::on_input_retry_signal_func_editingFinished() {
 void ConfigEventState::on_input_trigger_func_editingFinished() {
     if (!activeLine) return;
     activeLine->lineData.functionTrigger = ui.input_trigger_func->text();
+}
+
+void ConfigEventState::on_input_signal_check_editingFinished() {
+    if (!activeLine) return;
+    activeLine->lineData.functionCheck = ui.input_signal_check->text();
 }
 
 void ConfigEventState::on_check_fail_branch_stateChanged(int state) {

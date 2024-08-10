@@ -93,6 +93,7 @@ inline QDataStream& operator>>(QDataStream& in, FlowChartItemData& data) {
 
 struct FlowChartLineData {
     QString functionTrigger; //信号触发函数
+    QString functionCheck; //检查函数
     bool failBranch = false; //失败分支
 };
 

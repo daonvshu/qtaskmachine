@@ -57,6 +57,7 @@ struct ConfigFlowConnectLine : DataDumpInterface {
     DATA_KEY(qreal, ctlPy); //控制点y
 
     DATA_KEY(QString, trigger); //信号触发函数
+    DATA_KEY(QString, checkFunc); //检查函数
     DATA_KEY(bool, failBranch); //失败分支
 
     QPointF controlPos() const {
@@ -70,7 +71,7 @@ struct ConfigFlowConnectLine : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
-                 &trigger, &failBranch };
+                 &trigger, &checkFunc, &failBranch };
     }
 };
 

@@ -27,10 +27,11 @@ protected:
 
     /**
      * @brief 根据信号返回数据判断是否可以结束信号
+     * @param signalIndex 信号列表的索引
      * @param data setSignal中的信号返回的数据列表
      * @return
      */
-    virtual bool testFinishBySignalData(const QVariantList& data);
+    virtual bool testFinishBySignalData(int signalIndex, const QVariantList& data);
 
 private:
     QList<TargetSignalTransition*> signalTransitions;
