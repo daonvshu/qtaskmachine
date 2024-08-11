@@ -6,6 +6,9 @@
 
 #include "subpage/stateconfiginterface.h"
 
+#include "utils/taskmachinesteputil.h"
+#include "utils/taskmachinerunner.h"
+
 #include <qfile.h>
 #include <qmessagebox.h>
 
@@ -26,10 +29,10 @@ void App::flowItemRemove(int index) {
     saveConfigToFile();
 }
 
-void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
+bool App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
     auto index = ui.flow_list->currentIndex();
     if (!index.isValid()) {
-        return;
+        return false;
     }
 
     ConfigFlow& data = flowGroup.flows()[index.row()];
@@ -104,25 +107,25 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             data.lines().append(connectLine);
         }
     }
-    saveConfigToFile();
+    return saveConfigToFile();
 }
 
-void App::saveConfigToFile() {
+bool App::saveConfigToFile() {
     if (configFilePath.isEmpty()) {
-        return;
+        return false;
     }
 
     QFile file(configFilePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         QMessageBox::critical(nullptr, QStringLiteral("错误"), QStringLiteral("文件无法写入！"));
-        return;
+        return false;
     }
     auto obj = flowGroup.dumpToJson();
     auto data = QJsonDocument(obj).toJson(QJsonDocument::Indented);
     file.write(data);
     file.close();
 
-    QMessageBox::information(nullptr, QStringLiteral("提示"), QStringLiteral("OK!"));
+    return true;
 }
 
 void App::refreshConfigPathLabel() {
@@ -319,5 +322,34 @@ void App::nodeSelected(QGraphicsItem *item) {
         }
     } else {
         qCritical() << "unexpected flowchart item type!";
+    }
+}
+
+void App::beginCurrentState() {
+    if (configFilePath.isEmpty()) {
+        return;
+    }
+    TaskMachineStepUtil::stepConfig(configFilePath);
+    auto index = ui.flow_list->currentIndex();
+    if (!index.isValid()) {
+        return;
+    }
+
+    ConfigFlow& data = flowGroup.flows()[index.row()];
+    auto currentConfigName = data.name();
+
+    delete taskMachineRunner;
+    taskMachineRunner = new TaskMachineRunner(currentConfigName, this);
+    connect(taskMachineRunner, &TaskMachineRunner::finished, this, [] {
+        qDebug() << "task runner finished!";
+    });
+    taskMachineRunner->run(this);
+}
+
+void App::cancelCurrentState() {
+    if (taskMachineRunner) {
+        taskMachineRunner->cancel();
+        delete taskMachineRunner;
+        taskMachineRunner = nullptr;
     }
 }

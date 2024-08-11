@@ -23,6 +23,10 @@ public:
         signalTransition = new TargetSignalTransition(sender, sig);
     }
 
+    void setSignal(const QObject *sender, const char *sig) {
+        signalTransition = new TargetSignalTransition(sender, sig);
+    }
+
     /**
      * @brief 设置超时时间
      * @param ms

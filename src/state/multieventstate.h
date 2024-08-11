@@ -22,6 +22,10 @@ public:
         signalTransitions << new TargetSignalTransition(sender, sig);
     }
 
+    void addSignal(const QObject *sender, const char *sig) {
+        signalTransitions << new TargetSignalTransition(sender, sig);
+    }
+
 protected:
     void onEntry(QEvent *event) override;
 

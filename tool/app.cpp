@@ -11,6 +11,7 @@
 
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
+#include <qmessagebox.h>
 
 App::App(QWidget *parent)
     : QWidget(parent)
@@ -91,11 +92,20 @@ void App::on_btn_remove_item_clicked() {
 void App::on_btn_save_item_clicked() {
     ui.flow_view->resetFlowsId();
     auto items = ui.flow_view->getAllItems();
-    saveFlowConfig(items);
+    if (saveFlowConfig(items)) {
+        QMessageBox::information(nullptr, QStringLiteral("提示"), QStringLiteral("OK!"));
+    }
 }
 
+void App::on_btn_flow_start_clicked() {
+    ui.flow_view->resetFlowsId();
+    auto items = ui.flow_view->getAllItems();
+    if (!saveFlowConfig(items)) {
+        return;
+    }
+    beginCurrentState();
+}
 
-
-
-
-
+void App::on_btn_flow_stop_clicked() {
+    cancelCurrentState();
+}
