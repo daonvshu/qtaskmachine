@@ -55,6 +55,7 @@ struct FlowChartItemData {
     int timeoutMs = 0; //超时
     int timeoutRetry = 0; //重试次数
     QString functionRetry; //重试触发槽函数
+    bool nested = false; //是否嵌套历史
 
     FlowChartItemData() = default;
     explicit FlowChartItemData(FlowChartNodeType nodeType)

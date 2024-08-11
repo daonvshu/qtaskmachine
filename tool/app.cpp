@@ -7,6 +7,7 @@
 #include "subpage/configmultieventstate.h"
 #include "subpage/configconditionstate.h"
 #include "subpage/configgroupstate.h"
+#include "subpage/confighistorystate.h"
 
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
@@ -37,6 +38,7 @@ App::App(QWidget *parent)
     ui.stackedWidget->addWidget(new ConfigMultiEventState(this));
     ui.stackedWidget->addWidget(new ConfigConditionState(this));
     ui.stackedWidget->addWidget(new ConfigGroupState(this));
+    ui.stackedWidget->addWidget(new ConfigHistoryState(this));
 
     for (int i = 0; i < ui.stackedWidget->count(); i++) {
         auto widget = ui.stackedWidget->widget(i);

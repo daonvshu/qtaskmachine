@@ -22,7 +22,6 @@ void ConfigGroupState::setActiveLine(FcConnectLine *line) {
     }
 
     ui.input_trigger_func->setText(activeLine->lineData.functionTrigger);
-    ui.input_signal_check->setText(activeLine->lineData.functionCheck);
 
     reloadEnableState();
 }
@@ -47,19 +46,10 @@ void ConfigGroupState::on_input_trigger_func_editingFinished() {
     activeLine->lineData.functionTrigger = ui.input_trigger_func->text();
 }
 
-void ConfigGroupState::on_input_signal_check_editingFinished() {
-    if (!activeLine) return;
-    activeLine->lineData.functionCheck = ui.input_signal_check->text();
-}
-
 void ConfigGroupState::reloadEnableState() {
     bool enabled = activeLine->lineData.failBranch;
     ui.label_trigger->setEnabled(enabled);
     ui.input_trigger_func->setEnabled(enabled);
     ui.label_trigger_hint->setEnabled(enabled);
-    ui.label_signal_check->setEnabled(enabled);
-    ui.input_signal_check->setEnabled(enabled);
-    ui.label_signal_check_hint1->setEnabled(enabled);
-    ui.label_signal_check_hint2->setEnabled(enabled);
     viewChanged();
 }

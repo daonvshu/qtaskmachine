@@ -59,6 +59,8 @@ void App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             flowExecutor.timeout = executor->itemData.timeoutMs;
             flowExecutor.retry = executor->itemData.timeoutRetry;
             flowExecutor.funcRetry = executor->itemData.functionRetry;
+            //history
+            flowExecutor.nested = executor->itemData.nested;
 
             data.executors().append(flowExecutor);
 
@@ -202,6 +204,7 @@ void App::reloadFlowConfig(int rowIndex) {
                 itemData.timeoutMs = executor.timeout();
                 itemData.timeoutRetry = executor.retry();
                 itemData.functionRetry = executor.funcRetry();
+                itemData.nested = executor.nested();
                 auto item = new FcExecutorItem(itemData);
                 item->setTopLeftPos(executor.scenePos(), scene);
                 scene->addItem(item);
@@ -246,7 +249,6 @@ void App::nodeSelected(QGraphicsItem *item) {
             case FlowChartNodeType::Node_End:
             case FlowChartNodeType::Node_Normal:
             case FlowChartNodeType::Node_Group:
-            case FlowChartNodeType::Node_History:
                 ui.stackedWidget->setCurrentIndex(0);
                 break;
             case FlowChartNodeType::Node_Delay:
@@ -257,6 +259,9 @@ void App::nodeSelected(QGraphicsItem *item) {
                 break;
             case FlowChartNodeType::Node_MultiEvent:
                 ui.stackedWidget->setCurrentIndex(3);
+                break;
+            case FlowChartNodeType::Node_History:
+                ui.stackedWidget->setCurrentIndex(6);
                 break;
             default:
                 break;

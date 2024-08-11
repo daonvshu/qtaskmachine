@@ -58,15 +58,21 @@ add_executable(${PROJECT_NAME} WIN32
     subpage/configconditionstate.cpp
     subpage/configgroupstate.h
     subpage/configgroupstate.cpp
+    subpage/confighistorystate.h
+    subpage/confighistorystate.cpp
 
     utils/curvemovecontrol.h
     utils/curvemovecontrol.cpp
     utils/xmath.h
     utils/xmath.cpp
+    utils/flowstaterunner.h
+    utils/flowstaterunner.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+
+    qtask_machines
 )

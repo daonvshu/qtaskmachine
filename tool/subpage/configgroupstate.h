@@ -19,7 +19,6 @@ public:
 private slots:
     void on_branch_type_group_buttonClicked(QAbstractButton *button);
     void on_input_trigger_func_editingFinished();
-    void on_input_signal_check_editingFinished();
 
 private:
     void reloadEnableState();
