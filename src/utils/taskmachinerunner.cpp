@@ -289,8 +289,8 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
     state->setCondition([=] {
         auto checkFunc = findFunction(executor->condition());
         int branchId = 0;
-        auto returnValue = Q_ARG(bool, branchId);
-        bool invokeResult = checkFunc.invoke(this, Qt::DirectConnection, returnValue);
+        auto returnValue = Q_RETURN_ARG(int, branchId);
+        bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection, returnValue);
         if (!invokeResult) {
             qCCritical(taskMachine) << "invoke check function fail!";
             return 0;
@@ -397,14 +397,12 @@ void TaskMachineRunner::invokeFunction(const QString &slotName) {
     if (slotName.isEmpty()) {
         return;
     }
-    auto functionName = slotName.toLatin1();
-    int methodIndex = currentBindContext->metaObject()->indexOfMethod(QMetaObject::normalizedSignature(functionName));
-    if (methodIndex == -1) {
+    auto checkFunc = findFunction(slotName);
+    bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection);
+    if (!invokeResult) {
         qCCritical(taskMachine) << "cannot find slot function:" << slotName << "in context:" << currentBindContext->metaObject()->className();
         return;
     }
-    auto method = currentBindContext->metaObject()->method(methodIndex);
-    method.invoke(currentBindContext, Qt::DirectConnection);
 }
 
 QMetaMethod TaskMachineRunner::findFunction(const QString &signalName) {
