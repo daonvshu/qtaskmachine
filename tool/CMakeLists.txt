@@ -22,6 +22,8 @@ add_executable(${PROJECT_NAME} WIN32
     app.h
     app.cpp
     app.m.cpp
+    myapplication.h
+    myapplication.cpp
 
     res/res.qrc
 

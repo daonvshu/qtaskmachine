@@ -56,6 +56,15 @@ bool App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             //function
             flowExecutor.enter = executor->itemData.functionEnter;
             flowExecutor.exit = executor->itemData.functionExit;
+            //property
+            for (const auto& prop : executor->itemData.properties) {
+                ConfigFlowPropertyBind propBind;
+                propBind.callOnEntered = prop.callOnEntered;
+                propBind.key = prop.key;
+                propBind.value = prop.value;
+                propBind.valueType = prop.valueType;
+                flowExecutor.properties() << propBind;
+            }
             //delay
             flowExecutor.delay = executor->itemData.delayMs;
             //event
@@ -80,6 +89,15 @@ bool App::saveFlowConfig(const QList<QGraphicsItem *> &items) {
             flowConditional.text = condition->conditionData.text;
             flowConditional.enter = condition->conditionData.functionEnter;
             flowConditional.exit = condition->conditionData.functionExit;
+            //property
+            for (const auto& prop : condition->conditionData.properties) {
+                ConfigFlowPropertyBind propBind;
+                propBind.callOnEntered = prop.callOnEntered;
+                propBind.key = prop.key;
+                propBind.value = prop.value;
+                propBind.valueType = prop.valueType;
+                flowConditional.properties() << propBind;
+            }
             flowConditional.condition = condition->conditionData.functionCondition;
             data.executors().append(flowConditional);
         }
@@ -195,6 +213,14 @@ void App::reloadFlowConfig(int rowIndex) {
                 item->conditionData.functionEnter = executor.enter();
                 item->conditionData.functionExit = executor.exit();
                 item->conditionData.functionCondition = executor.condition();
+                for (const auto& prop : executor.properties()) {
+                    PropertyBindData propBind;
+                    propBind.callOnEntered = prop.callOnEntered();
+                    propBind.key = prop.key();
+                    propBind.value = prop.value();
+                    propBind.valueType = prop.valueType();
+                    item->conditionData.properties << propBind;
+                }
                 scene->addItem(item);
                 idMap[executor.id()] = item;
             }
@@ -203,6 +229,14 @@ void App::reloadFlowConfig(int rowIndex) {
                 FlowChartItemData itemData(executor.text(), executor.taskId(), executor.itemType());
                 itemData.functionEnter = executor.enter();
                 itemData.functionExit = executor.exit();
+                for (const auto& prop : executor.properties()) {
+                    PropertyBindData propBind;
+                    propBind.callOnEntered = prop.callOnEntered();
+                    propBind.key = prop.key();
+                    propBind.value = prop.value();
+                    propBind.valueType = prop.valueType();
+                    itemData.properties << propBind;
+                }
                 itemData.delayMs = executor.delay();
                 itemData.timeoutMs = executor.timeout();
                 itemData.timeoutRetry = executor.retry();

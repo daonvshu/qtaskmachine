@@ -41,6 +41,13 @@ inline QString nodeTypeToString(FlowChartNodeType nodeType) {
     return {};
 }
 
+struct PropertyBindData {
+    bool callOnEntered = true; //进入还是退出时调用
+    QString key; //属性key
+    QString value; //属性值
+    QString valueType; //属性值类型
+};
+
 struct FlowChartItemData {
     QString text;
     FlowChartNodeType nodeType = FlowChartNodeType::Node_Normal;
@@ -49,6 +56,8 @@ struct FlowChartItemData {
 
     QString functionEnter; //进入函数
     QString functionExit; //退出函数
+
+    QList<PropertyBindData> properties; //属性绑定列表
 
     int delayMs = 0; //延时
 
@@ -96,6 +105,8 @@ struct FlowChartConditionData {
     QString text;
     QString functionEnter; //进入函数
     QString functionExit; //退出函数
+
+    QList<PropertyBindData> properties; //属性绑定列表
 
     QString functionCondition; //条件函数
 };

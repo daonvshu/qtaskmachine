@@ -7,6 +7,19 @@
 #include "flowchart/flowchartitemdata.h"
 
 using namespace QDataUtil;
+
+struct ConfigFlowPropertyBind : DataDumpInterface {
+
+    DATA_KEY(bool, callOnEntered); //进入还是退出时调用
+    DATA_KEY(QString, key); //属性key
+    DATA_KEY(QString, value); //属性值
+    DATA_KEY(QString, valueType); //属性值类型
+
+    QList<DataReadInterface *> prop() override {
+        return { &callOnEntered, &key, &value, &valueType };
+    }
+};
+
 struct ConfigFlowExecutor : DataDumpInterface {
 
     DATA_KEY(int, id); //节点id
@@ -18,6 +31,8 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     DATA_KEY(QString, enter); //进入函数
     DATA_KEY(QString, exit); //退出函数
+
+    DATA_KEY(QList<ConfigFlowPropertyBind>, properties); //属性绑定
 
     DATA_KEY(int, delay); //延时
     DATA_KEY(int, timeout); //超时
@@ -46,7 +61,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &id, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &delay, &timeout, &retry, &funcRetry, &nested, &condition };
+                 &enter, &exit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition };
     }
 };
 

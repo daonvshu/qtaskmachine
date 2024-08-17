@@ -15,5 +15,7 @@
         <file>multi_signal_right.svg</file>
         <file>check.svg</file>
         <file>circle.svg</file>
+        <file>add.svg</file>
+        <file>down.svg</file>
     </qresource>
 </RCC>

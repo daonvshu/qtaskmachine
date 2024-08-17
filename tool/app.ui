@@ -475,7 +475,7 @@ QPushButton:hover{
 background:#00D1FF;
 }</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -514,6 +514,26 @@ font-size:12px;color:#A0C2D3;
 }</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
+            <item row="3" column="1">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>*设置entered绑定的槽函数</string>
+              </property>
+              <property name="mstyle" stdset="0">
+               <string>hint</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>*设置exited绑定的槽函数</string>
+              </property>
+              <property name="mstyle" stdset="0">
+               <string>hint</string>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="1">
              <widget class="QLineEdit" name="input_func_enter">
               <property name="minimumSize">
@@ -527,6 +547,26 @@ font-size:12px;color:#A0C2D3;
               </property>
               <property name="maxLength">
                <number>36</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>状态进入时调用：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>*设置打印时的名称</string>
+              </property>
+              <property name="mstyle" stdset="0">
+               <string>hint</string>
               </property>
              </widget>
             </item>
@@ -549,36 +589,6 @@ font-size:12px;color:#A0C2D3;
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>状态进入时调用：</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>状态退出时调用：</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>*设置打印时的名称</string>
-              </property>
-              <property name="mstyle" stdset="0">
-               <string>hint</string>
-              </property>
-             </widget>
-            </item>
             <item row="4" column="1">
              <widget class="QLineEdit" name="input_func_exit">
               <property name="minimumSize">
@@ -595,13 +605,13 @@ font-size:12px;color:#A0C2D3;
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="QLabel" name="label_7">
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_5">
               <property name="text">
-               <string>*设置entered绑定的槽函数</string>
+               <string>状态退出时调用：</string>
               </property>
-              <property name="mstyle" stdset="0">
-               <string>hint</string>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
@@ -615,15 +625,57 @@ font-size:12px;color:#A0C2D3;
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
-             <widget class="QLabel" name="label_8">
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_9">
               <property name="text">
-               <string>*设置exited绑定的槽函数</string>
+               <string>属性值应用：</string>
               </property>
-              <property name="mstyle" stdset="0">
-               <string>hint</string>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
+            </item>
+            <item row="6" column="1">
+             <layout class="QVBoxLayout" name="layout_bind_properties">
+              <item>
+               <widget class="QPushButton" name="btn_property_add">
+                <property name="minimumSize">
+                 <size>
+                  <width>32</width>
+                  <height>24</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>24</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton{
+background: transparent;
+}
+QPushButton:hover{
+background: #4C4E56;
+}</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normalon>:/res/add.svg</normalon>
+                 </iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
