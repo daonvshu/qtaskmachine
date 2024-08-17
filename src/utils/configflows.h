@@ -17,6 +17,18 @@ namespace TaskMachine {
         Node_History,           //恢复点
     };
 
+    struct ConfigFlowPropertyBind : DataDumpInterface {
+
+        T_DATA_KEY(bool, callOnEntered); //进入还是退出时调用
+        T_DATA_KEY(QString, key); //属性key
+        T_DATA_KEY(QString, value); //属性值
+        T_DATA_KEY(QString, valueType); //属性值类型
+
+        QList<DataReadInterface *> prop() override {
+            return { &callOnEntered, &key, &value, &valueType };
+        }
+    };
+
     struct ConfigFlowExecutor : DataDumpInterface {
 
         T_DATA_KEY(int, id); //节点id
@@ -28,6 +40,8 @@ namespace TaskMachine {
 
         T_DATA_KEY(QString, enter); //进入函数
         T_DATA_KEY(QString, exit); //退出函数
+
+        T_DATA_KEY(QList<ConfigFlowPropertyBind>, properties); //属性绑定
 
         T_DATA_KEY(int, delay); //延时
         T_DATA_KEY(int, timeout); //超时
@@ -56,7 +70,7 @@ namespace TaskMachine {
 
         QList<DataReadInterface *> prop() override {
             return {&id, &text, &taskId, &x, &y, &type,
-                    &enter, &exit, &delay, &timeout, &retry, &funcRetry, &nested, &condition};
+                    &enter, &exit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition};
         }
     };
 

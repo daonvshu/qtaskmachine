@@ -18,6 +18,11 @@ struct ConfigFlowPropertyBind : DataDumpInterface {
     QList<DataReadInterface *> prop() override {
         return { &callOnEntered, &key, &value, &valueType };
     }
+
+    ConfigFlowPropertyBind() {
+        callOnEntered = true;
+        valueType = "int";
+    }
 };
 
 struct ConfigFlowExecutor : DataDumpInterface {

@@ -103,18 +103,7 @@ QAbstractState* TaskMachineRunner::createDirectState(const TaskMachine::ConfigFl
     auto state = new DirectState(parent);
     state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        state->bindState(TaskStateType::State_Enter, [this, executor] {
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        state->bindState(TaskStateType::State_Exit, [this, executor] {
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor);
 
     auto connectLines = fromLines.values(executor->id());
     if (connectLines.isEmpty()) {
@@ -134,18 +123,7 @@ QAbstractState* TaskMachineRunner::createDelayState(const TaskMachine::ConfigFlo
     auto state = new DelayState(executor->delay(), parent);
     state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        state->bindState(TaskStateType::State_Enter, [this, executor] {
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        state->bindState(TaskStateType::State_Exit, [this, executor] {
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor);
 
     auto connectLines = fromLines.values(executor->id());
     if (connectLines.isEmpty()) {
@@ -165,18 +143,7 @@ QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlo
     auto state = new BindableCheckEventState(parent);
     state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        state->bindState(TaskStateType::State_Enter, [this, executor] {
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        state->bindState(TaskStateType::State_Exit, [this, executor] {
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor);
 
     state->setTimeout(executor->timeout());
     state->setRetrySize(executor->retry());
@@ -219,18 +186,7 @@ QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::Conf
     auto state = new BindableMultiCheckEventState(parent);
     state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        state->bindState(TaskStateType::State_Enter, [this, executor] {
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        state->bindState(TaskStateType::State_Exit, [this, executor] {
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor);
 
     auto connectLines = fromLines.values(executor->id());
     if (connectLines.isEmpty()) {
@@ -258,18 +214,7 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
     auto state = new DirectState(parent);
     state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        state->bindState(TaskStateType::State_Enter, [this, executor] {
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        state->bindState(TaskStateType::State_Exit, [this, executor] {
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor);
 
     auto connectLines = fromLines.values(executor->id());
     if (connectLines.isEmpty()) {
@@ -305,18 +250,7 @@ QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlo
     auto state = new EventState(parent);
     state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        state->bindState(TaskStateType::State_Enter, [this, executor] {
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        state->bindState(TaskStateType::State_Exit, [this, executor] {
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor);
 
     auto connectLines = fromLines.values(executor->id());
     if (connectLines.isEmpty()) {
@@ -350,23 +284,10 @@ QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlo
 QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new QHistoryState(parent);
     createdState[executor->id()] = state;
+    bindExecutorBaseInfo(state, executor, true);
 
     if (executor->nested()) {
         state->setHistoryType(QHistoryState::DeepHistory);
-    }
-
-    if (!executor->enter().isEmpty()) {
-        connect(state, &QHistoryState::entered, [this, executor] {
-            qCInfo(taskMachine) << "state '" << executor->text() << "' enter!";;
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        connect(state, &QHistoryState::exited, [this, executor] {
-            qCInfo(taskMachine) << "state '" << executor->text() << "' exit!";;
-            invokeFunction(executor->exit());
-        });
     }
 
     return state;
@@ -375,22 +296,63 @@ QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigF
 QAbstractState *TaskMachineRunner::createEndState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new QFinalState(parent);
     createdState[executor->id()] = state;
-
-    if (!executor->enter().isEmpty()) {
-        connect(state, &QFinalState::entered, [this, executor] {
-            qCInfo(taskMachine) << "state '" << executor->text() << "' enter!";;
-            invokeFunction(executor->enter());
-        });
-    }
-
-    if (!executor->exit().isEmpty()) {
-        connect(state, &QFinalState::exited, [this, executor] {
-            qCInfo(taskMachine) << "state '" << executor->text() << "' exit!";;
-            invokeFunction(executor->exit());
-        });
-    }
+    bindExecutorBaseInfo(state, executor, true);
 
     return state;
+}
+
+void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor *executor, bool printLog) {
+
+    const auto callProperties = [this, executor] (bool entered) {
+        for (const auto& prop : executor->properties()) {
+            if (entered != prop.callOnEntered()) {
+                continue;
+            }
+            QVariant data;
+            if (prop.valueType() == "int") {
+                data = prop.value().toInt();
+            } else if (prop.valueType() == "bool") {
+                data = prop.value().toLower() == "true";
+            } else if (prop.valueType() == "string") {
+                data = prop.value();
+            } else if (prop.valueType() == "double") {
+                data = prop.value().toDouble();
+            } else if (prop.valueType() == "float") {
+                data = prop.value().toFloat();
+            } else if (prop.valueType() == "hex") {
+                data = QByteArray::fromHex(prop.value().toLatin1());
+            } else {
+                qCCritical(taskMachine) << "unknown property type:" << prop.valueType();
+            }
+            if (data.isValid()) {
+                currentBindContext->setProperty(prop.key().toLatin1(), data);
+            }
+        }
+    };
+
+    if (!executor->enter().isEmpty() || !executor->properties().isEmpty()) {
+        connect(state, &QAbstractState::entered, [=] {
+            if (printLog) {
+                qCInfo(taskMachine) << "state '" << executor->text() << "' enter!";
+            }
+            callProperties(true);
+            if (!executor->enter().isEmpty()) {
+                invokeFunction(executor->enter());
+            }
+        });
+    }
+
+    if (!executor->exit().isEmpty() || !executor->properties().isEmpty()) {
+        connect(state, &QAbstractState::exited, [=] {
+            if (printLog) {
+                qCInfo(taskMachine) << "state '" << executor->text() << "' exit!";
+            }
+            callProperties(false);
+            if (!executor->exit().isEmpty()) {
+                invokeFunction(executor->exit());
+            }
+        });
+    }
 }
 
 void TaskMachineRunner::invokeFunction(const QString &slotName) {

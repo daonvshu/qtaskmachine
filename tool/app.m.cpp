@@ -8,6 +8,7 @@
 
 #include "utils/taskmachinesteputil.h"
 #include "utils/taskmachinerunner.h"
+#include "utils/flowstaterunner.h"
 
 #include <qfile.h>
 #include <qmessagebox.h>
@@ -377,7 +378,7 @@ void App::beginCurrentState() {
     connect(taskMachineRunner, &TaskMachineRunner::finished, this, [] {
         qDebug() << "task runner finished!";
     });
-    taskMachineRunner->run(this);
+    taskMachineRunner->run(new FlowStateRunner(this));
 }
 
 void App::cancelCurrentState() {
