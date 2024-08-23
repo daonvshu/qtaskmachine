@@ -170,7 +170,7 @@ QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlo
             if (triggerFunc.isValid()) {
                 state->setSignal(currentBindContext, triggerFunc.methodSignature().constData());
             }
-            state->setCheckFunction(findFunction(connectLine->checkFunc()));
+            state->setCheckFunction(currentBindContext, findFunction(connectLine->checkFunc()));
             state->next(nextState);
         } else {
             if (triggerFunc.isValid()) {
@@ -204,7 +204,7 @@ QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::Conf
         if (triggerFunc.isValid()) {
             state->addSignal(currentBindContext, triggerFunc.methodSignature().constData());
             state->next(nextState);
-            state->setCheckFunction(signalIndex++, connectLine->branchId(), findFunction(connectLine->checkFunc()));
+            state->setCheckFunction(currentBindContext, signalIndex++, connectLine->branchId(), findFunction(connectLine->checkFunc()));
         }
     }
     return state;
@@ -384,8 +384,8 @@ QMetaMethod TaskMachineRunner::findFunction(const QString &signalName) {
 bool BindableCheckEventState::testFinishBySignalData(const QVariantList &data)  {
     if (checkFunction.isValid()) {
         bool boolData = true;
-        auto returnValue = Q_ARG(bool, boolData);
-        bool invokeResult = checkFunction.invoke(this, Qt::DirectConnection, returnValue, Q_ARG(QVariantList, data));
+        auto returnValue = Q_RETURN_ARG(bool, boolData);
+        bool invokeResult = checkFunction.invoke(currentContext, Qt::DirectConnection, returnValue, Q_ARG(QVariantList, data));
         if (!invokeResult) {
             qCCritical(taskMachine) << "invoke check function fail!";
             return true;
@@ -395,12 +395,12 @@ bool BindableCheckEventState::testFinishBySignalData(const QVariantList &data)  
     return true;
 }
 
-bool BindableMultiCheckEventState::testFinishBySignalData(int signalIndex, const QVariantList &data)  {
+bool BindableMultiCheckEventState::testFinishBySignalData(int signalIndex, const QVariantList &data) {
     auto checkFunc = checkFunction[signalIndex];
     if (checkFunc.second.isValid()) {
         bool boolData = true;
-        auto returnValue = Q_ARG(bool, boolData);
-        bool invokeResult = checkFunc.second.invoke(this, Qt::DirectConnection, returnValue, Q_ARG(int, checkFunc.first), Q_ARG(QVariantList, data));
+        auto returnValue = Q_RETURN_ARG(bool, boolData);
+        bool invokeResult = checkFunc.second.invoke(currentContext, Qt::DirectConnection, returnValue, Q_ARG(int, checkFunc.first), Q_ARG(QVariantList, data));
         if (!invokeResult) {
             qCCritical(taskMachine) << "invoke check function fail!";
             return true;

@@ -56,8 +56,9 @@ class BindableCheckEventState : public EventState {
 public:
     using EventState::EventState;
 
-    void setCheckFunction(const QMetaMethod& function) {
+    void setCheckFunction(QObject* context, const QMetaMethod& function) {
         checkFunction = function;
+        currentContext = context;
     }
 
 protected:
@@ -65,14 +66,16 @@ protected:
 
 private:
     QMetaMethod checkFunction;
+    QObject* currentContext;
 };
 
 class BindableMultiCheckEventState : public MultiEventState {
 public:
     using MultiEventState::MultiEventState;
 
-    void setCheckFunction(int signalIndex, int branchId, const QMetaMethod& function) {
+    void setCheckFunction(QObject* context, int signalIndex, int branchId, const QMetaMethod& function) {
         checkFunction[signalIndex] = qMakePair(branchId, function);
+        currentContext = context;
     }
 
 protected:
@@ -80,4 +83,5 @@ protected:
 
 private:
     QHash<int, QPair<int, QMetaMethod>> checkFunction;
+    QObject* currentContext;
 };
