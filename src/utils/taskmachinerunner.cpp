@@ -286,6 +286,20 @@ QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigF
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor, true);
 
+    //bind default state
+    auto parentId = createdState.key(parent);
+    auto fromBranch = fromLines.values(parentId);
+    int defaultBranchId = -1;
+    for (const auto& branch : fromBranch) {
+        if (branch->subBranch()) {
+            defaultBranchId = branch->connectTo();
+            break;
+        }
+    }
+    if (defaultBranchId != -1) {
+        state->setDefaultState(createdState.value(defaultBranchId));
+    }
+
     if (executor->nested()) {
         state->setHistoryType(QHistoryState::DeepHistory);
     }
