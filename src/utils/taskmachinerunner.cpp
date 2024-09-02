@@ -257,6 +257,12 @@ QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlo
         return state;
     }
 
+    std::sort(connectLines.begin(), connectLines.end(), [](const TaskMachine::ConfigFlowConnectLine* a, const TaskMachine::ConfigFlowConnectLine* b) {
+        int flagA =  (((int)a->subBranch()) << 1) | (((int)a->failBranch()));
+        int flagB = (((int)b->subBranch()) << 1) | (((int)b->failBranch()));
+        return flagA > flagB;
+    });
+
     for (const auto connectLine : connectLines) {
         auto nextExecutor = executors[connectLine->connectTo()];
         if (nextExecutor == nullptr) {
@@ -282,12 +288,15 @@ QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlo
 }
 
 QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
-    auto state = new QHistoryState(parent);
+
+    //find parent group state
+    auto groupParent = findGroupParent(executor);
+    auto state = new QHistoryState(dynamic_cast<QState*>(groupParent));
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor, true);
 
     //bind default state
-    auto parentId = createdState.key(parent);
+    auto parentId = createdState.key(groupParent);
     auto fromBranch = fromLines.values(parentId);
     int defaultBranchId = -1;
     for (const auto& branch : fromBranch) {
@@ -297,7 +306,8 @@ QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigF
         }
     }
     if (defaultBranchId != -1) {
-        state->setDefaultState(createdState.value(defaultBranchId));
+        auto defaultState = createdState.value(defaultBranchId);
+        state->setDefaultState(defaultState);
     }
 
     if (executor->nested()) {
@@ -313,6 +323,24 @@ QAbstractState *TaskMachineRunner::createEndState(const TaskMachine::ConfigFlowE
     bindExecutorBaseInfo(state, executor, true);
 
     return state;
+}
+
+QAbstractState *TaskMachineRunner::findGroupParent(const TaskMachine::ConfigFlowExecutor *executor) {
+    auto connectToLines = toLines.values(executor->id());
+    for (const auto connectLine : connectToLines) {
+        auto connectFromId = connectLine->connectFrom();
+        if (createdState.contains(connectFromId)) {
+            auto stateExecutor = executors[connectFromId];
+            if (stateExecutor->itemType() == TaskMachine::FlowChartNodeType::Node_Group) {
+                return createdState.value(connectFromId);
+            }
+            auto parent = findGroupParent(stateExecutor);
+            if (parent != nullptr) {
+                return parent;
+            }
+        }
+    }
+    return nullptr;
 }
 
 void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor *executor, bool printLog) {
