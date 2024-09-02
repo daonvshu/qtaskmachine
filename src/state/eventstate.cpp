@@ -75,7 +75,7 @@ void EventState::onEntry(QEvent *event) {
 }
 
 void EventState::onExit(QEvent *event) {
-    LinearState::onEntry(event);
+    LinearState::onExit(event);
 
     if (timeoutCheckTimer->isActive()) {
         timeoutCheckTimer->stop();
