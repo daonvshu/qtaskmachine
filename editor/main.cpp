@@ -9,6 +9,7 @@
 #include "myapplication.h"
 
 #include <qlogcollector.h>
+#include <qloggingcategory.h>
 
 int main(int argc, char* argv[]) {
     QGuiApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
@@ -38,6 +39,8 @@ int main(int argc, char* argv[]) {
             .projectSourceCodeRootPath(ROOT_PROJECT_PATH)
             ;
     logcollector::QLogCollector::instance().registerLog();
+
+    QLoggingCategory::setFilterRules(QStringLiteral("qeventbus.*.info=false"));
 
     App app;
     app.show();

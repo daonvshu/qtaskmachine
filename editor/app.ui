@@ -202,10 +202,18 @@ background:#4C4E56;
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true"/>
+    <widget class="GraphicView" name="graphic_view" native="true"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicView</class>
+   <extends>QWidget</extends>
+   <header>graphic/graphicview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="app.qrc"/>
  </resources>

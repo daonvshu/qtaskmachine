@@ -31,6 +31,25 @@ add_executable(${PROJECT_NAME} WIN32
     app.qrc
     myapplication.h
     myapplication.cpp
+
+    graphic/graphicview.h
+    graphic/graphicview.cpp
+    graphic/graphiccontrol.h
+    graphic/graphiclayer.h
+    graphic/graphiclayer.cpp
+
+    graphic/controls/mouseactioncontrol.h
+    graphic/controls/mouseactioncontrol.cpp
+    graphic/controls/transformcontrol.h
+    graphic/controls/transformcontrol.cpp
+    graphic/controls/graphiclayercontrol.h
+    graphic/controls/graphiclayercontrol.cpp
+
+    graphic/layer/orthogonalgridlayer.h
+    graphic/layer/orthogonalgridlayer.cpp
+
+    graphic/utils/transform.h
+    graphic/utils/transform.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
