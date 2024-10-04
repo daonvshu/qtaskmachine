@@ -13,4 +13,5 @@ endif ()
 
 if (QTASK_MACHINE_BUILD_TOOL)
     add_subdirectory(tool)
+    add_subdirectory(editor)
 endif ()
