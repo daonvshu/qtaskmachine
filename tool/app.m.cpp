@@ -6,8 +6,6 @@
 
 #include "subpage/stateconfiginterface.h"
 
-#include "utils/taskmachinesteputil.h"
-#include "utils/taskmachinerunner.h"
 #include "utils/flowstaterunner.h"
 
 #include <qfile.h>
@@ -364,27 +362,15 @@ void App::beginCurrentState() {
     if (configFilePath.isEmpty()) {
         return;
     }
-    TaskMachineStepUtil::stepConfig(configFilePath);
     auto index = ui.flow_list->currentIndex();
     if (!index.isValid()) {
         return;
     }
 
     ConfigFlow& data = flowGroup.flows()[index.row()];
-    auto currentConfigName = data.name();
-
-    delete taskMachineRunner;
-    taskMachineRunner = new TaskMachineRunner(currentConfigName, this);
-    connect(taskMachineRunner, &TaskMachineRunner::finished, this, [] {
-        qDebug() << "task runner finished!";
-    });
-    taskMachineRunner->run(new FlowStateRunner(this));
+    flowStateRunner->run(index.row(), data.name(), flowGroup);
 }
 
 void App::cancelCurrentState() {
-    if (taskMachineRunner) {
-        taskMachineRunner->cancel();
-        delete taskMachineRunner;
-        taskMachineRunner = nullptr;
-    }
+    flowStateRunner->cancel();
 }

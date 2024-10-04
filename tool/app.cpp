@@ -52,6 +52,8 @@ App::App(QWidget *parent)
             };
         }
     }
+
+    flowStateRunner = new FlowStateRunner(this);
 }
 
 void App::on_btn_new_config_clicked() {

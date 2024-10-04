@@ -11,7 +11,8 @@
 
 #include "subpage/commonpropmanager.h"
 
-class TaskMachineRunner;
+#include "utils/flowstaterunner.h"
+
 class App : public QWidget {
     Q_OBJECT
 
@@ -25,10 +26,9 @@ private:
     QStandardItemModel* flowsMode;
 
     CommonPropManager* commonPropManager;
+    FlowStateRunner* flowStateRunner;
 
     QString configFilePath;
-
-    TaskMachineRunner* taskMachineRunner = nullptr;
 
 private slots:
     void on_btn_new_config_clicked();
