@@ -3,13 +3,18 @@
 #include <qobject.h>
 
 #include "../graphiccontrol.h"
+#include "../graphicobject.h"
 
 enum class GraphicLayerType {
     Layer_None =        0,
 
     Layer_Grid =        1 << 0,   //网格线
+    Layer_Static_Node = 1 << 1,   //静态节点
+    Layer_Static_Link = 1 << 2,   //静态连线
+    Layer_Active_Node = 1 << 3,   //动态节点
+    Layer_Active_Link = 1 << 4,   //动态连线
 
-    Layer_All = Layer_Grid,
+    Layer_All = Layer_Grid | Layer_Static_Node | Layer_Static_Link | Layer_Active_Node | Layer_Active_Link,
 };
 Q_DECLARE_FLAGS(GraphicLayerTypes, GraphicLayerType)
 
@@ -50,6 +55,12 @@ public:
      * @brief 清空所有图形
      */
     void clearAllGraphic();
+
+    /**
+     * @brief 设置当前编辑节点
+     * @param activeNode
+     */
+    void setActiveNode(const QSharedPointer<GraphicObject>& activeNode);
 
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层

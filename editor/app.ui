@@ -15,9 +15,18 @@
   </property>
   <property name="styleSheet">
    <string notr="true">*{
-background:#35363C;
-font-size:14px;
-color:white;
+	background:#35363C;
+	font-size:14px;
+	color:white;
+}
+QMenu {
+	background: #26282D;
+}
+QMenu::item {
+	padding: 6px 20px;
+}
+QMenu::item:selected {
+	background:#35363C;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">

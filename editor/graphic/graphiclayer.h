@@ -18,7 +18,7 @@ public:
     /**
      * @brief 重置缓存
      */
-    virtual void recache() = 0;
+    virtual void reCache() = 0;
 
 public:
     QPixmap layerCache; //! 双缓冲图形层

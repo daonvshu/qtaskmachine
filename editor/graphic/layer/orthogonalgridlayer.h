@@ -11,7 +11,7 @@ class OrthogonalGridLayer : public GraphicLayer {
 public:
     explicit OrthogonalGridLayer(QObject *parent = nullptr);
 
-    void recache() override;
+    void reCache() override;
 
     /**
      * @brief 捕捉测试

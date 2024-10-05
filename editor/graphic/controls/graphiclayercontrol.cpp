@@ -1,6 +1,10 @@
 ﻿#include "graphiclayercontrol.h"
 
 #include "../layer/orthogonalgridlayer.h"
+#include "../layer/activenodelayer.h"
+#include "../layer/activelinklinelayer.h"
+#include "../layer/staticnodelayer.h"
+#include "../layer/staticlinklinelayer.h"
 
 #include <qdebug.h>
 
@@ -8,6 +12,7 @@ GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlShar
     : GraphicControl(data, parent)
 {
     layers << qMakePair(GraphicLayerType::Layer_Grid, new OrthogonalGridLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
     graphLayerReload();
 }
 
@@ -24,7 +29,7 @@ void GraphicLayerControl::graphLayerRepaint(QPainter* painter) {
         layer->graphicTransform = transform;
         layer->sizeAdjust(viewSize);
         if (graphicResetOption.testFlag(i.first)) {
-            layer->recache();
+            layer->reCache();
         }
         painter->drawPixmap(0, 0, layer->layerCache);
     }
@@ -46,4 +51,9 @@ void GraphicLayerControl::reloadLayer(GraphicLayerType layerType) {
 
 void GraphicLayerControl::clearAllGraphic() {
 
+}
+
+void GraphicLayerControl::setActiveNode(const QSharedPointer<GraphicObject> &activeNode) {
+    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode = activeNode;
+    reloadLayer(GraphicLayerType::Layer_Active_Node);
 }

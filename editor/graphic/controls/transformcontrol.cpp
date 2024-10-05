@@ -13,11 +13,11 @@ void TransformControl::scaleByDefault() {
     isFirstLoad = false;
 
     auto viewCenter = d->view->rect().center();
-    QTransform transform;
-    transform.translate(viewCenter.x(), viewCenter.y());
-    transform.scale(10.0, 10.0);
-    transform.translate(-viewCenter.x(), -viewCenter.y());
-    d->graphicTransform *= transform;
+    //QTransform transform;
+    //transform.translate(viewCenter.x(), viewCenter.y());
+    //transform.scale(10.0, 10.0);
+    //transform.translate(-viewCenter.x(), -viewCenter.y());
+    //d->graphicTransform *= transform;
 
     oldViewCenter = viewCenter;
 }
@@ -25,10 +25,10 @@ void TransformControl::scaleByDefault() {
 void TransformControl::coordinateReload() {
     auto oldCenterRel = d->getGraphicTransform().toRealPoint(oldViewCenter); //原先界面中心位置的实际坐标值
     auto viewCenter = d->view->rect().center();
-    //笛卡尔坐标系变换
     d->coordinateTransform = QTransform();
     d->coordinateTransform.translate(viewCenter.x(), viewCenter.y());
-    d->coordinateTransform.scale(1, -1);
+    //笛卡尔坐标系变换
+    //d->coordinateTransform.scale(1, -1);
 
     if (!isFirstLoad) {
         //视图中心坐标对应的实际值相对当前视图中心产生了偏移量

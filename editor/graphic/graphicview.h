@@ -4,6 +4,8 @@
 
 class GraphicControlWrapper;
 class GraphicView : public QWidget {
+    Q_OBJECT
+
 public:
     explicit GraphicView(QWidget *parent = nullptr);
 
@@ -14,6 +16,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
 private:
     GraphicControlWrapper* controls;

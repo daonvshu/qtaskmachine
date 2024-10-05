@@ -10,8 +10,8 @@ OrthogonalGridLayer::OrthogonalGridLayer(QObject *parent)
 {
 }
 
-void OrthogonalGridLayer::recache() {
-
+void OrthogonalGridLayer::reCache() {
+    //TODO: cache block grid
     layerCache.fill(Qt::transparent);
     QPainter painter(&layerCache);
 
@@ -65,11 +65,11 @@ void OrthogonalGridLayer::drawGridLine(QPainter *painter, qreal gridWidth, const
 }
 
 QColor OrthogonalGridLayer::gridColor() const {
-    return 0x2D3540;
+    return 0x353A3F;
 }
 
 QColor OrthogonalGridLayer::metaGridColor() const {
-    return 0x36404D;
+    return 0x3A3F44;
 }
 
 void OrthogonalGridLayer::snapTest(QPointF& point) const {

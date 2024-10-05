@@ -37,6 +37,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/graphiccontrol.h
     graphic/graphiclayer.h
     graphic/graphiclayer.cpp
+    graphic/graphicobject.h
+    graphic/graphicobject.cpp
 
     graphic/controls/mouseactioncontrol.h
     graphic/controls/mouseactioncontrol.cpp
@@ -44,9 +46,48 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/controls/transformcontrol.cpp
     graphic/controls/graphiclayercontrol.h
     graphic/controls/graphiclayercontrol.cpp
+    graphic/controls/graphicobjcreatecontrol.h
+    graphic/controls/graphicobjcreatecontrol.cpp
 
     graphic/layer/orthogonalgridlayer.h
     graphic/layer/orthogonalgridlayer.cpp
+    graphic/layer/activenodelayer.h
+    graphic/layer/activenodelayer.cpp
+    graphic/layer/activelinklinelayer.h
+    graphic/layer/activelinklinelayer.cpp
+    graphic/layer/staticnodelayer.h
+    graphic/layer/staticnodelayer.cpp
+    graphic/layer/staticlinklinelayer.h
+    graphic/layer/staticlinklinelayer.cpp
+
+    graphic/objects/graphicnode.h
+    graphic/objects/graphicnode.cpp
+    graphic/objects/graphiclinkline.h
+    graphic/objects/graphiclinkline.cpp
+
+    graphic/objects/nodes/nodebeginstate.h
+    graphic/objects/nodes/nodebeginstate.cpp
+    graphic/objects/nodes/nodeendstate.h
+    graphic/objects/nodes/nodeendstate.cpp
+    graphic/objects/nodes/nodenormalstate.h
+    graphic/objects/nodes/nodenormalstate.cpp
+    graphic/objects/nodes/nodedelaystate.h
+    graphic/objects/nodes/nodedelaystate.cpp
+    graphic/objects/nodes/nodeeventstate.h
+    graphic/objects/nodes/nodeeventstate.cpp
+    graphic/objects/nodes/nodemultieventstate.h
+    graphic/objects/nodes/nodemultieventstate.cpp
+    graphic/objects/nodes/nodeconditionstate.h
+    graphic/objects/nodes/nodeconditionstate.cpp
+    graphic/objects/nodes/nodestategroup.h
+    graphic/objects/nodes/nodestategroup.cpp
+    graphic/objects/nodes/noderecoverystate.h
+    graphic/objects/nodes/noderecoverystate.cpp
+
+    graphic/render/graphicrender.h
+    graphic/render/graphicrender.cpp
+    graphic/render/nodes/nodenormalstaterender.h
+    graphic/render/nodes/nodenormalstaterender.cpp
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp

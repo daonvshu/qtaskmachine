@@ -3,6 +3,7 @@
 #include "graphiclayercontrol.h"
 
 #include <qevent.h>
+#include <qdebug.h>
 
 void MouseActionControl::mousePress(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
