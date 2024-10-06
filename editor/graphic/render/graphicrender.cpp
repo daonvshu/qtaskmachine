@@ -25,22 +25,42 @@ GraphicRenderInterface *GraphicRenderInterface::getRender() {
     return nullptr;
 }
 
-QRectF GraphicRenderInterface::drawNodeBody(const QPointF &topCenter, int requiredWidth, int subWindowHeight, bool isSelected) {
+QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCenter, int requiredWidth, int subWindowHeight) {
+    qreal width = qMax(requiredWidth, 120);
+    qreal height = 40 + subWindowHeight + 2; // 2像素分割线
+    return {
+            topCenter.x() - width / 2.0,
+            topCenter.y(),
+            width,
+            height
+            };
+}
 
-    auto pos = graphicTransform.toGuiPoint(topCenter);
-    qreal width = graphicTransform.toGuiDx(qMax(requiredWidth, 120));
-    qreal height = graphicTransform.toGuiDy(40 + subWindowHeight + 2); // 2像素分割线
+int GraphicRenderInterface::getTextWidthByFont(const QString& text, int pixelSize) {
+    auto font = renderPainter->font();
+    font.setPixelSize(pixelSize);
+    return QFontMetrics(font).horizontalAdvance(text);
+}
 
-    QRectF guiBodyRect(pos.x() - width / 2.0, pos.y(), width, height);
+QRectF GraphicRenderInterface::getConnectPointRect(const QRectF &itemRect, bool onLeft) {
+    qreal cx = onLeft ? (itemRect.left() + 8) : (itemRect.right() - 8);
+    qreal cy = itemRect.center().y();
+    return { cx - 4, cy - 4, 8, 8 };
+}
+
+void GraphicRenderInterface::drawNodeBody(const QRectF& rect, bool isSelected) {
+
+    QRectF guiBodyRect = graphicTransform.toGuiPoint(rect);
+    auto radius = graphicTransform.toGuiDx(9);
 
     //TODO: draw only the visible region
-    QPixmap cacheImage(qRound(width), qRound(height));
+    QPixmap cacheImage(qRound(guiBodyRect.width()), qRound(guiBodyRect.height()));
     cacheImage.fill(Qt::transparent);
     QPainter cachePainter(&cacheImage);
     cachePainter.setRenderHint(QPainter::Antialiasing);
     cachePainter.setBrush(QColor(0x4A4B53));
     cachePainter.setPen(Qt::NoPen);
-    cachePainter.drawRoundedRect(QRectF(0, 0, width, height), 9, 9);
+    cachePainter.drawRoundedRect(QRectF(0, 0, guiBodyRect.width(), guiBodyRect.height()), radius, radius);
     cachePainter.end();
     drawShadow(cacheImage, guiBodyRect.topLeft(), 6, 0xA01E1F22, QPointF(1, 1));
 
@@ -48,11 +68,9 @@ QRectF GraphicRenderInterface::drawNodeBody(const QPointF &topCenter, int requir
         renderPainter->save();
         renderPainter->setPen(Qt::white);
         auto offset = graphicTransform.toGuiDx(8);
-        renderPainter->drawRoundedRect(guiBodyRect.adjusted(-offset, -offset, offset, offset), 9, 9);
+        renderPainter->drawRoundedRect(guiBodyRect.adjusted(-offset, -offset, offset, offset), radius, radius);
         renderPainter->restore();
     }
-
-    return guiBodyRect;
 }
 
 // qtbase/src/widgets/effects/qpixmapfilter.cpp: line 1317
@@ -115,12 +133,50 @@ void GraphicRenderInterface::drawNodeSplitLine(const QRectF &nodeBodyRect, Graph
         return Qt::black;
     };
 
+    auto drawRect = nodeBodyRect.translated(0, 40);
+    drawRect = graphicTransform.toGuiPoint(drawRect);
+
     renderPainter->save();
     auto pen = renderPainter->pen();
-    pen.setColor(getColor());
-    pen.setWidthF(1);
-    QPointF offset(0, graphicTransform.toGuiDy(40));
+    pen.setColor(getColor().darker(150));
+    pen.setWidthF(graphicTransform.toGuiDx(1));
+    QPointF padding = QPointF(graphicTransform.toGuiDx(2), 0);
     renderPainter->setPen(pen);
-    renderPainter->drawLine(nodeBodyRect.topLeft() + offset, nodeBodyRect.topRight() + offset);
+    renderPainter->drawLine(drawRect.topLeft() + padding, drawRect.topRight() - padding);
     renderPainter->restore();
+}
+
+void GraphicRenderInterface::drawNodeTitle(const QRectF &renderRect, const QString &title, int pixelSize) {
+    auto font = renderPainter->font();
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
+    renderPainter->save();
+    renderPainter->setFont(font);
+    renderPainter->setPen(Qt::white);
+    auto titleDrawRect = graphicTransform.toGuiPoint(renderRect.translated(12, 0));
+    renderPainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    renderPainter->restore();
+}
+
+void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool onLeft) {
+    // draw connect point
+    renderPainter->save();
+    renderPainter->setPen(Qt::NoPen);
+    renderPainter->setBrush(color);
+    auto connectPointRect = getConnectPointRect(renderRect, onLeft);
+    connectPointRect = graphicTransform.toGuiPoint(connectPointRect);
+    renderPainter->drawEllipse(connectPointRect);
+    renderPainter->restore();
+    // draw text
+    renderPainter->save();
+    auto font = renderPainter->font();
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
+    renderPainter->setFont(font);
+    renderPainter->setPen(Qt::white);
+    auto textRect = renderRect.adjusted(onLeft ? 16 : 0, 0, onLeft ? 0 : -16, 0);
+    textRect = graphicTransform.toGuiPoint(textRect);
+    renderPainter->drawText(textRect, Qt::AlignVCenter | (onLeft ? Qt::AlignLeft : Qt::AlignRight), title);
+    renderPainter->restore();
+
+    //renderPainter->setPen(Qt::yellow);
+    //renderPainter->drawRect(graphicTransform.toGuiPoint(renderRect));
 }

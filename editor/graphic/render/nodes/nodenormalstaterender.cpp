@@ -6,19 +6,22 @@ NodeNormalStateRender::NodeNormalStateRender(const QSharedPointer<GraphicObjectD
 }
 
 void NodeNormalStateRender::drawObject(bool isActiveState) {
-    auto titleFont = renderPainter->font();
-    titleFont.setPixelSize(14);
-    auto titleFontMetrics = QFontMetrics(titleFont);
-    int minTitleWidth = titleFontMetrics.horizontalAdvance(d->nodeName) + 8 * 2;
+    int minTitleWidth = getTextWidthByFont(d->nodeName, 14) + 12 * 2;
+    int minSubItemWidth = 0;
+    minSubItemWidth = qMax(getTextWidthByFont(d->funcEnter, 12), getTextWidthByFont(d->funcExit, 12));
+    minSubItemWidth += 12 * 2;
 
-    auto subItemFont = renderPainter->font();
-    subItemFont.setPixelSize(12);
-    auto subItemFontMetrics = QFontMetrics(subItemFont);
-    int minSubItemWidth = INT32_MAX;
-    minSubItemWidth = qMin(minSubItemWidth, subItemFontMetrics.horizontalAdvance(d->funcEnter));
-    minSubItemWidth = qMin(minSubItemWidth, subItemFontMetrics.horizontalAdvance(d->funcExit));
-    minSubItemWidth += 8 * 2;
-
-    auto bodyRect = drawNodeBody(d->renderPosition, qMax(minTitleWidth, minSubItemWidth), 32 * 2, d->selected);
+    auto bodyRect = getNodeBodyRectFromTopCenter(d->renderPosition, qMax(minTitleWidth, minSubItemWidth), 33 * 2);
+    drawNodeBody(bodyRect, d->selected);
     drawNodeSplitLine(bodyRect, GraphicObjectType::Node_Normal_State);
+
+    // draw title
+    auto titleDrawRect = QRectF(bodyRect.left(), bodyRect.top(), bodyRect.width(), 40);
+    drawNodeTitle(titleDrawRect, d->nodeName, 14);
+
+    QRectF itemEnterRow(bodyRect.left(), bodyRect.top() + 40 + 2, bodyRect.width(), 33);
+    drawConnectableItem(itemEnterRow, d->funcEnter.isEmpty() ? "(onEnter)" : d->funcEnter, 12, Qt::green, true);
+
+    QRectF itemExitRow = itemEnterRow.translated(0, 33);
+    drawConnectableItem(itemExitRow, d->funcExit.isEmpty() ? "(onExit)" : d->funcExit, 12, Qt::green, false);
 }
