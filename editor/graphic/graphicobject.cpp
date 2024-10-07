@@ -5,3 +5,7 @@ GraphicObject::GraphicObject(const QSharedPointer<GraphicObjectData> &data)
 {
 
 }
+
+bool GraphicObject::selectTest(const QPointF &point) {
+    return false;
+}

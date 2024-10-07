@@ -13,6 +13,7 @@ GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlShar
 {
     layers << qMakePair(GraphicLayerType::Layer_Grid, new OrthogonalGridLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Static_Node, new StaticNodeLayer(this));
     graphLayerReload();
 }
 
@@ -56,4 +57,9 @@ void GraphicLayerControl::clearAllGraphic() {
 void GraphicLayerControl::setActiveNode(const QSharedPointer<GraphicObject> &activeNode) {
     layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode = activeNode;
     reloadLayer(GraphicLayerType::Layer_Active_Node);
+}
+
+void GraphicLayerControl::updateStaticNodes(const GraphicObjectList &nodes) {
+    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList = nodes;
+    reloadLayer(GraphicLayerType::Layer_Static_Node);
 }

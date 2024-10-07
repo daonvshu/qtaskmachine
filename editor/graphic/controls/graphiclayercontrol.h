@@ -62,6 +62,12 @@ public:
      */
     void setActiveNode(const QSharedPointer<GraphicObject>& activeNode);
 
+    /**
+     * @brief 更新静态节点
+     * @param nodes
+     */
+    void updateStaticNodes(const GraphicObjectList& nodes);
+
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层
     GraphicLayerTypes graphicResetOption = GraphicLayerType::Layer_None; //重置缓存

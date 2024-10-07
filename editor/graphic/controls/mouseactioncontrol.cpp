@@ -1,6 +1,7 @@
 #include "mouseactioncontrol.h"
 #include "transformcontrol.h"
 #include "graphiclayercontrol.h"
+#include "graphicobjcreatecontrol.h"
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -17,8 +18,9 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
     auto mousePos = e->pos();
 
     if (e->buttons() & Qt::LeftButton) {
-        if (mousePressPoint != mousePos) {
+        if (objectSelected) {
             selectObjMove(mousePos);
+        } else {
             d->getControl<TransformControl>()->dragMoving(mousePos);
             d->getControl<GraphicLayerControl>()->graphLayerReload();
         }
@@ -28,7 +30,9 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
 }
 
 void MouseActionControl::mouseRelease(QMouseEvent *) {
-    selectObjRelease();
+    if (objectSelected) {
+        selectObjRelease();
+    }
     d->view->repaint();
 }
 
@@ -39,17 +43,19 @@ void MouseActionControl::wheelEvent(QWheelEvent *e) {
 }
 
 void MouseActionControl::selectObjPress(const QPoint &mousePos) {
-    preSelect = true; //测试是否是鼠标左键选择
-    dragging = false;
+    auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
+    objectSelected = !selectedObj.isNull();
+    lastMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
 }
 
-void MouseActionControl::selectObjMove(const QPoint &) {
-    dragging = true;
+void MouseActionControl::selectObjMove(const QPoint &mousePos) {
+    auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
+    auto delta = currentMousePoint - lastMousePoint;
+    d->getControl<GraphicObjCreateControl>()->translate(delta);
+    d->view->repaint();
+    lastMousePoint = currentMousePoint;
 }
 
 void MouseActionControl::selectObjRelease() {
-    if (dragging) {
-
-    }
-    preSelect = false;
+    objectSelected = false;
 }

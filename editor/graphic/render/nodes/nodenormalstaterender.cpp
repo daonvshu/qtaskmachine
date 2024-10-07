@@ -12,7 +12,8 @@ void NodeNormalStateRender::drawObject(bool isActiveState) {
     minSubItemWidth += 12 * 2;
 
     auto bodyRect = getNodeBodyRectFromTopCenter(d->renderPosition, qMax(minTitleWidth, minSubItemWidth), 33 * 2);
-    drawNodeBody(bodyRect, d->selected);
+    drawNodeBody(bodyRect, d);
+
     drawNodeSplitLine(bodyRect, GraphicObjectType::Node_Normal_State);
 
     // draw title

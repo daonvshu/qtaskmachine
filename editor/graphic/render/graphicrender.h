@@ -49,9 +49,9 @@ protected:
     /**
      * @brief 绘制节点主体背景框
      * @param rect
-     * @param isSelected
+     * @param nodeData
      */
-    void drawNodeBody(const QRectF& rect, bool isSelected);
+    void drawNodeBody(const QRectF& rect, QSharedPointer<struct GraphicNodeData>& nodeData);
 
     /**
      * @brief 绘制节点分割线
@@ -63,12 +63,12 @@ protected:
     /**
      * @brief 为对象绘制阴影
      * @param shadowObjectPixCache 对象临时缓冲图形
-     * @param pos 绘制位置
      * @param blurRadius 阴影半径
      * @param color 阴影颜色
      * @param offset 偏移
+     * @return 返回阴影背景
      */
-    void drawShadow(const QPixmap& shadowObjectPixCache, const QPointF& pos, qreal blurRadius, const QColor& color, const QPointF& offset);
+    static QImage drawShadow(const QPixmap& shadowObjectPixCache, qreal blurRadius, const QColor& color, const QPointF& offset);
 
     /**
      * @brief 绘制节点标题

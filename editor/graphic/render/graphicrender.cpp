@@ -1,5 +1,7 @@
 #include "graphicrender.h"
 
+#include "../objects/graphicnode.d.h"
+
 #include <qmath.h>
 
 // Qt internal function (qtbase/src/widgets/effects/qpixmapfilter.cpp)
@@ -48,23 +50,40 @@ QRectF GraphicRenderInterface::getConnectPointRect(const QRectF &itemRect, bool 
     return { cx - 4, cy - 4, 8, 8 };
 }
 
-void GraphicRenderInterface::drawNodeBody(const QRectF& rect, bool isSelected) {
+void GraphicRenderInterface::drawNodeBody(const QRectF& rect, QSharedPointer<GraphicNodeData>& nodeData) {
 
     QRectF guiBodyRect = graphicTransform.toGuiPoint(rect);
-    auto radius = graphicTransform.toGuiDx(9);
+    const qreal shadowRadius = 6;
 
-    //TODO: draw only the visible region
-    QPixmap cacheImage(qRound(guiBodyRect.width()), qRound(guiBodyRect.height()));
-    cacheImage.fill(Qt::transparent);
-    QPainter cachePainter(&cacheImage);
-    cachePainter.setRenderHint(QPainter::Antialiasing);
-    cachePainter.setBrush(QColor(0x4A4B53));
-    cachePainter.setPen(Qt::NoPen);
-    cachePainter.drawRoundedRect(QRectF(0, 0, guiBodyRect.width(), guiBodyRect.height()), radius, radius);
-    cachePainter.end();
-    drawShadow(cacheImage, guiBodyRect.topLeft(), 6, 0xA01E1F22, QPointF(1, 1));
+    if (nodeData->boundingRect.size() != rect.size()) {
+        auto radius = graphicTransform.toGuiDx(9);
 
-    if (isSelected) {
+        //TODO: draw only the visible region
+        QPixmap cacheImage(qRound(guiBodyRect.width()), qRound(guiBodyRect.height()));
+        cacheImage.fill(Qt::transparent);
+        QPainter cachePainter(&cacheImage);
+        cachePainter.setRenderHint(QPainter::Antialiasing);
+        cachePainter.setBrush(QColor(0x4A4B53));
+        cachePainter.setPen(Qt::NoPen);
+        cachePainter.drawRoundedRect(QRectF(0, 0, guiBodyRect.width(), guiBodyRect.height()), radius, radius);
+        cachePainter.end();
+
+        auto shadowImage = drawShadow(cacheImage, shadowRadius, 0xA01E1F22, QPointF(1, 1));
+        nodeData->nodeBackgroundCache = QPixmap(shadowImage.size());
+        nodeData->nodeBackgroundCache.fill(Qt::transparent);
+        QPainter backgroundPainter(&nodeData->nodeBackgroundCache);
+        // draw shadow image
+        backgroundPainter.drawImage(QPointF(0, 0), shadowImage);
+        // draw source image
+        backgroundPainter.drawPixmap(QPointF(shadowRadius, shadowRadius), cacheImage);
+    }
+    nodeData->boundingRect = rect;
+    // draw cached image
+    renderPainter->drawPixmap(guiBodyRect.topLeft() - QPointF(shadowRadius, shadowRadius), nodeData->nodeBackgroundCache);
+
+    if (nodeData->selected) {
+        auto radius = graphicTransform.toGuiDx(9);
+
         renderPainter->save();
         renderPainter->setPen(Qt::white);
         auto offset = graphicTransform.toGuiDx(8);
@@ -74,7 +93,7 @@ void GraphicRenderInterface::drawNodeBody(const QRectF& rect, bool isSelected) {
 }
 
 // qtbase/src/widgets/effects/qpixmapfilter.cpp: line 1317
-void GraphicRenderInterface::drawShadow(const QPixmap &shadowObjectPixCache, const QPointF& pos, qreal blurRadius, const QColor &color, const QPointF &offset) {
+QImage GraphicRenderInterface::drawShadow(const QPixmap &shadowObjectPixCache, qreal blurRadius, const QColor &color, const QPointF &offset) {
 
     // temp render object
     QImage tmp(shadowObjectPixCache.size() + QSize(qCeil(blurRadius * 2), qCeil(blurRadius * 2)), QImage::Format_ARGB32_Premultiplied);
@@ -101,11 +120,7 @@ void GraphicRenderInterface::drawShadow(const QPixmap &shadowObjectPixCache, con
     tmpPainter.fillRect(tmp.rect(), color);
     tmpPainter.end();
 
-    // draw shadow image
-    renderPainter->drawImage(pos - QPointF(blurRadius, blurRadius), tmp);
-
-    // draw source image
-    renderPainter->drawPixmap(pos, shadowObjectPixCache);
+    return tmp;
 }
 
 void GraphicRenderInterface::drawNodeSplitLine(const QRectF &nodeBodyRect, GraphicObjectType objectType) {

@@ -13,6 +13,8 @@ class GraphicObject
 public:
     explicit GraphicObject(const QSharedPointer<GraphicObjectData>& data);
 
+    virtual bool selectTest(const QPointF& point);
+
     Q_DISABLE_COPY(GraphicObject);
 
 public:

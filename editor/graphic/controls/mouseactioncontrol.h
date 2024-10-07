@@ -34,9 +34,7 @@ public:
     void wheelEvent(QWheelEvent* e);
 
 private:
-    bool preSelect = false;
-    bool dragging = false;
-    bool selecting = false;
+    bool objectSelected = false;
     QPointF lastMousePoint;
     QPointF mousePressPoint;
 

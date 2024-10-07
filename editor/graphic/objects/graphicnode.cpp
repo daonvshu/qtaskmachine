@@ -6,3 +6,7 @@ GraphicNode::GraphicNode(const QSharedPointer<GraphicNodeData> &data)
 {
 
 }
+
+bool GraphicNode::selectTest(const QPointF &point) {
+    return nodeData->boundingRect.contains(point);
+}
