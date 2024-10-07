@@ -55,7 +55,7 @@ void GraphicRenderInterface::drawNodeBody(const QRectF& rect, QSharedPointer<Gra
     QRectF guiBodyRect = graphicTransform.toGuiPoint(rect);
     const qreal shadowRadius = 6;
 
-    if (nodeData->boundingRect.size() != rect.size()) {
+    if (nodeData->oldBackgroundGuiSize != guiBodyRect.size()) {
         auto radius = graphicTransform.toGuiDx(9);
 
         //TODO: draw only the visible region
@@ -76,8 +76,9 @@ void GraphicRenderInterface::drawNodeBody(const QRectF& rect, QSharedPointer<Gra
         backgroundPainter.drawImage(QPointF(0, 0), shadowImage);
         // draw source image
         backgroundPainter.drawPixmap(QPointF(shadowRadius, shadowRadius), cacheImage);
+
+        nodeData->oldBackgroundGuiSize = guiBodyRect.size();
     }
-    nodeData->boundingRect = rect;
     // draw cached image
     renderPainter->drawPixmap(guiBodyRect.topLeft() - QPointF(shadowRadius, shadowRadius), nodeData->nodeBackgroundCache);
 

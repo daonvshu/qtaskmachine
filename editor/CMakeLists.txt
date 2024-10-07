@@ -20,6 +20,15 @@ include(CPM.cmake)
 
 CPMAddPackage("gh:daonvshu/qlogcollector@1.0.5")
 CPMAddPackage("gh:stdware/qwindowkit#1.2")
+CPMAddPackage(
+    NAME QJsonUtil
+    GITHUB_REPOSITORY daonvshu/qjsonutil
+    GIT_TAG master
+)
+
+if (QJsonUtil_ADDED)
+    include_directories(${QJsonUtil_SOURCE_DIR}/include)
+endif ()
 
 add_compile_definitions(ROOT_PROJECT_PATH="${CMAKE_SOURCE_DIR}")
 
@@ -31,6 +40,12 @@ add_executable(${PROJECT_NAME} WIN32
     app.qrc
     myapplication.h
     myapplication.cpp
+
+    dialogs/basepropertyeditdlg.h
+    dialogs/basepropertyeditdlg.cpp
+
+    dialogs/nodeedit/normalstatepropeditdlg.h
+    dialogs/nodeedit/normalstatepropeditdlg.cpp
 
     graphic/graphicview.h
     graphic/graphicview.cpp

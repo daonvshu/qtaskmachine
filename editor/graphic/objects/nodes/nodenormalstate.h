@@ -16,4 +16,8 @@ public:
     GraphicRenderInterface * getRender() override {
         return new NodeNormalStateRender(data);
     }
+
+    GraphicObjectType objectType() override {
+        return GraphicObjectType::Node_Normal_State;
+    }
 };

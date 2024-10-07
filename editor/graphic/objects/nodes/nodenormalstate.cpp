@@ -3,5 +3,5 @@
 NodeNormalState::NodeNormalState(const QSharedPointer<GraphicNodeData> &data)
     : GraphicNode(data)
 {
-    data->nodeName = "普通状态";
+    data->propData.nodeName = "普通状态";
 }

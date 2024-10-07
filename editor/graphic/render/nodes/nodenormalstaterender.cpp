@@ -6,23 +6,24 @@ NodeNormalStateRender::NodeNormalStateRender(const QSharedPointer<GraphicObjectD
 }
 
 void NodeNormalStateRender::drawObject(bool isActiveState) {
-    int minTitleWidth = getTextWidthByFont(d->nodeName, 14) + 12 * 2;
+    int minTitleWidth = getTextWidthByFont(d->propData.nodeName(), 14) + 12 * 2;
     int minSubItemWidth = 0;
-    minSubItemWidth = qMax(getTextWidthByFont(d->funcEnter, 12), getTextWidthByFont(d->funcExit, 12));
+    minSubItemWidth = qMax(getTextWidthByFont(d->propData.funcEnter(), 12), getTextWidthByFont(d->propData.funcExit(), 12));
     minSubItemWidth += 12 * 2;
 
     auto bodyRect = getNodeBodyRectFromTopCenter(d->renderPosition, qMax(minTitleWidth, minSubItemWidth), 33 * 2);
+    d->boundingRect = bodyRect;
     drawNodeBody(bodyRect, d);
 
     drawNodeSplitLine(bodyRect, GraphicObjectType::Node_Normal_State);
 
     // draw title
     auto titleDrawRect = QRectF(bodyRect.left(), bodyRect.top(), bodyRect.width(), 40);
-    drawNodeTitle(titleDrawRect, d->nodeName, 14);
+    drawNodeTitle(titleDrawRect, d->propData.nodeName(), 14);
 
     QRectF itemEnterRow(bodyRect.left(), bodyRect.top() + 40 + 2, bodyRect.width(), 33);
-    drawConnectableItem(itemEnterRow, d->funcEnter.isEmpty() ? "(onEnter)" : d->funcEnter, 12, Qt::green, true);
+    drawConnectableItem(itemEnterRow, d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(), 12, 0x77E000, true);
 
     QRectF itemExitRow = itemEnterRow.translated(0, 33);
-    drawConnectableItem(itemExitRow, d->funcExit.isEmpty() ? "(onExit)" : d->funcExit, 12, Qt::green, false);
+    drawConnectableItem(itemExitRow, d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(), 12, 0x00E0E0, false);
 }

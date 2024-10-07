@@ -4,5 +4,7 @@
         <file>res/maxsize1.svg</file>
         <file>res/maxsize2.svg</file>
         <file>res/minsize.svg</file>
+        <file>res/add.svg</file>
+        <file>res/down.svg</file>
     </qresource>
 </RCC>
