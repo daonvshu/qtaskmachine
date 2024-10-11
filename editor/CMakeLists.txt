@@ -20,15 +20,6 @@ include(CPM.cmake)
 
 CPMAddPackage("gh:daonvshu/qlogcollector@1.0.5")
 CPMAddPackage("gh:stdware/qwindowkit#1.2")
-CPMAddPackage(
-    NAME QJsonUtil
-    GITHUB_REPOSITORY daonvshu/qjsonutil
-    GIT_TAG master
-)
-
-if (QJsonUtil_ADDED)
-    include_directories(${QJsonUtil_SOURCE_DIR}/include)
-endif ()
 
 add_compile_definitions(ROOT_PROJECT_PATH="${CMAKE_SOURCE_DIR}")
 
@@ -101,6 +92,8 @@ add_executable(${PROJECT_NAME} WIN32
 
     graphic/render/graphicrender.h
     graphic/render/graphicrender.cpp
+    graphic/render/graphiclinklinerender.h
+    graphic/render/graphiclinklinerender.cpp
     graphic/render/nodes/nodenormalstaterender.h
     graphic/render/nodes/nodenormalstaterender.cpp
 

@@ -33,8 +33,15 @@ public:
      */
     void wheelEvent(QWheelEvent* e);
 
+    /**
+     * @brief 右键菜单
+     * @param event
+     */
+    void showContextMenu(QContextMenuEvent *event);
+
 private:
     bool objectSelected = false;
+    bool linkLineCreating = false;
     QPointF lastMousePoint;
     QPointF mousePressPoint;
 
@@ -42,4 +49,20 @@ private:
     void selectObjPress(const QPoint& mousePos);
     void selectObjMove(const QPoint& mousePos);
     void selectObjRelease();
+
+    void linkLineMove(const QPoint& mousePos);
+    void linkLineRelease();
+
+    /**
+     * @brief 显示节点的右键菜单
+     * @param obj
+     * @param event
+     */
+    void showSelectedObjectMenu(const QSharedPointer<class GraphicObject>& obj, QContextMenuEvent *event);
+
+    /**
+     * @brief 显示背景的右键菜单
+     * @param event
+     */
+    void showBlackboardMenu(QContextMenuEvent *event);
 };

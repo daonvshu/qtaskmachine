@@ -10,4 +10,6 @@ enum class GraphicObjectType {
     Node_Condition_State,       // 条件分支状态
     Node_State_Group,           // 子状态组
     Node_Recovery_State,        // 恢复点
+
+    Link_Line,                  // 连接线
 };

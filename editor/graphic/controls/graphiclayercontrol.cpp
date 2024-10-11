@@ -12,8 +12,10 @@ GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlShar
     : GraphicControl(data, parent)
 {
     layers << qMakePair(GraphicLayerType::Layer_Grid, new OrthogonalGridLayer(this));
-    layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Static_Link, new StaticLinkLineLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Static_Node, new StaticNodeLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Active_Link, new ActiveLinkLineLayer(this));
     graphLayerReload();
 }
 
@@ -57,9 +59,47 @@ void GraphicLayerControl::clearAllGraphic() {
 void GraphicLayerControl::setActiveNode(const QSharedPointer<GraphicObject> &activeNode) {
     layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode = activeNode;
     reloadLayer(GraphicLayerType::Layer_Active_Node);
+    if (activeNode != nullptr) {
+        //测试是否有连接线
+        const auto& staticLinks = layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->staticLinkLineList;
+        for (const auto& linkLine : staticLinks) {
+            if (linkLine->linkData->linkFromNodeData == activeNode->data ||
+                linkLine->linkData->linkToNodeData == activeNode->data)
+            {
+                linkLine->linkData->selected = true;
+                layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.insert(linkLine);
+            }
+        }
+        reloadLayer(GraphicLayerType::Layer_Active_Link);
+    }
+}
+
+void GraphicLayerControl::setActiveLinkLine(const QSharedPointer<GraphicLinkLine> &activeLinkLine) {
+    layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.insert(activeLinkLine);
+    reloadLayer(GraphicLayerType::Layer_Active_Link);
+}
+
+void GraphicLayerControl::cancelActiveLinkLine(const QSharedPointer<GraphicLinkLine> &activeLinkLine) {
+    activeLinkLine->linkData->selected = false;
+    layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.remove(activeLinkLine);
+    reloadLayer(GraphicLayerType::Layer_Active_Link);
+}
+
+void GraphicLayerControl::cancelAllActiveLinkLine() {
+    auto& activeLinkLines = layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList;
+    for (const auto& linkLine : activeLinkLines) {
+        linkLine->linkData->selected = false;
+    }
+    activeLinkLines.clear();
+    reloadLayer(GraphicLayerType::Layer_Active_Link);
 }
 
 void GraphicLayerControl::updateStaticNodes(const GraphicObjectList &nodes) {
     layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList = nodes;
     reloadLayer(GraphicLayerType::Layer_Static_Node);
+}
+
+void GraphicLayerControl::updateStaticLinkLines(const GraphicLinkLineList &linkLines) {
+    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->staticLinkLineList = linkLines;
+    reloadLayer(GraphicLayerType::Layer_Static_Link);
 }

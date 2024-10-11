@@ -12,7 +12,9 @@ void NodeNormalStateRender::drawObject(bool isActiveState) {
     minSubItemWidth += 12 * 2;
 
     auto bodyRect = getNodeBodyRectFromTopCenter(d->renderPosition, qMax(minTitleWidth, minSubItemWidth), 33 * 2);
-    d->boundingRect = bodyRect;
+    if (isActiveState) {
+        d->boundingRect = bodyRect;
+    }
     drawNodeBody(bodyRect, d);
 
     drawNodeSplitLine(bodyRect, GraphicObjectType::Node_Normal_State);
@@ -22,8 +24,16 @@ void NodeNormalStateRender::drawObject(bool isActiveState) {
     drawNodeTitle(titleDrawRect, d->propData.nodeName(), 14);
 
     QRectF itemEnterRow(bodyRect.left(), bodyRect.top() + 40 + 2, bodyRect.width(), 33);
+    if (isActiveState) {
+        d->inputLinkPoints.clear();
+        d->inputLinkPoints << getConnectPointRect(itemEnterRow, true);
+    }
     drawConnectableItem(itemEnterRow, d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(), 12, 0x77E000, true);
 
     QRectF itemExitRow = itemEnterRow.translated(0, 33);
+    if (isActiveState) {
+        d->outputLinkPoints.clear();
+        d->outputLinkPoints << getConnectPointRect(itemExitRow, false);
+    }
     drawConnectableItem(itemExitRow, d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(), 12, 0x00E0E0, false);
 }

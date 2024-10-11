@@ -12,6 +12,14 @@ public:
 
     bool selectTest(const QPointF& point) override;
 
+    /**
+     * @brief 测试是否在链接点上
+     * @param point 非GUI坐标点
+     * @param testInputPoint 是否在输入点上
+     * @return 链接点index，不存在则返回-1
+     */
+    int testOnLinkPoint(const QPointF& point, bool testInputPoint);
+
 protected:
     QSharedPointer<GraphicNodeData> nodeData;
 };

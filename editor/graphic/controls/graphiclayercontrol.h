@@ -5,6 +5,8 @@
 #include "../graphiccontrol.h"
 #include "../graphicobject.h"
 
+#include "../objects/graphiclinkline.h"
+
 enum class GraphicLayerType {
     Layer_None =        0,
 
@@ -63,10 +65,33 @@ public:
     void setActiveNode(const QSharedPointer<GraphicObject>& activeNode);
 
     /**
+     * @brief 设置当前编辑连线
+     * @param activeLinkLine
+     */
+    void setActiveLinkLine(const QSharedPointer<GraphicLinkLine>& activeLinkLine);
+
+    /**
+     * @brief 取消编辑连线
+     * @param activeLinkLine
+     */
+    void cancelActiveLinkLine(const QSharedPointer<GraphicLinkLine>& activeLinkLine);
+
+    /**
+     * @brief 取消所有编辑连线
+     */
+    void cancelAllActiveLinkLine();
+
+    /**
      * @brief 更新静态节点
      * @param nodes
      */
     void updateStaticNodes(const GraphicObjectList& nodes);
+
+    /**
+     * @brief 更新静态连线
+     * @param linkLines
+     */
+    void updateStaticLinkLines(const GraphicLinkLineList& linkLines);
 
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层

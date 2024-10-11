@@ -6,6 +6,8 @@
 #include "../graphicobject.h"
 #include "../graphicobjecttype.h"
 
+#include "../objects/graphiclinkline.h"
+
 class GraphicObjCreateControl : public GraphicControl {
 public:
     explicit GraphicObjCreateControl(const QSharedPointer<GraphicControlSharedData>& data, QObject *parent = nullptr);
@@ -20,15 +22,46 @@ public:
     QSharedPointer<GraphicObject> selectTest(const QPoint& mousePoint);
 
     /**
+     * @brief 将指定对象选中
+     * @param object
+     */
+    void setObjectSelected(const QSharedPointer<GraphicObject>& object);
+
+    /**
      * @brief 平移选中对象
      * @param delta
      */
-    void translate(const QPointF& delta);
+    void objTranslate(const QPointF& delta);
+
+    /**
+     * @brief 取消节点选中
+     */
+    void cancelObjActiveSelected();
+
+    /**
+     * @brief 创建链接线
+     * @param linkFrom
+     * @param linkPointIndex
+     * @param curMousePoint
+     */
+    void beginActiveLinkLine(const QSharedPointer<GraphicObject>& linkFrom, int linkPointIndex, const QPointF& curMousePoint);
+
+    /**
+     * @brief 更新链接线终点位置
+     * @param linkTo
+     * @param linkPointIndex
+     * @param curMousePoint
+     */
+    void updateActiveLinkLineToPoint(const QSharedPointer<GraphicObject>& linkTo, int linkPointIndex, const QPointF& curMousePoint);
+
+    /**
+     * @brief 释放当前编辑链接线
+     */
+    void releaseActiveLinkLine();
 
 private:
     GraphicObjectList graphicObjects;
+    GraphicLinkLineList linkLines;
     QSharedPointer<GraphicObject> activeObject;
-
-private:
-    void cancelActiveSelected();
+    QSharedPointer<GraphicLinkLine> activeLinkLine;
 };
