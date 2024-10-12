@@ -11,12 +11,12 @@ GraphicLinkLineRender::GraphicLinkLineRender(const QSharedPointer<GraphicLinkLin
 }
 
 void GraphicLinkLineRender::drawObject(bool isActiveState) {
-    auto linkFromPoint = qSharedPointerCast<GraphicNodeData>(d->linkFromNodeData)->outputLinkPoints[d->linkFromPointIndex].center();
+    auto linkFromPoint = d->linkFromNode->nodeData->outputLinkPoints[d->linkFromPointIndex].center();
     QPointF linkToPoint;
     if (d->isEditing) {
         linkToPoint = d->tempLinkToPoint;
     } else {
-        linkToPoint = qSharedPointerCast<GraphicNodeData>(d->linkToNodeData)->inputLinkPoints[d->linkToPointIndex].center();
+        linkToPoint = d->linkToNode->nodeData->inputLinkPoints[d->linkToPointIndex].center();
     }
 
     linkFromPoint = graphicTransform.toGuiPoint(linkFromPoint);

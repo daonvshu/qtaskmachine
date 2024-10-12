@@ -44,6 +44,7 @@ private:
     bool linkLineCreating = false;
     QPointF lastMousePoint;
     QPointF mousePressPoint;
+    QSharedPointer<class GraphicNode> lastHoverActiveNode;
 
 private:
     void selectObjPress(const QPoint& mousePos);

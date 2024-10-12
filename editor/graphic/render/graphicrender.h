@@ -85,8 +85,9 @@ protected:
      * @param pixelSize
      * @param color
      * @param onLeft
+     * @param linkPointActive
      */
-    void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool onLeft);
+    void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool onLeft, bool linkPointActive);
 
 protected:
     QPainter* renderPainter = nullptr;

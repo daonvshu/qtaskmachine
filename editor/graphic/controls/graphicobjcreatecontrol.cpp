@@ -17,7 +17,7 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
         case GraphicObjectType::Node_End_State:
             break;
         case GraphicObjectType::Node_Normal_State:
-            activeObject = NodeNormalState::create();
+            editingNodeObject = NodeNormalState::create();
             break;
         case GraphicObjectType::Node_Delay_State:
             break;
@@ -34,21 +34,28 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
         default:
             break;
     }
-    if (activeObject) {
-        activeObject->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint);
-        activeObject->data->selected = true;
-        graphicObjects << activeObject;
-        d->getControl<GraphicLayerControl>()->updateStaticNodes(graphicObjects);
+    if (editingNodeObject) {
+        editingNodeObject->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint);
+        editingNodeObject->data->selected = true;
+        nodeObjects << editingNodeObject;
+        d->getControl<GraphicLayerControl>()->updateStaticNodes(nodeObjects, false);
     }
-    d->getControl<GraphicLayerControl>()->setActiveNode(activeObject);
+    d->getControl<GraphicLayerControl>()->setActiveNode(editingNodeObject);
     d->view->repaint();
 }
 
-QSharedPointer<GraphicObject> GraphicObjCreateControl::selectTest(const QPoint &mousePoint) {
+QSharedPointer<GraphicObject> GraphicObjCreateControl::selectTest(const QPoint &mousePoint, bool testSelectedObject) {
     auto realPoint = d->getGraphicTransform().toRealPoint(mousePoint);
-    for (const auto& object : graphicObjects) {
+    for (const auto& object : nodeObjects) {
         if (object->selectTest(realPoint)) {
             return object;
+        }
+    }
+    if (testSelectedObject) {
+        if (editingNodeObject) {
+            if (editingNodeObject->selectTest(realPoint)) {
+                return editingNodeObject;
+            }
         }
     }
     return nullptr;
@@ -56,71 +63,69 @@ QSharedPointer<GraphicObject> GraphicObjCreateControl::selectTest(const QPoint &
 
 void GraphicObjCreateControl::setObjectSelected(const QSharedPointer<GraphicObject> &object) {
     cancelObjActiveSelected();
-    activeObject = object;
-    activeObject->data->selected = true;
+    editingNodeObject = object;
+    editingNodeObject->data->selected = true;
     d->getControl<GraphicLayerControl>()->setActiveNode(object);
-    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
-    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
 }
 
 void GraphicObjCreateControl::objTranslate(const QPointF& delta) {
-    if (activeObject) {
-        activeObject->data->renderPosition += delta;
-        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node);
-        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Link);
+    if (editingNodeObject) {
+        editingNodeObject->data->renderPosition += delta;
+        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
     }
 }
 
 void GraphicObjCreateControl::cancelObjActiveSelected() {
-    if (activeObject) {
-        activeObject->data->selected = false;
+    if (editingNodeObject) {
+        editingNodeObject->data->selected = false;
         d->getControl<GraphicLayerControl>()->setActiveNode(nullptr);
-        if (activeLinkLine.isNull()) {
-            d->getControl<GraphicLayerControl>()->cancelAllActiveLinkLine();
-        }
-        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
-        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
+        Q_ASSERT(editingLinkLine.isNull());
+        d->getControl<GraphicLayerControl>()->cancelAllActiveLinkLine();
+        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
     }
 }
 
 void GraphicObjCreateControl::beginActiveLinkLine(const QSharedPointer<GraphicObject> &linkFrom, int linkPointIndex, const QPointF& curMousePoint) {
-    activeLinkLine = GraphicLinkLine::create();
-    activeLinkLine->linkData->linkFromNodeData = qSharedPointerCast<GraphicNode>(linkFrom)->data;
-    activeLinkLine->linkData->linkFromPointIndex = linkPointIndex;
-    activeLinkLine->linkData->tempLinkToPoint = curMousePoint;
-    linkLines << activeLinkLine;
-    d->getControl<GraphicLayerControl>()->setActiveLinkLine(activeLinkLine);
-    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines);
+    editingLinkLine = GraphicLinkLine::create();
+    editingLinkLine->linkData->linkFromNode = qSharedPointerCast<GraphicNode>(linkFrom);
+    editingLinkLine->linkData->linkFromPointIndex = linkPointIndex;
+    editingLinkLine->linkData->tempLinkToPoint = curMousePoint;
+    linkLines << editingLinkLine;
+    d->getControl<GraphicLayerControl>()->setActiveLinkLine(editingLinkLine);
+    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines, false);
 }
 
 void GraphicObjCreateControl::updateActiveLinkLineToPoint(const QSharedPointer<GraphicObject>& linkTo, int linkPointIndex, const QPointF &curMousePoint) {
-    if (activeLinkLine) {
-        activeLinkLine->linkData->linkToNodeData = linkTo.isNull() ? nullptr : qSharedPointerCast<GraphicNode>(linkTo)->data;
-        activeLinkLine->linkData->linkToPointIndex = linkPointIndex;
-        activeLinkLine->linkData->tempLinkToPoint = curMousePoint;
+    if (editingLinkLine) {
+        editingLinkLine->linkData->linkToNode = qSharedPointerCast<GraphicNode>(linkTo);
+        editingLinkLine->linkData->linkToPointIndex = linkPointIndex;
+        editingLinkLine->linkData->tempLinkToPoint = curMousePoint;
         d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Link);
     }
 }
 
 void GraphicObjCreateControl::releaseActiveLinkLine() {
-    if (activeLinkLine) {
-        activeLinkLine->linkData->isEditing = false;
-        if (activeLinkLine->linkData->linkToNodeData.isNull()) {
-            linkLines.removeOne(activeLinkLine);
+    if (editingLinkLine) {
+        editingLinkLine->linkData->isEditing = false;
+        if (editingLinkLine->linkData->linkToNode.isNull()) {
+            linkLines.removeOne(editingLinkLine);
             d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines);
-            activeLinkLine = nullptr;
+            d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(editingLinkLine);
+            editingLinkLine = nullptr;
         } else {
             d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
         }
-        if (activeLinkLine) {
-            bool linkToSelectedNode = activeLinkLine->linkData->linkFromNodeData == activeObject->data ||
-                    activeLinkLine->linkData->linkToNodeData == activeObject->data;
+        if (editingLinkLine) {
+            bool linkToSelectedNode = editingLinkLine->linkData->linkFromNode == editingNodeObject ||
+                                      editingLinkLine->linkData->linkToNode == editingNodeObject;
             if (linkToSelectedNode) {
-                activeLinkLine->linkData->selected = true;
+                editingLinkLine->linkData->selected = true;
+                d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Link);
             } else {
-                d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(activeLinkLine);
+                d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(editingLinkLine);
             }
-            activeLinkLine = nullptr;
+            editingLinkLine = nullptr;
         }
     }
 }

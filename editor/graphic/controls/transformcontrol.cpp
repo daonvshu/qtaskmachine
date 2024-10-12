@@ -63,7 +63,7 @@ bool TransformControl::scale(bool zoomIn, const QPointF& mousePoint) {
     qreal scaleFactor = zoomIn ? (1 - zoomFactor) : (1 + zoomFactor);
     //测试缩放之后的坐标系大小
     auto toScaleFactor = scaleFactor * d->graphicTransform.m11();
-    if (toScaleFactor <= 1e-8 || toScaleFactor >= 1e6) {
+    if (toScaleFactor <= 0.1 || toScaleFactor >= 5.0) {
         return false;
     }
     //qDebug() << "apply scale factor:" << toScaleFactor;

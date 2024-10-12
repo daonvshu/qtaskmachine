@@ -18,8 +18,15 @@ public:
      * @param testInputPoint 是否在输入点上
      * @return 链接点index，不存在则返回-1
      */
-    int testOnLinkPoint(const QPointF& point, bool testInputPoint);
+    int testOnLinkPoint(const QPointF& point, bool testInputPoint) const;
 
-protected:
+    /**
+     * @brief 设置链接点是否激活
+     * @param linkIndex
+     * @param isInputPoint
+     */
+    void makeLinkPointActive(int linkIndex, bool isInputPoint) const;
+
+public:
     QSharedPointer<GraphicNodeData> nodeData;
 };

@@ -16,4 +16,6 @@ struct GraphicNodeData : GraphicObjectData {
 
     QList<QRectF> inputLinkPoints;  //输入链接点
     QList<QRectF> outputLinkPoints; //输出链接点
+    int activeInputLinkPointIndex = -1;  //激活的输入链接点
+    int activeOutputLinkPointIndex = -1; //激活的输出链接点
 };

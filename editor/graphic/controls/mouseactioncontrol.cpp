@@ -38,6 +38,28 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
         }
     }
 
+    auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos, true);
+    if (selectedObj != lastHoverActiveNode) {
+        if (lastHoverActiveNode) {
+            lastHoverActiveNode->makeLinkPointActive(-1, true);
+            lastHoverActiveNode->makeLinkPointActive(-1, false);
+            lastHoverActiveNode = nullptr;
+            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
+        }
+    }
+    if (selectedObj) {
+        if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+            lastHoverActiveNode = qSharedPointerCast<GraphicNode>(selectedObj);
+            //测试是否在输出连接点上
+            auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
+            auto inputLinkIndex = qSharedPointerCast<GraphicNode>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
+            auto outputLinkIndex = qSharedPointerCast<GraphicNode>(selectedObj)->testOnLinkPoint(currentMousePoint, false);
+            lastHoverActiveNode->makeLinkPointActive(inputLinkIndex, true);
+            lastHoverActiveNode->makeLinkPointActive(outputLinkIndex, false);
+            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
+        }
+    }
+
     d->view->repaint();
 }
 
@@ -126,7 +148,7 @@ void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
     }
 }
 
-void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<struct GraphicObject> &obj, QContextMenuEvent *event) {
+void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObject> &obj, QContextMenuEvent *event) {
     QMenu menu(d->view);
     QList<QAction *> actions;
     actions << menu.addAction(tr("复制 (Ctrl+C)"));

@@ -17,9 +17,10 @@ public:
     /**
      * @brief 测试鼠标位置（GUI位置）是否可选中对象
      * @param mousePoint
+     * @param testSelectedObject
      * @return
      */
-    QSharedPointer<GraphicObject> selectTest(const QPoint& mousePoint);
+    QSharedPointer<GraphicObject> selectTest(const QPoint& mousePoint, bool testSelectedObject = false);
 
     /**
      * @brief 将指定对象选中
@@ -60,8 +61,8 @@ public:
     void releaseActiveLinkLine();
 
 private:
-    GraphicObjectList graphicObjects;
+    GraphicObjectList nodeObjects;
     GraphicLinkLineList linkLines;
-    QSharedPointer<GraphicObject> activeObject;
-    QSharedPointer<GraphicLinkLine> activeLinkLine;
+    QSharedPointer<GraphicObject> editingNodeObject;
+    QSharedPointer<GraphicLinkLine> editingLinkLine;
 };

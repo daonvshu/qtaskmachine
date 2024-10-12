@@ -3,6 +3,7 @@
 #include "../objects/graphicnode.d.h"
 
 #include <qmath.h>
+#include <qelapsedtimer.h>
 
 // Qt internal function (qtbase/src/widgets/effects/qpixmapfilter.cpp)
 extern void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed);
@@ -68,7 +69,11 @@ void GraphicRenderInterface::drawNodeBody(const QRectF& rect, QSharedPointer<Gra
         cachePainter.drawRoundedRect(QRectF(0, 0, guiBodyRect.width(), guiBodyRect.height()), radius, radius);
         cachePainter.end();
 
+        //QElapsedTimer elapsedTimer;
+        //elapsedTimer.start();
         auto shadowImage = drawShadow(cacheImage, shadowRadius, 0xA01E1F22, QPointF(1, 1));
+        //qDebug() << "crete shadow image used time:" << elapsedTimer.elapsed();
+
         nodeData->nodeBackgroundCache = QPixmap(shadowImage.size());
         nodeData->nodeBackgroundCache.fill(Qt::transparent);
         QPainter backgroundPainter(&nodeData->nodeBackgroundCache);
@@ -173,7 +178,7 @@ void GraphicRenderInterface::drawNodeTitle(const QRectF &renderRect, const QStri
     renderPainter->restore();
 }
 
-void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool onLeft) {
+void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool onLeft, bool linkPointActive) {
     // draw connect point
     renderPainter->save();
     renderPainter->setPen(Qt::NoPen);
@@ -182,6 +187,16 @@ void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const
     connectPointRect = graphicTransform.toGuiPoint(connectPointRect);
     renderPainter->drawEllipse(connectPointRect);
     renderPainter->restore();
+    if (linkPointActive) {
+        renderPainter->save();
+        auto pen = renderPainter->pen();
+        pen.setWidthF(graphicTransform.toGuiDx(1.5));
+        pen.setColor(color);
+        renderPainter->setPen(pen);
+        auto expandR = graphicTransform.toGuiDx(2);
+        renderPainter->drawEllipse(connectPointRect.adjusted(-expandR, -expandR, expandR, expandR));
+        renderPainter->restore();
+    }
     // draw text
     renderPainter->save();
     auto font = renderPainter->font();

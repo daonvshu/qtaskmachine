@@ -19,6 +19,7 @@ enum class GraphicLayerType {
     Layer_All = Layer_Grid | Layer_Static_Node | Layer_Static_Link | Layer_Active_Node | Layer_Active_Link,
 };
 Q_DECLARE_FLAGS(GraphicLayerTypes, GraphicLayerType)
+Q_DECLARE_OPERATORS_FOR_FLAGS(GraphicLayerTypes)
 
 class GraphicLayerControl : public GraphicControl {
 public:
@@ -51,7 +52,7 @@ public:
      * @brief 刷新指定图层
      * @param layerType
      */
-    void reloadLayer(GraphicLayerType layerType);
+    void reloadLayer(GraphicLayerTypes layerType);
 
     /**
      * @brief 清空所有图形
@@ -84,14 +85,16 @@ public:
     /**
      * @brief 更新静态节点
      * @param nodes
+     * @param layerReload
      */
-    void updateStaticNodes(const GraphicObjectList& nodes);
+    void updateStaticNodes(const GraphicObjectList& nodes, bool layerReload = true);
 
     /**
      * @brief 更新静态连线
      * @param linkLines
+     * @param layerReload
      */
-    void updateStaticLinkLines(const GraphicLinkLineList& linkLines);
+    void updateStaticLinkLines(const GraphicLinkLineList& linkLines, bool layerReload = true);
 
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层
