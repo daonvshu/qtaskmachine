@@ -3,6 +3,7 @@
 #include "../objects/nodes/nodenormalstate.h"
 #include "../objects/nodes/nodebeginstate.h"
 #include "../objects/nodes/nodeendstate.h"
+#include "../objects/nodes/nodedelaystate.h"
 
 #include "graphiclayercontrol.h"
 
@@ -24,6 +25,7 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
             editingNodeObject = NodeNormalState::create();
             break;
         case GraphicObjectType::Node_Delay_State:
+            editingNodeObject = NodeDelayState::create();
             break;
         case GraphicObjectType::Node_Event_State:
             break;

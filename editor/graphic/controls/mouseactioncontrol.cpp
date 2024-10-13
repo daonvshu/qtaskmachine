@@ -6,8 +6,9 @@
 #include "dialogs/nodeedit/normalstatepropeditdlg.h"
 #include "dialogs/nodeedit/beginstatepropeditdlg.h"
 #include "dialogs/nodeedit/endstatepropeditdlg.h"
+#include "dialogs/nodeedit/delaystatepropeditdlg.h"
 
-#include "../objects/nodes/nodenormalstate.h"
+#include "../objects/nodes/nodedelaystate.d.h"
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -170,12 +171,21 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
 
         } else if (actionIndex == 3) {
 
-            const auto& showPropertyDlg = [&] (BasePropertyEditDlg& dlg) {
+            const auto& showPropertyDlg = [&] (BasePropertyEditDlg& dlg,
+                                               const std::function<void(const QSharedPointer<GraphicNodeData>&)>& exDataRead = nullptr,
+                                               const std::function<void(QSharedPointer<GraphicNodeData>&)>& exDataWrite = nullptr)
+            {
                 auto objData = qSharedPointerCast<GraphicNodeData>(obj->data);
                 dlg.setData(objData->propData);
+                if (exDataRead) {
+                    exDataRead(objData);
+                }
                 auto exitCode = dlg.exec();
                 if (exitCode == QDialog::Accepted) {
                     objData->propData = dlg.getEditData();
+                    if (exDataWrite) {
+                        exDataWrite(objData);
+                    }
                     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
                     d->view->repaint();
                 }
@@ -198,7 +208,14 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
                     showPropertyDlg(dlg);
                 }
                     break;
-                case GraphicObjectType::Node_Delay_State:
+                case GraphicObjectType::Node_Delay_State: {
+                    DelayStatePropEditDlg dlg;
+                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                        dlg.setExData(qSharedPointerCast<NodeDelayStateData>(objData)->delayPropData);
+                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                        qSharedPointerCast<NodeDelayStateData>(objData)->delayPropData = dlg.getExEditData();
+                    });
+                }
                     break;
                 case GraphicObjectType::Node_Event_State:
                     break;

@@ -41,6 +41,8 @@ add_executable(${PROJECT_NAME} WIN32
     dialogs/nodeedit/beginstatepropeditdlg.cpp
     dialogs/nodeedit/endstatepropeditdlg.h
     dialogs/nodeedit/endstatepropeditdlg.cpp
+    dialogs/nodeedit/delaystatepropeditdlg.h
+    dialogs/nodeedit/delaystatepropeditdlg.cpp
 
     graphic/graphicview.h
     graphic/graphicview.cpp
@@ -106,6 +108,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/render/nodes/nodebeginstaterender.cpp
     graphic/render/nodes/nodeendstaterender.h
     graphic/render/nodes/nodeendstaterender.cpp
+    graphic/render/nodes/nodedelaystaterender.h
+    graphic/render/nodes/nodedelaystaterender.cpp
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp

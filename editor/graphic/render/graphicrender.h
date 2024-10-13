@@ -85,10 +85,10 @@ protected:
      * @param title
      * @param pixelSize
      * @param color
-     * @param onLeft
+     * @param alignLeft
      * @param linkPointActive
      */
-    void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool onLeft, bool linkPointActive);
+    void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive);
 
     /**
      * @brief 绘制属性标题
@@ -107,6 +107,17 @@ protected:
      * @param color
      */
     void drawPropertyRow(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color);
+
+    /**
+     * @brief 绘制图标行
+     * @param renderRect
+     * @param iconPath
+     * @param iconSize
+     * @param displayText
+     * @param pixelSize
+     * @param alignLeft
+     */
+    void drawIconRow(const QRectF& renderRect, const QString& iconPath, int iconSize, const QString& displayText, int pixelSize, bool alignLeft);
 
 protected:
     QPainter* renderPainter = nullptr;

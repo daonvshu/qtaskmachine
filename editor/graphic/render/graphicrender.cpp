@@ -3,6 +3,7 @@
 #include "../objects/graphicnode.d.h"
 
 #include <qmath.h>
+#include <qicon.h>
 #include <qelapsedtimer.h>
 
 // Qt internal function (qtbase/src/widgets/effects/qpixmapfilter.cpp)
@@ -178,12 +179,12 @@ void GraphicRenderInterface::drawNodeTitle(const QRectF &renderRect, const QStri
     renderPainter->restore();
 }
 
-void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool onLeft, bool linkPointActive) {
+void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive) {
     // draw connect point
     renderPainter->save();
     renderPainter->setPen(Qt::NoPen);
     renderPainter->setBrush(color);
-    auto connectPointRect = getConnectPointRect(renderRect, onLeft);
+    auto connectPointRect = getConnectPointRect(renderRect, alignLeft);
     connectPointRect = graphicTransform.toGuiPoint(connectPointRect);
     renderPainter->drawEllipse(connectPointRect);
     renderPainter->restore();
@@ -203,9 +204,9 @@ void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
     renderPainter->setFont(font);
     renderPainter->setPen(Qt::white);
-    auto textRect = renderRect.adjusted(onLeft ? 16 : 0, 0, onLeft ? 0 : -16, 0);
+    auto textRect = renderRect.adjusted(alignLeft ? 16 : 0, 0, alignLeft ? 0 : -16, 0);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignVCenter | (onLeft ? Qt::AlignLeft : Qt::AlignRight), title);
+    renderPainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
     renderPainter->restore();
 
     //renderPainter->setPen(Qt::yellow);
@@ -242,5 +243,31 @@ void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QSt
     auto textRect = renderRect.adjusted(16, 0, 0, 0);
     textRect = graphicTransform.toGuiPoint(textRect);
     renderPainter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    renderPainter->restore();
+}
+
+void GraphicRenderInterface::drawIconRow(const QRectF &renderRect, const QString &iconPath, int iconSize, const QString &displayText, int pixelSize, bool alignLeft) {
+    // draw icon
+    renderPainter->save();
+    QRectF iconRect(0, 0, iconSize, iconSize);
+    if (alignLeft) {
+        iconRect.moveCenter(QPointF(renderRect.left() + 8 + iconRect.width() / 2, renderRect.center().y()));
+    } else {
+        iconRect.moveCenter(QPointF(renderRect.right() - 8 - iconRect.width() / 2, renderRect.center().y()));
+    }
+    iconRect = graphicTransform.toGuiPoint(iconRect);
+    QIcon icon(iconPath);
+    auto pixmap = icon.pixmap(qRound(iconRect.width()), qRound(iconRect.height()));
+    renderPainter->drawPixmap(iconRect.toRect(), pixmap);
+    renderPainter->restore();
+    // draw icon text
+    renderPainter->save();
+    auto font = renderPainter->font();
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
+    renderPainter->setFont(font);
+    renderPainter->setPen(Qt::white);
+    auto textRect = renderRect.adjusted(alignLeft ? (iconSize + 12) : 0, 0, alignLeft ? 0 : -(iconSize + 12), 0);
+    textRect = graphicTransform.toGuiPoint(textRect);
+    renderPainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), displayText);
     renderPainter->restore();
 }

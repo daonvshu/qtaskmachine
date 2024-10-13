@@ -6,5 +6,8 @@
         <file>res/minsize.svg</file>
         <file>res/add.svg</file>
         <file>res/down.svg</file>
+        <file>res/time.svg</file>
+        <file>res/arrow_up.svg</file>
+        <file>res/arrow_down.svg</file>
     </qresource>
 </RCC>

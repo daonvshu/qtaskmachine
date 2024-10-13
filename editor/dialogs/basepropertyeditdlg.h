@@ -29,11 +29,11 @@ protected:
 
     bool eventFilter(QObject *obj, QEvent *e) override;
 
-private slots:
+protected slots:
     void on_btn_property_add_clicked();
     void on_btn_close_clicked();
     void on_btn_cancel_clicked();
-    void on_btn_confirm_clicked();
+    virtual void on_btn_confirm_clicked();
 
 protected:
     Ui::BasePropertyEditDlg ui;
