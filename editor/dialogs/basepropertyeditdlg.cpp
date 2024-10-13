@@ -17,7 +17,7 @@ BasePropertyEditDlg::BasePropertyEditDlg(QWidget *parent)
     registerMessageHint(ui.input_name, tr("设置打印时的名称"));
     registerMessageHint(ui.input_func_enter, tr("设置状态进入绑定的槽函数"));
     registerMessageHint(ui.input_func_exit, tr("设置状态退出绑定的槽函数"));
-    registerMessageHint(ui.btn_property_add, tr("设置状态进入时应用属性值"));
+    registerMessageHint(ui.btn_property_add, tr("设置状态进入或退出时应用属性值"));
 }
 
 void BasePropertyEditDlg::setData(const BasePropertyData &data) {
@@ -25,6 +25,12 @@ void BasePropertyEditDlg::setData(const BasePropertyData &data) {
     ui.input_name->setText(data.nodeName());
     ui.input_func_enter->setText(data.funcEnter());
     ui.input_func_exit->setText(data.funcExit());
+    if (!data.properties().isEmpty()) {
+        for (auto& property : editData.properties()) {
+            auto propertyBindWidget = new PropertyBindWidget(&property, ui.state_common_prop);
+            ui.layout_bind_properties->insertWidget(ui.layout_bind_properties->count() - 1, propertyBindWidget);
+        }
+    }
 }
 
 BasePropertyData BasePropertyEditDlg::getEditData() const {

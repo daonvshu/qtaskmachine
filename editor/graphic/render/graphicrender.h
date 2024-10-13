@@ -26,9 +26,10 @@ protected:
      * @param topCenter
      * @param requiredWidth
      * @param subWindowHeight
+     * @param splitHeight
      * @return
      */
-    static QRectF getNodeBodyRectFromTopCenter(const QPointF& topCenter, int requiredWidth, int subWindowHeight);
+    static QRectF getNodeBodyRectFromTopCenter(const QPointF& topCenter, int requiredWidth, int subWindowHeight, int splitHeight);
 
     /**
      * @brief 获取文本宽度
@@ -75,8 +76,9 @@ protected:
      * @param renderRect
      * @param title
      * @param pixelSize
+     * @param padding
      */
-    void drawNodeTitle(const QRectF& renderRect, const QString& title, int pixelSize);
+    void drawNodeTitle(const QRectF& renderRect, const QString& title, int pixelSize, int padding);
 
     /**
      * @brief 绘制可连接的节点
@@ -88,6 +90,24 @@ protected:
      * @param linkPointActive
      */
     void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool onLeft, bool linkPointActive);
+
+    /**
+     * @brief 绘制属性标题
+     * @param renderRect
+     * @param title
+     * @param pixelSize
+     * @param padding
+     */
+    void drawPropertyTitle(const QRectF& renderRect, const QString& title, int pixelSize, int padding);
+
+    /**
+     * @brief 绘制属性行
+     * @param renderRect
+     * @param title
+     * @param pixelSize
+     * @param color
+     */
+    void drawPropertyRow(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color);
 
 protected:
     QPainter* renderPainter = nullptr;

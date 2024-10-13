@@ -180,7 +180,7 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
                     auto exitCode = dlg.exec();
                     if (exitCode == QDialog::Accepted) {
                         objData->propData = dlg.getEditData();
-                        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node);
+                        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
                         d->view->repaint();
                     }
                 }

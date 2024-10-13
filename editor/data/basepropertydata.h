@@ -32,4 +32,18 @@ struct BasePropertyData : DataDumpInterface {
     QList<DataReadInterface *> prop() override {
         return { &nodeName, &funcEnter, &funcExit, &properties };
     }
+
+    QStringList propertyBindDisplayStrings() const {
+        QStringList displayStrings;
+        for (auto& prop : properties()) {
+            QString str;
+            if (prop.valueType() == "string") {
+                str = QString("%1 = \"%2\"");
+            } else {
+                str = QString("%1 = %2");
+            }
+            displayStrings << str.arg(prop.key(), prop.value());
+        }
+        return displayStrings;
+    }
 };

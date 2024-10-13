@@ -28,9 +28,9 @@ GraphicRenderInterface *GraphicRenderInterface::getRender() {
     return nullptr;
 }
 
-QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCenter, int requiredWidth, int subWindowHeight) {
+QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCenter, int requiredWidth, int subWindowHeight, int splitHeight) {
     qreal width = qMax(requiredWidth, 120);
-    qreal height = 40 + subWindowHeight + 2; // 2像素分割线
+    qreal height = 40 + subWindowHeight + splitHeight;
     return {
             topCenter.x() - width / 2.0,
             topCenter.y(),
@@ -167,13 +167,13 @@ void GraphicRenderInterface::drawNodeSplitLine(const QRectF &nodeBodyRect, Graph
     renderPainter->restore();
 }
 
-void GraphicRenderInterface::drawNodeTitle(const QRectF &renderRect, const QString &title, int pixelSize) {
+void GraphicRenderInterface::drawNodeTitle(const QRectF &renderRect, const QString &title, int pixelSize, int padding) {
     auto font = renderPainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
     renderPainter->save();
     renderPainter->setFont(font);
     renderPainter->setPen(Qt::white);
-    auto titleDrawRect = graphicTransform.toGuiPoint(renderRect.translated(12, 0));
+    auto titleDrawRect = graphicTransform.toGuiPoint(renderRect.translated(padding, 0));
     renderPainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
     renderPainter->restore();
 }
@@ -210,4 +210,37 @@ void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const
 
     //renderPainter->setPen(Qt::yellow);
     //renderPainter->drawRect(graphicTransform.toGuiPoint(renderRect));
+}
+
+void GraphicRenderInterface::drawPropertyTitle(const QRectF &renderRect, const QString &title, int pixelSize, int padding) {
+    auto font = renderPainter->font();
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
+    font.setItalic(true);
+    renderPainter->save();
+    renderPainter->setFont(font);
+    renderPainter->setPen(0xAFAFAF);
+    auto titleDrawRect = graphicTransform.toGuiPoint(renderRect.translated(padding, 0));
+    renderPainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    renderPainter->restore();
+}
+
+void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QString &title, int pixelSize, const QColor &color) {
+    // draw type indicator
+    renderPainter->save();
+    renderPainter->setPen(Qt::NoPen);
+    renderPainter->setBrush(color);
+    QRectF indicatorRect(renderRect.left() + 4, renderRect.center().y() - 4, 8, 8);
+    indicatorRect = graphicTransform.toGuiPoint(indicatorRect);
+    renderPainter->drawRect(indicatorRect);
+    renderPainter->restore();
+    // draw text
+    renderPainter->save();
+    auto font = renderPainter->font();
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
+    renderPainter->setFont(font);
+    renderPainter->setPen(Qt::white);
+    auto textRect = renderRect.adjusted(16, 0, 0, 0);
+    textRect = graphicTransform.toGuiPoint(textRect);
+    renderPainter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    renderPainter->restore();
 }
