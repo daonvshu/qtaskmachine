@@ -1,6 +1,8 @@
 #include "graphicobjcreatecontrol.h"
 
 #include "../objects/nodes/nodenormalstate.h"
+#include "../objects/nodes/nodebeginstate.h"
+#include "../objects/nodes/nodeendstate.h"
 
 #include "graphiclayercontrol.h"
 
@@ -13,8 +15,10 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
     cancelObjActiveSelected();
     switch (type) {
         case GraphicObjectType::Node_Begin_State:
+            editingNodeObject = NodeBeginState::create();
             break;
         case GraphicObjectType::Node_End_State:
+            editingNodeObject = NodeEndState::create();
             break;
         case GraphicObjectType::Node_Normal_State:
             editingNodeObject = NodeNormalState::create();
@@ -79,6 +83,7 @@ void GraphicObjCreateControl::objTranslate(const QPointF& delta) {
 void GraphicObjCreateControl::cancelObjActiveSelected() {
     if (editingNodeObject) {
         editingNodeObject->data->selected = false;
+        editingNodeObject = nullptr;
         d->getControl<GraphicLayerControl>()->setActiveNode(nullptr);
         Q_ASSERT(editingLinkLine.isNull());
         d->getControl<GraphicLayerControl>()->cancelAllActiveLinkLine();

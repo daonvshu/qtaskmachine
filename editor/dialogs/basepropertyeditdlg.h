@@ -23,6 +23,10 @@ protected:
 
     void registerMessageHint(QWidget* widget, const QString& message);
 
+    void hideEnterFunctionEditor();
+
+    void hideExitFunctionEditor();
+
     bool eventFilter(QObject *obj, QEvent *e) override;
 
 private slots:

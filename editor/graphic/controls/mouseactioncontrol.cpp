@@ -4,6 +4,8 @@
 #include "graphicobjcreatecontrol.h"
 
 #include "dialogs/nodeedit/normalstatepropeditdlg.h"
+#include "dialogs/nodeedit/beginstatepropeditdlg.h"
+#include "dialogs/nodeedit/endstatepropeditdlg.h"
 
 #include "../objects/nodes/nodenormalstate.h"
 
@@ -167,22 +169,33 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
         } else if (actionIndex == 2) {
 
         } else if (actionIndex == 3) {
+
+            const auto& showPropertyDlg = [&] (BasePropertyEditDlg& dlg) {
+                auto objData = qSharedPointerCast<GraphicNodeData>(obj->data);
+                dlg.setData(objData->propData);
+                auto exitCode = dlg.exec();
+                if (exitCode == QDialog::Accepted) {
+                    objData->propData = dlg.getEditData();
+                    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
+                    d->view->repaint();
+                }
+            };
+
             auto objectType = obj->objectType();
             switch (objectType) {
-                case GraphicObjectType::Node_Begin_State:
+                case GraphicObjectType::Node_Begin_State: {
+                    BeginStatePropEditDlg dlg;
+                    showPropertyDlg(dlg);
+                }
                     break;
-                case GraphicObjectType::Node_End_State:
+                case GraphicObjectType::Node_End_State: {
+                    EndStatePropEditDlg dlg;
+                    showPropertyDlg(dlg);
+                }
                     break;
                 case GraphicObjectType::Node_Normal_State: {
-                    auto objData = qSharedPointerCast<GraphicNodeData>(qSharedPointerCast<NodeNormalState>(obj)->data);
                     NormalStatePropEditDlg dlg;
-                    dlg.setData(objData->propData);
-                    auto exitCode = dlg.exec();
-                    if (exitCode == QDialog::Accepted) {
-                        objData->propData = dlg.getEditData();
-                        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
-                        d->view->repaint();
-                    }
+                    showPropertyDlg(dlg);
                 }
                     break;
                 case GraphicObjectType::Node_Delay_State:

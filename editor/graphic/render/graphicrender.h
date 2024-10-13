@@ -25,11 +25,10 @@ protected:
      * @brief 通过上中心点，获取节点主体背景框矩形，未进行Gui变换
      * @param topCenter
      * @param requiredWidth
-     * @param subWindowHeight
-     * @param splitHeight
+     * @param requiredHeight
      * @return
      */
-    static QRectF getNodeBodyRectFromTopCenter(const QPointF& topCenter, int requiredWidth, int subWindowHeight, int splitHeight);
+    static QRectF getNodeBodyRectFromTopCenter(const QPointF& topCenter, int requiredWidth, int requiredHeight);
 
     /**
      * @brief 获取文本宽度
@@ -37,7 +36,7 @@ protected:
      * @param pixelSize
      * @return
      */
-    int getTextWidthByFont(const QString& text, int pixelSize);
+    int getTextWidthByFont(const QString& text, int pixelSize) const;
 
     /**
      * @brief 根据连接节点获取连接点位置

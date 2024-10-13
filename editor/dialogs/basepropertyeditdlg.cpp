@@ -50,6 +50,16 @@ void BasePropertyEditDlg::registerMessageHint(QWidget *widget, const QString &me
     widget->installEventFilter(this);
 }
 
+void BasePropertyEditDlg::hideEnterFunctionEditor() {
+    ui.label_func_enter->setVisible(false);
+    ui.input_func_enter->setVisible(false);
+}
+
+void BasePropertyEditDlg::hideExitFunctionEditor() {
+    ui.label_func_exit->setVisible(false);
+    ui.input_func_exit->setVisible(false);
+}
+
 bool BasePropertyEditDlg::eventFilter(QObject *obj, QEvent *e) {
     if (e->type() == QEvent::HoverEnter) {
         if (messageHint.contains(obj)) {

@@ -28,9 +28,9 @@ GraphicRenderInterface *GraphicRenderInterface::getRender() {
     return nullptr;
 }
 
-QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCenter, int requiredWidth, int subWindowHeight, int splitHeight) {
+QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCenter, int requiredWidth, int requiredHeight) {
     qreal width = qMax(requiredWidth, 120);
-    qreal height = 40 + subWindowHeight + splitHeight;
+    qreal height = requiredHeight;
     return {
             topCenter.x() - width / 2.0,
             topCenter.y(),
@@ -39,7 +39,7 @@ QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCe
             };
 }
 
-int GraphicRenderInterface::getTextWidthByFont(const QString& text, int pixelSize) {
+int GraphicRenderInterface::getTextWidthByFont(const QString& text, int pixelSize) const {
     auto font = renderPainter->font();
     font.setPixelSize(pixelSize);
     return QFontMetrics(font).horizontalAdvance(text);
@@ -135,7 +135,7 @@ void GraphicRenderInterface::drawNodeSplitLine(const QRectF &nodeBodyRect, Graph
             case GraphicObjectType::Node_Begin_State:
                 return 0x13D185;
             case GraphicObjectType::Node_End_State:
-                return 0x588774;
+                return 0x009E9E;
             case GraphicObjectType::Node_Normal_State:
                 return 0x598EF3;
             case GraphicObjectType::Node_Delay_State:

@@ -1,21 +1,21 @@
-#include "nodenormalstaterender.h"
+#include "nodeendstaterender.h"
 
-NodeNormalStateRender::NodeNormalStateRender(const QSharedPointer<GraphicObjectData> &data)
+NodeEndStateRender::NodeEndStateRender(const QSharedPointer<GraphicObjectData> &data)
     : CommonNodeStateRender(data)
     , d(qSharedPointerCast<GraphicNodeData>(data))
 {
 }
 
-void NodeNormalStateRender::drawObject(bool isActiveState) {
+void NodeEndStateRender::drawObject(bool isActiveState) {
 
     // calc min item width
-    int minSubItemWidth = qMax(functionEnterWidth(), functionExitWidth());
+    int minSubItemWidth = functionEnterWidth();
     QStringList bindStrings;
     minSubItemWidth = qMax(minSubItemWidth, minPropertyWidth(bindStrings));
     minSubItemWidth += itemPadding * 2;
 
     // calc min item height
-    int minItemHeight = itemHeight * 2;
+    int minItemHeight = itemHeight;
     if (!bindStrings.isEmpty()) {
         minItemHeight += propertyTitleHeight + propertyItemHeight * bindStrings.size();
     }
@@ -24,7 +24,7 @@ void NodeNormalStateRender::drawObject(bool isActiveState) {
     auto bodyRect = renderNodeBody(minSubItemWidth, minItemHeight, isActiveState);
 
     // draw split line
-    drawNodeSplitLine(bodyRect, GraphicObjectType::Node_Normal_State);
+    drawNodeSplitLine(bodyRect, GraphicObjectType::Node_End_State);
 
     // draw title
     renderNodeTitle(bodyRect);
@@ -40,17 +40,6 @@ void NodeNormalStateRender::drawObject(bool isActiveState) {
                         itemFontSize, 0x77E000, true,
                         d->activeInputLinkPointIndex != -1);
 
-    // draw exit row
-    QRectF itemExitRow = itemEnterRow.translated(0, itemHeight);
-    if (isActiveState) {
-        d->outputLinkPoints.clear();
-        d->outputLinkPoints << getConnectPointRect(itemExitRow, false);
-    }
-    drawConnectableItem(itemExitRow,
-                        d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(),
-                        itemFontSize, 0x00E0E0, false,
-                        d->activeOutputLinkPointIndex != -1);
-
     // draw property rows
-    renderPropertyItems(bodyRect, itemExitRow.bottom(), bindStrings);
+    renderPropertyItems(bodyRect, itemEnterRow.bottom(), bindStrings);
 }

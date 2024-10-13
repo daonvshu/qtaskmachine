@@ -2,8 +2,7 @@
 
 #include "../basepropertyeditdlg.h"
 
-class NormalStatePropEditDlg : public BasePropertyEditDlg
-{
+class NormalStatePropEditDlg : public BasePropertyEditDlg {
     Q_OBJECT
 
 public:

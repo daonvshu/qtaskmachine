@@ -4,9 +4,9 @@
 
 #include "../commonnodestaterender.h"
 
-class NodeNormalStateRender : public CommonNodeStateRender {
+class NodeEndStateRender : public CommonNodeStateRender {
 public:
-    explicit NodeNormalStateRender(const QSharedPointer<GraphicObjectData>& data);
+    explicit NodeEndStateRender(const QSharedPointer<GraphicObjectData>& data);
 
 protected:
     void drawObject(bool isActiveState) override;
