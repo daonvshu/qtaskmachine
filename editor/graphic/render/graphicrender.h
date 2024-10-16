@@ -91,6 +91,18 @@ protected:
     void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive);
 
     /**
+     * @brief 绘制双行可连接的节点
+     * @param renderRect
+     * @param title
+     * @param subTitle
+     * @param pixelSize
+     * @param color
+     * @param alignLeft
+     * @param linkPointActive
+     */
+    void drawDoubleRowConnectableItem(const QRectF& renderRect, const QString& title, const QString& subTitle, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive);
+
+    /**
      * @brief 绘制属性标题
      * @param renderRect
      * @param title

@@ -26,8 +26,8 @@ protected:
         // row height
         titleHeight = 40,
         itemHeight = 31,
-        propertyTitleHeight = 25,
-        propertyItemHeight = 25,
+        propertyTitleHeight = 23,
+        propertyItemHeight = 23,
         splitHeight = 2,
     };
 

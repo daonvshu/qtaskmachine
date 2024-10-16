@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ConditionStatePropEx</class>
- <widget class="QWidget" name="ConditionStatePropEx">
+ <class>EventStatePropEx</class>
+ <widget class="QWidget" name="EventStatePropEx">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>545</width>
-    <height>105</height>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,7 +80,7 @@ QSpinBox::down-arrow {
       <string notr="true">font-size:17px;font-weight:bold;</string>
      </property>
      <property name="text">
-      <string>条件分支状态属性</string>
+      <string>事件触发状态属性</string>
      </property>
     </widget>
    </item>
@@ -103,7 +103,7 @@ QLabel[mstyle=&quot;hint&quot;]{
 font-size:12px;color:#A0C2D3;
 }</string>
      </property>
-     <layout class="QGridLayout" name="layout_2" columnstretch="0,0">
+     <layout class="QGridLayout" name="event_prop_edit_layout" columnstretch="0,0">
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -122,36 +122,86 @@ font-size:12px;color:#A0C2D3;
       <property name="verticalSpacing">
        <number>4</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>分支检查函数：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>分支列表：</string>
+         <string>重试次数：</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QWidget" name="branch_list_widget" native="true"/>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>正常触发信号：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="input_check_func">
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="input_retry_callback">
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>32</height>
          </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="input_retry">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>超时时间：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>重试回调函数：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="input_timeout">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="suffix">
+         <string> ms</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>异常触发信号：</string>
         </property>
        </widget>
       </item>

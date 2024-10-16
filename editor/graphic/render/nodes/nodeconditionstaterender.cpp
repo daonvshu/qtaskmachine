@@ -23,7 +23,7 @@ void NodeConditionStateRender::drawObject(bool isActiveState) {
     minSubItemWidth += itemPadding * 2;
 
     // calc min item height
-    int minItemHeight = itemHeight * (2 + branchIdStrings.size() + 1);
+    int minItemHeight = itemHeight * (2 + branchIdStrings.size()) + propertyItemHeight;
     if (!bindStrings.isEmpty()) {
         minItemHeight += propertyTitleHeight + propertyItemHeight * bindStrings.size();
     }
@@ -71,6 +71,7 @@ void NodeConditionStateRender::drawObject(bool isActiveState) {
 
     // draw check function
     QRectF itemCheckRow = itemExitRow.translated(0, itemHeight * (branchIdStrings.size() + 1));
+    itemCheckRow.setHeight(propertyItemHeight);
     drawPropertyRow(itemCheckRow, checkFunction, itemFontSize, 0x00E0E0, true);
 
     // draw property rows

@@ -213,6 +213,52 @@ void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const
     //renderPainter->drawRect(graphicTransform.toGuiPoint(renderRect));
 }
 
+void GraphicRenderInterface::drawDoubleRowConnectableItem(const QRectF &renderRect, const QString &title,
+                                                          const QString &subTitle, int pixelSize, const QColor &color,
+                                                          bool alignLeft, bool linkPointActive) {
+    if (subTitle.isEmpty()) {
+        drawConnectableItem(renderRect, title, pixelSize, color, alignLeft, linkPointActive);
+        return;
+    }
+    // draw connect point
+    renderPainter->save();
+    renderPainter->setPen(Qt::NoPen);
+    renderPainter->setBrush(color);
+    auto connectPointRect = getConnectPointRect(renderRect, alignLeft);
+    connectPointRect = graphicTransform.toGuiPoint(connectPointRect);
+    renderPainter->drawEllipse(connectPointRect);
+    renderPainter->restore();
+    if (linkPointActive) {
+        renderPainter->save();
+        auto pen = renderPainter->pen();
+        pen.setWidthF(graphicTransform.toGuiDx(1.5));
+        pen.setColor(color);
+        renderPainter->setPen(pen);
+        auto expandR = graphicTransform.toGuiDx(2);
+        renderPainter->drawEllipse(connectPointRect.adjusted(-expandR, -expandR, expandR, expandR));
+        renderPainter->restore();
+    }
+    // draw text
+    renderPainter->save();
+    auto font = renderPainter->font();
+    // main text
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize - 1)));
+    renderPainter->setFont(font);
+    renderPainter->setPen(Qt::white);
+    auto textRect = renderRect.adjusted(alignLeft ? 16 : 2, 0, alignLeft ? 0 : -16, 0);
+    textRect = graphicTransform.toGuiPoint(textRect);
+    renderPainter->drawText(textRect, Qt::AlignTop | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
+    // sub text
+    font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize - 3)));
+    renderPainter->setFont(font);
+    renderPainter->setPen(Qt::gray);
+    textRect = renderRect.adjusted(alignLeft ? 16 : 0, 0, alignLeft ? 0 : -16, -2);
+    textRect = graphicTransform.toGuiPoint(textRect);
+    renderPainter->drawText(textRect, Qt::AlignBottom | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), subTitle);
+
+    renderPainter->restore();
+}
+
 void GraphicRenderInterface::drawPropertyTitle(const QRectF &renderRect, const QString &title, int pixelSize, int padding) {
     auto font = renderPainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
