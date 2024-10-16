@@ -7,8 +7,10 @@
 #include "dialogs/nodeedit/beginstatepropeditdlg.h"
 #include "dialogs/nodeedit/endstatepropeditdlg.h"
 #include "dialogs/nodeedit/delaystatepropeditdlg.h"
+#include "dialogs/nodeedit/conditionstatepropeditdlg.h"
 
 #include "../objects/nodes/nodedelaystate.d.h"
+#include "../objects/nodes/nodeconditionstate.d.h"
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -221,7 +223,14 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
                     break;
                 case GraphicObjectType::Node_MultiEvent_State:
                     break;
-                case GraphicObjectType::Node_Condition_State:
+                case GraphicObjectType::Node_Condition_State: {
+                    ConditionStatePropEditDlg dlg;
+                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                        dlg.setExData(qSharedPointerCast<NodeConditionStateData>(objData)->conditionPropData);
+                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                        qSharedPointerCast<NodeConditionStateData>(objData)->conditionPropData = dlg.getExEditData();
+                    });
+                }
                     break;
                 case GraphicObjectType::Node_State_Group:
                     break;

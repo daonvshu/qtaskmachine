@@ -105,8 +105,9 @@ protected:
      * @param title
      * @param pixelSize
      * @param color
+     * @param alignLeft
      */
-    void drawPropertyRow(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color);
+    void drawPropertyRow(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool alignLeft = true);
 
     /**
      * @brief 绘制图标行

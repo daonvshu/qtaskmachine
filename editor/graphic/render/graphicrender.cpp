@@ -225,12 +225,17 @@ void GraphicRenderInterface::drawPropertyTitle(const QRectF &renderRect, const Q
     renderPainter->restore();
 }
 
-void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QString &title, int pixelSize, const QColor &color) {
+void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QString &title, int pixelSize, const QColor &color, bool alignLeft) {
     // draw type indicator
     renderPainter->save();
     renderPainter->setPen(Qt::NoPen);
     renderPainter->setBrush(color);
-    QRectF indicatorRect(renderRect.left() + 4, renderRect.center().y() - 4, 8, 8);
+    QRectF indicatorRect;
+    if (alignLeft) {
+        indicatorRect = QRectF(renderRect.left() + 4, renderRect.center().y() - 4, 8, 8);
+    } else {
+        indicatorRect = QRectF(renderRect.right() - 12, renderRect.center().y() - 4, 8, 8);
+    }
     indicatorRect = graphicTransform.toGuiPoint(indicatorRect);
     renderPainter->drawRect(indicatorRect);
     renderPainter->restore();
@@ -240,9 +245,9 @@ void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QSt
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
     renderPainter->setFont(font);
     renderPainter->setPen(Qt::white);
-    auto textRect = renderRect.adjusted(16, 0, 0, 0);
+    auto textRect = renderRect.adjusted(alignLeft ? 16 : 0, 0, alignLeft ? 0 : -16, 0);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    renderPainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
     renderPainter->restore();
 }
 
