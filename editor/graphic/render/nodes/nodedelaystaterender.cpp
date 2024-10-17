@@ -8,10 +8,6 @@ NodeDelayStateRender::NodeDelayStateRender(const QSharedPointer<NodeDelayStateDa
 
 void NodeDelayStateRender::drawObject(bool isActiveState) {
 
-    enum {
-        delayDataRowHeight = 25,
-    };
-
     // calc min item width
     int minSubItemWidth = qMax(functionEnterWidth(), functionExitWidth());
     QStringList bindStrings;
@@ -19,7 +15,7 @@ void NodeDelayStateRender::drawObject(bool isActiveState) {
     minSubItemWidth += itemPadding * 2;
 
     // calc min item height
-    int minItemHeight = itemHeight * 2 + delayDataRowHeight;
+    int minItemHeight = itemHeight * 2 + propertyItemHeight;
     if (!bindStrings.isEmpty()) {
         minItemHeight += propertyTitleHeight + propertyItemHeight * bindStrings.size();
     }
@@ -56,7 +52,7 @@ void NodeDelayStateRender::drawObject(bool isActiveState) {
                         d->activeOutputLinkPointIndex != -1);
 
     // draw delay data row
-    QRectF itemDelayDataRow(bodyRect.left(), itemExitRow.bottom(), bodyRect.width(), delayDataRowHeight);
+    QRectF itemDelayDataRow(bodyRect.left(), itemExitRow.bottom(), bodyRect.width(), propertyItemHeight);
     drawIconRow(itemDelayDataRow, ":/res/time.svg", 12, QString("%1 ms").arg(d->delayPropData.delayMs()), itemFontSize, true);
 
     // draw property rows

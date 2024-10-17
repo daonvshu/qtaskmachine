@@ -11,12 +11,14 @@
 #include "dialogs/nodeedit/eventstatepropeditdlg.h"
 #include "dialogs/nodeedit/multieventstatepropeditdlg.h"
 #include "dialogs/nodeedit/groupstatepropeditdlg.h"
+#include "dialogs/nodeedit/recoverystatepropeditdlg.h"
 
 #include "../objects/nodes/nodedelaystate.d.h"
 #include "../objects/nodes/nodeconditionstate.d.h"
 #include "../objects/nodes/nodeeventstate.d.h"
 #include "../objects/nodes/nodemultieventstate.d.h"
 #include "../objects/nodes/nodestategroup.d.h"
+#include "../objects/nodes/noderecoverystate.d.h"
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -261,7 +263,14 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
                     });
                 }
                     break;
-                case GraphicObjectType::Node_Recovery_State:
+                case GraphicObjectType::Node_Recovery_State: {
+                    RecoveryStatePropEditDlg dlg;
+                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                        dlg.setExData(qSharedPointerCast<NodeRecoveryStateData>(objData)->recoveryPropData);
+                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                        qSharedPointerCast<NodeRecoveryStateData>(objData)->recoveryPropData = dlg.getExEditData();
+                    });
+                }
                     break;
                 case GraphicObjectType::Link_Line:
                     break;

@@ -10,5 +10,7 @@
         <file>res/arrow_up.svg</file>
         <file>res/arrow_down.svg</file>
         <file>res/delete.svg</file>
+        <file>res/checked.svg</file>
+        <file>res/unchecked.svg</file>
     </qresource>
 </RCC>

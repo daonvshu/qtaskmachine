@@ -53,6 +53,8 @@ add_executable(${PROJECT_NAME} WIN32
     dialogs/nodeedit/multieventstatepropeditdlg.cpp
     dialogs/nodeedit/groupstatepropeditdlg.h
     dialogs/nodeedit/groupstatepropeditdlg.cpp
+    dialogs/nodeedit/recoverystatepropeditdlg.h
+    dialogs/nodeedit/recoverystatepropeditdlg.cpp
 
     widget/flowlayout.h
     widget/flowlayout.cpp
@@ -131,6 +133,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/render/nodes/nodemultieventstaterender.cpp
     graphic/render/nodes/nodegroupstaterender.h
     graphic/render/nodes/nodegroupstaterender.cpp
+    graphic/render/nodes/noderecoverystaterender.h
+    graphic/render/nodes/noderecoverystaterender.cpp
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp

@@ -8,6 +8,7 @@
 #include "../objects/nodes/nodeeventstate.h"
 #include "../objects/nodes/nodemultieventstate.h"
 #include "../objects/nodes/nodestategroup.h"
+#include "../objects/nodes/noderecoverystate.h"
 
 #include "graphiclayercontrol.h"
 
@@ -44,6 +45,7 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
             editingNodeObject = NodeStateGroup::create();
             break;
         case GraphicObjectType::Node_Recovery_State:
+            editingNodeObject = NodeRecoveryState::create();
             break;
         default:
             break;
