@@ -40,13 +40,19 @@ protected:
     BasePropertyData editData;
 
     QHash<QObject*, QString> messageHint;
+
+private:
+    void addPropertyEditItem(const PropertyBindData& bindData = PropertyBindData());
 };
 
 class PropertyBindWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit PropertyBindWidget(PropertyBindData* bindData, QWidget *parent = nullptr);
+    explicit PropertyBindWidget(const PropertyBindData& bindData, QWidget *parent = nullptr);
+
+signals:
+    void removeRequest();
 
 private slots:
     void on_cb_call_time_currentIndexChanged(int index);
@@ -55,6 +61,8 @@ private slots:
     void on_input_value_editingFinished();
 
 private:
-    PropertyBindData* bindData;
+    PropertyBindData bindData;
     Ui::PropertyBindWidget ui;
+
+    friend class BasePropertyEditDlg;
 };

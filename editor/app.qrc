@@ -9,5 +9,6 @@
         <file>res/time.svg</file>
         <file>res/arrow_up.svg</file>
         <file>res/arrow_down.svg</file>
+        <file>res/delete.svg</file>
     </qresource>
 </RCC>

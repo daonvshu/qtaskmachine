@@ -27,8 +27,7 @@ void BasePropertyEditDlg::setData(const BasePropertyData &data) {
     ui.input_func_exit->setText(data.funcExit());
     if (!data.properties().isEmpty()) {
         for (auto& property : editData.properties()) {
-            auto propertyBindWidget = new PropertyBindWidget(&property, ui.state_common_prop);
-            ui.layout_bind_properties->insertWidget(ui.layout_bind_properties->count() - 1, propertyBindWidget);
+            addPropertyEditItem(property);
         }
     }
 }
@@ -72,9 +71,7 @@ bool BasePropertyEditDlg::eventFilter(QObject *obj, QEvent *e) {
 }
 
 void BasePropertyEditDlg::on_btn_property_add_clicked() {
-    editData.properties() << PropertyBindData();
-    auto propertyBindWidget = new PropertyBindWidget(&editData.properties().last(), ui.state_common_prop);
-    ui.layout_bind_properties->insertWidget(ui.layout_bind_properties->count() - 1, propertyBindWidget);
+    addPropertyEditItem();
 }
 
 void BasePropertyEditDlg::on_btn_close_clicked() {
@@ -89,33 +86,53 @@ void BasePropertyEditDlg::on_btn_confirm_clicked() {
     editData.nodeName() = ui.input_name->text();
     editData.funcEnter() = ui.input_func_enter->text();
     editData.funcExit() = ui.input_func_exit->text();
+    editData.properties().clear();
+    for (int i = 0; i < ui.layout_bind_properties->count() - 1; ++i) {
+        auto item = ui.layout_bind_properties->itemAt(i);
+        auto widget = item->widget();
+        auto propertyBindWidget = dynamic_cast<PropertyBindWidget*>(widget);
+        if (propertyBindWidget) {
+            editData.properties().append(propertyBindWidget->bindData);
+        }
+    }
     accept();
 }
 
-PropertyBindWidget::PropertyBindWidget(PropertyBindData* bindData, QWidget *parent)
+void BasePropertyEditDlg::addPropertyEditItem(const PropertyBindData& bindData) {
+    auto propertyBindWidget = new PropertyBindWidget(bindData, ui.state_common_prop);
+    ui.layout_bind_properties->insertWidget(ui.layout_bind_properties->count() - 1, propertyBindWidget);
+    connect(propertyBindWidget, &PropertyBindWidget::removeRequest, this, [&, propertyBindWidget] {
+        ui.layout_bind_properties->removeWidget(propertyBindWidget);
+        propertyBindWidget->deleteLater();
+    });
+}
+
+PropertyBindWidget::PropertyBindWidget(const PropertyBindData& bindData, QWidget *parent)
     : QWidget(parent)
     , bindData(bindData)
 {
     ui.setupUi(this);
 
-    ui.cb_call_time->setCurrentIndex(bindData->callOnEntered() ? 0 : 1);
-    ui.cb_value_type->setCurrentText(bindData->valueType());
-    ui.input_key->setText(bindData->key());
-    ui.input_value->setText(bindData->value());
+    ui.cb_call_time->setCurrentIndex(bindData.callOnEntered() ? 0 : 1);
+    ui.cb_value_type->setCurrentText(bindData.valueType());
+    ui.input_key->setText(bindData.key());
+    ui.input_value->setText(bindData.value());
+
+    connect(ui.btn_remove, &QPushButton::clicked, this, &PropertyBindWidget::removeRequest);
 }
 
 void PropertyBindWidget::on_cb_call_time_currentIndexChanged(int index) {
-    bindData->callOnEntered = index == 0;
+    bindData.callOnEntered = index == 0;
 }
 
 void PropertyBindWidget::on_cb_value_type_currentTextChanged(const QString &typeName) {
-    bindData->valueType = typeName;
+    bindData.valueType = typeName;
 }
 
 void PropertyBindWidget::on_input_key_editingFinished() {
-    bindData->key = ui.input_key->text();
+    bindData.key = ui.input_key->text();
 }
 
 void PropertyBindWidget::on_input_value_editingFinished() {
-    bindData->value = ui.input_value->text();
+    bindData.value = ui.input_value->text();
 }
