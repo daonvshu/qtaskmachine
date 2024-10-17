@@ -5,11 +5,17 @@
 using namespace QDataUtil;
 
 struct EventTriggerFunction : DataDumpInterface {
+    DATA_KEY(int, branchId);          // 分支ID
     DATA_KEY(QString, triggerFunc);   // 触发函数
     DATA_KEY(QString, checkFunc);     // 检查函数
 
+    EventTriggerFunction() {
+        branchId = -1;
+    }
+
     QList<DataReadInterface *> prop() override {
         return {
+            &branchId,
             &triggerFunc,
             &checkFunc
         };

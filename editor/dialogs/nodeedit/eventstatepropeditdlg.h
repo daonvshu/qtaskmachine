@@ -6,6 +6,7 @@
 
 #include "data/eventstatepropdata.h"
 
+class EventTriggerInputWidget;
 class EventStatePropEditDlg : public BasePropertyEditDlg {
     Q_OBJECT
 
@@ -22,4 +23,7 @@ protected:
 private:
     Ui::EventStatePropEx exUi;
     EventStatePropertyData exData;
+
+    EventTriggerInputWidget* normalTriggerEvent;
+    EventTriggerInputWidget* errorTriggerEvent;
 };

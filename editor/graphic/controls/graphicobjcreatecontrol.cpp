@@ -6,6 +6,7 @@
 #include "../objects/nodes/nodedelaystate.h"
 #include "../objects/nodes/nodeconditionstate.h"
 #include "../objects/nodes/nodeeventstate.h"
+#include "../objects/nodes/nodemultieventstate.h"
 
 #include "graphiclayercontrol.h"
 
@@ -33,6 +34,7 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
             editingNodeObject = NodeEventState::create();
             break;
         case GraphicObjectType::Node_MultiEvent_State:
+            editingNodeObject = NodeMultiEventState::create();
             break;
         case GraphicObjectType::Node_Condition_State:
             editingNodeObject = NodeConditionState::create();

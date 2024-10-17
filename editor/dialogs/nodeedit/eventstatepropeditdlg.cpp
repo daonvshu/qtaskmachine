@@ -21,11 +21,13 @@ void EventStatePropEditDlg::setExData(const EventStatePropertyData &data) {
     exUi.input_retry->setValue(data.timeoutRetryCount());
     exUi.input_retry_callback->setText(data.timeoutRetryCallback());
 
-    auto normalTriggerEvent = new EventTriggerInputWidget(&exData.normalEvent(), exUi.event_prop_edit_layout->parentWidget());
+    normalTriggerEvent = new EventTriggerInputWidget(exData.normalEvent(), exUi.event_prop_edit_layout->parentWidget());
+    normalTriggerEvent->hideIdInput();
     normalTriggerEvent->hideRemoveButton();
     exUi.event_prop_edit_layout->addWidget(normalTriggerEvent, 3, 1);
 
-    auto errorTriggerEvent = new EventTriggerInputWidget(&exData.errorEvent(), exUi.event_prop_edit_layout->parentWidget());
+    errorTriggerEvent = new EventTriggerInputWidget(exData.errorEvent(), exUi.event_prop_edit_layout->parentWidget());
+    errorTriggerEvent->hideIdInput();
     errorTriggerEvent->hideRemoveButton();
     exUi.event_prop_edit_layout->addWidget(errorTriggerEvent, 4, 1);
 
@@ -47,5 +49,7 @@ void EventStatePropEditDlg::on_btn_confirm_clicked() {
     exData.timeout = exUi.input_timeout->value();
     exData.timeoutRetryCount = exUi.input_retry->value();
     exData.timeoutRetryCallback = exUi.input_retry_callback->text();
+    exData.normalEvent = normalTriggerEvent->getData();
+    exData.errorEvent = errorTriggerEvent->getData();
     BasePropertyEditDlg::on_btn_confirm_clicked();
 }

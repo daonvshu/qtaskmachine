@@ -49,6 +49,8 @@ add_executable(${PROJECT_NAME} WIN32
     dialogs/nodeedit/eventstatepropeditdlg.cpp
     dialogs/nodeedit/eventtriggerinputwidget.h
     dialogs/nodeedit/eventtriggerinputwidget.cpp
+    dialogs/nodeedit/multieventstatepropeditdlg.h
+    dialogs/nodeedit/multieventstatepropeditdlg.cpp
 
     widget/flowlayout.h
     widget/flowlayout.cpp
@@ -123,6 +125,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/render/nodes/nodeconditionstaterender.cpp
     graphic/render/nodes/nodeeventstaterender.h
     graphic/render/nodes/nodeeventstaterender.cpp
+    graphic/render/nodes/nodemultieventstaterender.h
+    graphic/render/nodes/nodemultieventstaterender.cpp
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp
