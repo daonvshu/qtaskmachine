@@ -5,9 +5,11 @@ GraphicLayer::GraphicLayer(QObject *parent)
 {
 }
 
-void GraphicLayer::sizeAdjust(const QSize &viewSize) {
+bool GraphicLayer::sizeAdjust(const QSize &viewSize) {
     if (layerCache.isNull() || layerCache.size() != viewSize) {
         layerCache = QPixmap(viewSize);
         reCache();
+        return true;
     }
+    return false;
 }

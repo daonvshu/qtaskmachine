@@ -12,8 +12,9 @@ public:
     /**
      * @brief 根据视图调整缓存大小
      * @param viewSize
+     * @return 是否重置了缓存
      */
-    void sizeAdjust(const QSize& viewSize);
+    bool sizeAdjust(const QSize& viewSize);
 
     /**
      * @brief 重置缓存

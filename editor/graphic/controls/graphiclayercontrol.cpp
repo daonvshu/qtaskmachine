@@ -6,6 +6,7 @@
 #include "../layer/staticnodelayer.h"
 #include "../layer/staticlinklinelayer.h"
 
+#include <qelapsedtimer.h>
 #include <qdebug.h>
 
 GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlSharedData>& data, QObject *parent)
@@ -27,15 +28,19 @@ void GraphicLayerControl::graphLayerReload() {
 void GraphicLayerControl::graphLayerRepaint(QPainter* painter) {
     auto viewSize = d->view->size();
     auto transform = d->getGraphicTransform();
+    //QElapsedTimer elapsedTimer;
+    //elapsedTimer.start();
     for (auto &i : layers) {
         auto layer = i.second;
         layer->graphicTransform = transform;
-        layer->sizeAdjust(viewSize);
-        if (graphicResetOption.testFlag(i.first)) {
-            layer->reCache();
+        if (!layer->sizeAdjust(viewSize)) {
+            if (graphicResetOption.testFlag(i.first)) {
+                layer->reCache();
+            }
         }
         painter->drawPixmap(0, 0, layer->layerCache);
     }
+    //qDebug() << "layer repaint time:" << elapsedTimer.elapsed();
     graphicResetOption = GraphicLayerType::Layer_None;
 }
 
