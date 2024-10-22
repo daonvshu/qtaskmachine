@@ -206,3 +206,14 @@ void GraphicObjCreateControl::removeLinkLine(const QSharedPointer<GraphicObject>
 QSharedPointer<GraphicLinkLine> GraphicObjCreateControl::getSelectedLinkLine() {
     return selectedLinkLine;
 }
+
+bool GraphicObjCreateControl::checkIsAnyLinkLineLinkedToNode(const QSharedPointer<GraphicNode> &node, int linkIndex) {
+    for (const auto& linkLine : linkLines) {
+        if (linkLine->linkData->linkFromNode == node &&
+            linkLine->linkData->linkFromPointIndex == linkIndex)
+        {
+            return true;
+        }
+    }
+    return false;
+}

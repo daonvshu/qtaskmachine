@@ -107,6 +107,14 @@ public:
      */
     QSharedPointer<GraphicLinkLine> getSelectedLinkLine();
 
+    /**
+     * @brief 检查当前节点是否被其他链接线连接
+     * @param node
+     * @param linkIndex
+     * @return
+     */
+    bool checkIsAnyLinkLineLinkedToNode(const QSharedPointer<GraphicNode>& node, int linkIndex);
+
 private:
     GraphicObjectList nodeObjects;
     GraphicLinkLineList linkLines;

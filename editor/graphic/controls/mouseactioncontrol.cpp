@@ -104,7 +104,15 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
     if (selectedObj) {
         if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
             //测试是否在输出连接点上
-            auto linkIndex = qSharedPointerCast<GraphicNode>(selectedObj)->testOnLinkPoint(lastMousePoint, false);
+            auto node = qSharedPointerCast<GraphicNode>(selectedObj);
+            auto linkIndex = node->testOnLinkPoint(lastMousePoint, false);
+            if (linkIndex != -1) {
+                //检查是否有链接线连接，输出节点只能连接一条线
+                bool linkLineLinked = d->getControl<GraphicObjCreateControl>()->checkIsAnyLinkLineLinkedToNode(node, linkIndex);
+                if (linkLineLinked) {
+                    linkIndex = -1;
+                }
+            }
             if (linkIndex == -1) {
                 d->getControl<GraphicObjCreateControl>()->setObjectSelected(selectedObj);
                 objectSelected = true;
