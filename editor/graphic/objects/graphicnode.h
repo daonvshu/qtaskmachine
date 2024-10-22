@@ -27,6 +27,14 @@ public:
      */
     void makeLinkPointActive(int linkIndex, bool isInputPoint) const;
 
+    /**
+     * @brief 获取链接点颜色
+     * @param linkIndex
+     * @param isInputPoint
+     * @return
+     */
+    virtual QColor getLinkPointColor(int linkIndex, bool isInputPoint) const;
+
 public:
     QSharedPointer<GraphicNodeData> nodeData;
 };

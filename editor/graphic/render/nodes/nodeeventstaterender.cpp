@@ -52,14 +52,15 @@ void NodeEventStateRender::drawObject(bool isActiveState) {
     }
     drawConnectableItem(itemEnterRow,
                         d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(),
-                        itemFontSize, 0x77E000, true,
+                        itemFontSize, d->inputLinkPointColors.first(), true,
                         d->activeInputLinkPointIndex != -1);
 
     // draw exit row
     QRectF itemExitRow = itemEnterRow.translated(0, itemHeight);
+    auto outputColor = d->outputLinkPointColors.first();
     drawPropertyRow(itemExitRow,
                     d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(),
-                    itemFontSize, 0x00E0E0, false);
+                    itemFontSize, outputColor, false);
 
     // draw normal trigger event row
     if (isActiveState) {
@@ -73,20 +74,20 @@ void NodeEventStateRender::drawObject(bool isActiveState) {
         drawDoubleRowConnectableItem(itemEventRow,
                             eventRows[i]->triggerFunc().isEmpty() ? (i == 0 ? "(Normal)" : "(Error)") : eventRows[i]->triggerFunc(),
                             eventRows[i]->checkFunc(),
-                            itemFontSize, i == 0 ? 0x00E0E0 : 0xD81E06, false,
+                            itemFontSize, d->outputLinkPointColors.at(i), false,
                             d->activeOutputLinkPointIndex == i);
     }
 
     // draw extra data
     QRectF timeoutDataRow = itemExitRow.translated(0, itemHeight * 3);
     timeoutDataRow.setHeight(propertyItemHeight);
-    drawPropertyRow(timeoutDataRow, timeoutData, itemFontSize, 0x00E0E0, true);
+    drawPropertyRow(timeoutDataRow, timeoutData, itemFontSize, outputColor, true);
 
     QRectF retryCountDataRow = timeoutDataRow.translated(0, propertyItemHeight);
-    drawPropertyRow(retryCountDataRow, retryCountData, itemFontSize, 0x00E0E0, true);
+    drawPropertyRow(retryCountDataRow, retryCountData, itemFontSize, outputColor, true);
 
     QRectF retryCallbackRow = retryCountDataRow.translated(0, propertyItemHeight);
-    drawPropertyRow(retryCallbackRow, retryCallbackData, itemFontSize, 0x00E0E0, true);
+    drawPropertyRow(retryCallbackRow, retryCallbackData, itemFontSize, outputColor, true);
 
     // draw property rows
     renderPropertyItems(bodyRect, retryCallbackRow.bottom(), bindStrings);

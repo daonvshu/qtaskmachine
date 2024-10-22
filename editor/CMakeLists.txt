@@ -138,6 +138,8 @@ add_executable(${PROJECT_NAME} WIN32
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp
+    graphic/utils/bezierdistancecalculator.h
+    graphic/utils/bezierdistancecalculator.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

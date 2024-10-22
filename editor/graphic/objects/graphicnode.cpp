@@ -28,3 +28,17 @@ void GraphicNode::makeLinkPointActive(int linkIndex, bool isInputPoint) const {
         nodeData->activeOutputLinkPointIndex = linkIndex;
     }
 }
+
+QColor GraphicNode::getLinkPointColor(int linkIndex, bool isInputPoint) const {
+    if (isInputPoint) {
+        if (linkIndex < nodeData->inputLinkPointColors.size()) {
+            return nodeData->inputLinkPointColors.at(linkIndex);
+        }
+        return nodeData->inputLinkPointColors.last();
+    } else {
+        if (linkIndex < nodeData->outputLinkPointColors.size()) {
+            return nodeData->outputLinkPointColors.at(linkIndex);
+        }
+        return nodeData->outputLinkPointColors.last();
+    }
+}

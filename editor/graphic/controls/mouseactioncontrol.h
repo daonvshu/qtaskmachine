@@ -42,8 +42,8 @@ public:
 private:
     bool objectSelected = false;
     bool linkLineCreating = false;
+    bool linkLineSelected = false;
     QPointF lastMousePoint;
-    QPointF mousePressPoint;
     QSharedPointer<class GraphicNode> lastHoverActiveNode;
 
 private:

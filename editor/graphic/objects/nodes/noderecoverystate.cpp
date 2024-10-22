@@ -5,4 +5,5 @@ NodeRecoveryState::NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData>
     , recoveryStateData(data)
 {
     data->propData.nodeName = "恢复点";
+    data->inputLinkPointColors << 0x77E000;
 }

@@ -37,12 +37,12 @@ void NodeRecoveryStateRender::drawObject(bool isActiveState) {
     }
     drawConnectableItem(itemEnterRow,
                         d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(),
-                        itemFontSize, 0x77E000, true,
+                        itemFontSize, d->inputLinkPointColors.first(), true,
                         d->activeInputLinkPointIndex != -1);
 
     // draw delay data row
     QRectF itemDataRow(bodyRect.left(), itemEnterRow.bottom(), bodyRect.width(), propertyItemHeight);
-    drawPropertyRow(itemDataRow, d->recoveryPropData.nested() ? "嵌套" : "非嵌套", itemFontSize, 0x77E000, true);
+    drawPropertyRow(itemDataRow, d->recoveryPropData.nested() ? "嵌套" : "非嵌套", itemFontSize, d->inputLinkPointColors.first(), true);
 
     // draw property rows
     renderPropertyItems(bodyRect, itemDataRow.bottom(), bindStrings);

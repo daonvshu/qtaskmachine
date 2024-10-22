@@ -44,7 +44,7 @@ void NodeGroupStateRender::drawObject(bool isActiveState) {
     }
     drawConnectableItem(itemEnterRow,
                         d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(),
-                        itemFontSize, 0x77E000, true,
+                        itemFontSize, d->inputLinkPointColors.first(), true,
                         d->activeInputLinkPointIndex != -1);
 
     // draw exit row
@@ -54,7 +54,7 @@ void NodeGroupStateRender::drawObject(bool isActiveState) {
     QRectF itemExitRow = itemEnterRow.translated(0, itemHeight);
     drawPropertyRow(itemExitRow,
                     d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(),
-                    itemFontSize, 0x00E0E0, false);
+                    itemFontSize, d->outputLinkPointColors.last(), false);
 
     for (int i = 0; i < branchStrings.size(); ++i) {
         const auto &name = branchStrings.at(i);
@@ -65,7 +65,7 @@ void NodeGroupStateRender::drawObject(bool isActiveState) {
         drawDoubleRowConnectableItem(itemBranchRow,
                                      name,
                                      i == 0 ? d->groupPropData.errorTriggerFunc() : QString(),
-                                     itemFontSize, i == 0 ? 0xD81E06 : (i == 1 ? 0xD165A2 : 0x00E0E0), false,
+                                     itemFontSize, d->outputLinkPointColors.at(i), false,
                                      d->activeOutputLinkPointIndex == i);
     }
 

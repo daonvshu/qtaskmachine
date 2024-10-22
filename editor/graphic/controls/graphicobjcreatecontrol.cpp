@@ -67,6 +67,11 @@ QSharedPointer<GraphicObject> GraphicObjCreateControl::selectTest(const QPoint &
             return object;
         }
     }
+    for (const auto& linkLine : linkLines) {
+        if (linkLine->selectTest(realPoint)) {
+            return linkLine;
+        }
+    }
     if (testSelectedObject) {
         if (editingNodeObject) {
             if (editingNodeObject->selectTest(realPoint)) {
@@ -101,6 +106,7 @@ void GraphicObjCreateControl::cancelObjActiveSelected() {
         d->getControl<GraphicLayerControl>()->cancelAllActiveLinkLine();
         d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
     }
+    cancelSelectedLinkLine();
 }
 
 void GraphicObjCreateControl::beginActiveLinkLine(const QSharedPointer<GraphicObject> &linkFrom, int linkPointIndex, const QPointF& curMousePoint) {
@@ -108,6 +114,7 @@ void GraphicObjCreateControl::beginActiveLinkLine(const QSharedPointer<GraphicOb
     editingLinkLine->linkData->linkFromNode = qSharedPointerCast<GraphicNode>(linkFrom);
     editingLinkLine->linkData->linkFromPointIndex = linkPointIndex;
     editingLinkLine->linkData->tempLinkToPoint = curMousePoint;
+    editingLinkLine->linkData->selected = true;
     linkLines << editingLinkLine;
     d->getControl<GraphicLayerControl>()->setActiveLinkLine(editingLinkLine);
     d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines, false);
@@ -145,4 +152,20 @@ void GraphicObjCreateControl::releaseActiveLinkLine() {
             editingLinkLine = nullptr;
         }
     }
+}
+
+void GraphicObjCreateControl::setLinkLineSelected(const QSharedPointer<GraphicObject> &object) {
+    cancelSelectedLinkLine();
+    selectedLinkLine = qSharedPointerCast<GraphicLinkLine>(object);
+    selectedLinkLine->data->selected = true;
+    d->getControl<GraphicLayerControl>()->setActiveLinkLine(selectedLinkLine);
+    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines, false);
+}
+
+void GraphicObjCreateControl::cancelSelectedLinkLine() {
+    if (selectedLinkLine.isNull()) {
+        return;
+    }
+    selectedLinkLine->data->selected = false;
+    d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(selectedLinkLine);
 }

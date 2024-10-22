@@ -37,7 +37,7 @@ void NodeBeginStateRender::drawObject(bool isActiveState) {
     }
     drawConnectableItem(itemExitRow,
                         d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(),
-                        itemFontSize, 0x00E0E0, false,
+                        itemFontSize, d->outputLinkPointColors.first(), false,
                         d->activeOutputLinkPointIndex != -1);
 
     // draw property rows

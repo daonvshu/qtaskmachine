@@ -32,9 +32,13 @@ void GraphicLinkLineRender::drawObject(bool isActiveState) {
     path.moveTo(linkFromPoint);
     path.cubicTo(controlPoint1, controlPoint2, linkToPoint);
 
+    auto linkColor = d->linkFromNode->nodeData->outputLinkPointColors[d->linkFromPointIndex];
+    if (!d->selected) {
+        linkColor = linkColor.darker(150);
+    }
     auto pen = renderPainter->pen();
     pen.setWidthF(graphicTransform.toGuiDx(2));
-    pen.setColor(Qt::white);
+    pen.setColor(linkColor);
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
 

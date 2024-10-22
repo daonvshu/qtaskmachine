@@ -27,10 +27,9 @@
 
 void MouseActionControl::mousePress(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
-        mousePressPoint = e->pos();
         selectObjPress(e->pos());
-        if (objectSelected) {
-
+        if (objectSelected || linkLineCreating || linkLineSelected) {
+            //...
         } else {
             d->getControl<TransformControl>()->moveBegin(e->pos());
         }
@@ -45,6 +44,8 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
             selectObjMove(mousePos);
         } else if (linkLineCreating) {
             linkLineMove(mousePos);
+        } else if (linkLineSelected) {
+            //...
         } else {
             d->getControl<TransformControl>()->dragMoving(mousePos);
             d->getControl<GraphicLayerControl>()->graphLayerReload();
@@ -81,6 +82,8 @@ void MouseActionControl::mouseRelease(QMouseEvent *) {
         selectObjRelease();
     } else if (linkLineCreating) {
         linkLineRelease();
+    } else if (linkLineSelected) {
+        linkLineSelected = false;
     }
     d->view->repaint();
 }
@@ -109,7 +112,8 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
                 linkLineCreating = true;
             }
         } else if (selectedObj->objectType() == GraphicObjectType::Link_Line) { //选中连接线
-
+            d->getControl<GraphicObjCreateControl>()->setLinkLineSelected(selectedObj);
+            linkLineSelected = true;
         }
     } else {
         d->getControl<GraphicObjCreateControl>()->cancelObjActiveSelected();

@@ -37,7 +37,7 @@ void NodeEndStateRender::drawObject(bool isActiveState) {
     }
     drawConnectableItem(itemEnterRow,
                         d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(),
-                        itemFontSize, 0x77E000, true,
+                        itemFontSize, d->inputLinkPointColors.first(), true,
                         d->activeInputLinkPointIndex != -1);
 
     // draw property rows

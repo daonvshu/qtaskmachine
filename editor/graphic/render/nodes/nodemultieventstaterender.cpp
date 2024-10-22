@@ -41,14 +41,15 @@ void NodeMultiEventStateRender::drawObject(bool isActiveState) {
     }
     drawConnectableItem(itemEnterRow,
                         d->propData.funcEnter().isEmpty() ? "(onEnter)" : d->propData.funcEnter(),
-                        itemFontSize, 0x77E000, true,
+                        itemFontSize, d->inputLinkPointColors.first(), true,
                         d->activeInputLinkPointIndex != -1);
 
     // draw exit row
     QRectF itemExitRow = itemEnterRow.translated(0, itemHeight);
+    auto outputColor = d->outputLinkPointColors.first();
     drawPropertyRow(itemExitRow,
                     d->propData.funcExit().isEmpty() ? "(onExit)" : d->propData.funcExit(),
-                    itemFontSize, 0x00E0E0, false);
+                    itemFontSize, outputColor, false);
 
     // draw normal trigger event row
     if (isActiveState) {
@@ -63,7 +64,7 @@ void NodeMultiEventStateRender::drawObject(bool isActiveState) {
         drawDoubleRowConnectableItem(itemEventRow,
                                      mainEventText,
                                      eventRows[i].checkFunc(),
-                                     itemFontSize, 0x00E0E0, false,
+                                     itemFontSize, outputColor, false,
                                      d->activeOutputLinkPointIndex == i);
     }
 

@@ -60,9 +60,21 @@ public:
      */
     void releaseActiveLinkLine();
 
+    /**
+     * @brief 设置链接线选中
+     * @param object
+     */
+    void setLinkLineSelected(const QSharedPointer<GraphicObject>& object);
+
+    /**
+     * @brief 取消当前选中的线
+     */
+    void cancelSelectedLinkLine();
+
 private:
     GraphicObjectList nodeObjects;
     GraphicLinkLineList linkLines;
     QSharedPointer<GraphicObject> editingNodeObject;
     QSharedPointer<GraphicLinkLine> editingLinkLine;
+    QSharedPointer<GraphicLinkLine> selectedLinkLine;
 };
