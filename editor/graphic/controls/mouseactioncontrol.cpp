@@ -24,6 +24,7 @@
 #include <qdebug.h>
 #include <qmenu.h>
 #include <qaction.h>
+#include <qshortcut.h>
 
 void MouseActionControl::mousePress(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
@@ -172,143 +173,55 @@ void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
     }
 }
 
+void MouseActionControl::installShortcut() {
+    new QShortcut(QKeySequence("Ctrl+C"), d->view, [this] {
+        copyNodeObject(d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj());
+    });
+
+    new QShortcut(QKeySequence("Ctrl+V"), d->view, [this] {
+        pasteNodeObject(d->view->mapFromGlobal(QCursor::pos()));
+    });
+
+    new QShortcut(QKeySequence("Del"), d->view, [this] {
+        auto activeNode = d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj();
+        if (!activeNode.isNull()) {
+            deleteNodeObject(activeNode);
+            return;
+        }
+        auto activeLinkLine = d->getControl<GraphicObjCreateControl>()->getSelectedLinkLine();
+        if (!activeLinkLine.isNull()) {
+            removeLinkLine(activeLinkLine);
+            return;
+        }
+    });
+
+    new QShortcut(QKeySequence("Ctrl+D"), d->view, [this] {
+        editNodeObject(d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj());
+    });
+}
+
 void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObject> &obj, QContextMenuEvent *event) {
     QMenu menu(d->view);
     QList<QAction *> actions;
-    actions << menu.addAction(tr("复制 (Ctrl+C)"));
-    actions << menu.addAction(tr("粘贴 (Ctrl+V)"));
-    actions << menu.addAction(tr("删除 (Del)"));
+    actions << menu.addAction(tr("复制"), [this, obj] { copyNodeObject(obj); }, QKeySequence("Ctrl+C"));
+    actions << menu.addAction(tr("粘贴"), [this, event] { pasteNodeObject(event->pos()); }, QKeySequence("Ctrl+V"));
+    actions << menu.addAction(tr("删除"), [this, obj] { deleteNodeObject(obj); }, QKeySequence("Del"));
     menu.addSeparator();
-    actions << menu.addAction(tr("编辑"));
-
-    auto selectedAction = menu.exec(event->globalPos());
-    int actionIndex = actions.indexOf(selectedAction);
-    if (actionIndex != -1) {
-        if (actionIndex == 0) {
-
-        } else if (actionIndex == 1) {
-
-        } else if (actionIndex == 2) {
-
-        } else if (actionIndex == 3) {
-
-            const auto& showPropertyDlg = [&] (BasePropertyEditDlg& dlg,
-                                               const std::function<void(const QSharedPointer<GraphicNodeData>&)>& exDataRead = nullptr,
-                                               const std::function<void(QSharedPointer<GraphicNodeData>&)>& exDataWrite = nullptr)
-            {
-                auto objData = qSharedPointerCast<GraphicNodeData>(obj->data);
-                dlg.setData(objData->propData);
-                if (exDataRead) {
-                    exDataRead(objData);
-                }
-                auto exitCode = dlg.exec();
-                if (exitCode == QDialog::Accepted) {
-                    objData->propData = dlg.getEditData();
-                    if (exDataWrite) {
-                        exDataWrite(objData);
-                    }
-                    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
-                    d->view->repaint();
-                }
-            };
-
-            auto objectType = obj->objectType();
-            switch (objectType) {
-                case GraphicObjectType::Node_Begin_State: {
-                    BeginStatePropEditDlg dlg;
-                    showPropertyDlg(dlg);
-                }
-                    break;
-                case GraphicObjectType::Node_End_State: {
-                    EndStatePropEditDlg dlg;
-                    showPropertyDlg(dlg);
-                }
-                    break;
-                case GraphicObjectType::Node_Normal_State: {
-                    NormalStatePropEditDlg dlg;
-                    showPropertyDlg(dlg);
-                }
-                    break;
-                case GraphicObjectType::Node_Delay_State: {
-                    DelayStatePropEditDlg dlg;
-                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
-                        dlg.setExData(qSharedPointerCast<NodeDelayStateData>(objData)->delayPropData);
-                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
-                        qSharedPointerCast<NodeDelayStateData>(objData)->delayPropData = dlg.getExEditData();
-                    });
-                }
-                    break;
-                case GraphicObjectType::Node_Event_State: {
-                    EventStatePropEditDlg dlg;
-                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
-                        dlg.setExData(qSharedPointerCast<NodeEventStateData>(objData)->eventPropData);
-                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
-                        qSharedPointerCast<NodeEventStateData>(objData)->eventPropData = dlg.getExEditData();
-                    });
-                }
-                    break;
-                case GraphicObjectType::Node_MultiEvent_State: {
-                    MultiEventStatePropEditDlg dlg;
-                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
-                        dlg.setExData(qSharedPointerCast<NodeMultiEventStateData>(objData)->eventPropData);
-                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
-                        qSharedPointerCast<NodeMultiEventStateData>(objData)->eventPropData = dlg.getExEditData();
-                    });
-                }
-                    break;
-                case GraphicObjectType::Node_Condition_State: {
-                    ConditionStatePropEditDlg dlg;
-                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
-                        dlg.setExData(qSharedPointerCast<NodeConditionStateData>(objData)->conditionPropData);
-                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
-                        qSharedPointerCast<NodeConditionStateData>(objData)->conditionPropData = dlg.getExEditData();
-                    });
-                }
-                    break;
-                case GraphicObjectType::Node_State_Group: {
-                    GroupStatePropEditDlg dlg;
-                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
-                        dlg.setExData(qSharedPointerCast<NodeStateGroupData>(objData)->groupPropData);
-                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
-                        qSharedPointerCast<NodeStateGroupData>(objData)->groupPropData = dlg.getExEditData();
-                    });
-                }
-                    break;
-                case GraphicObjectType::Node_Recovery_State: {
-                    RecoveryStatePropEditDlg dlg;
-                    showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
-                        dlg.setExData(qSharedPointerCast<NodeRecoveryStateData>(objData)->recoveryPropData);
-                    }, [&] (QSharedPointer<GraphicNodeData>& objData) {
-                        qSharedPointerCast<NodeRecoveryStateData>(objData)->recoveryPropData = dlg.getExEditData();
-                    });
-                }
-                    break;
-                case GraphicObjectType::Link_Line:
-                    break;
-            }
-        }
-    }
+    actions << menu.addAction(tr("编辑"), [this, obj] { editNodeObject(obj); }, QKeySequence("Ctrl+D"));
+    menu.exec(event->globalPos());
 }
 
-void MouseActionControl::showLinkLineMenu(const QSharedPointer<class GraphicObject> &obj, QContextMenuEvent *event) {
+void MouseActionControl::showLinkLineMenu(const QSharedPointer<GraphicObject> &obj, QContextMenuEvent *event) {
     QMenu menu(d->view);
     QList<QAction *> actions;
-    actions << menu.addAction(tr("删除 (Del)"));
-
-    auto selectedAction = menu.exec(event->globalPos());
-    int actionIndex = actions.indexOf(selectedAction);
-    if (actionIndex != -1) {
-        if (actionIndex == 0) {
-            d->getControl<GraphicObjCreateControl>()->removeLinkLine(obj);
-            d->view->update();
-        }
-    }
+    actions << menu.addAction(tr("删除"), [this, obj] { removeLinkLine(obj); }, QKeySequence("Del"));
+    menu.exec(event->globalPos());
 }
 
 void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) {
     QMenu menu(d->view);
     QList<QAction *> actions;
-    actions << menu.addAction(tr("粘贴 (Ctrl+V)"));
+    actions << menu.addAction(tr("粘贴"), [this, event] { pasteNodeObject(event->pos()); }, QKeySequence("Ctrl+V"));
     menu.addSeparator();
     actions << menu.addAction(tr("开始状态"));
     actions << menu.addAction(tr("结束状态"));
@@ -322,11 +235,136 @@ void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) {
 
     auto selectedAction = menu.exec(event->globalPos());
     int actionIndex = actions.indexOf(selectedAction);
-    if (actionIndex != -1) {
-        if (actionIndex == 0) {
-
-        } else {
-            d->getControl<GraphicObjCreateControl>()->addObject(GraphicObjectType(actionIndex - 1), event->pos());
-        }
+    if (actionIndex > 0) {
+        d->getControl<GraphicObjCreateControl>()->addObject(GraphicObjectType(actionIndex - 1), event->pos());
     }
+}
+
+void MouseActionControl::editNodeObject(const QSharedPointer<GraphicObject> &obj) {
+    if (obj.isNull()) {
+        return;
+    }
+
+    const auto& showPropertyDlg = [&] (BasePropertyEditDlg& dlg,
+                                       const std::function<void(const QSharedPointer<GraphicNodeData>&)>& exDataRead = nullptr,
+                                       const std::function<void(QSharedPointer<GraphicNodeData>&)>& exDataWrite = nullptr)
+    {
+        auto objData = qSharedPointerCast<GraphicNodeData>(obj->data);
+        dlg.setData(objData->propData);
+        if (exDataRead) {
+            exDataRead(objData);
+        }
+        auto exitCode = dlg.exec();
+        if (exitCode == QDialog::Accepted) {
+            objData->propData = dlg.getEditData();
+            if (exDataWrite) {
+                exDataWrite(objData);
+            }
+            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
+            d->view->repaint();
+        }
+    };
+
+    auto objectType = obj->objectType();
+    switch (objectType) {
+        case GraphicObjectType::Node_Begin_State: {
+            BeginStatePropEditDlg dlg;
+            showPropertyDlg(dlg);
+        }
+            break;
+        case GraphicObjectType::Node_End_State: {
+            EndStatePropEditDlg dlg;
+            showPropertyDlg(dlg);
+        }
+            break;
+        case GraphicObjectType::Node_Normal_State: {
+            NormalStatePropEditDlg dlg;
+            showPropertyDlg(dlg);
+        }
+            break;
+        case GraphicObjectType::Node_Delay_State: {
+            DelayStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeDelayStateData>(objData)->delayPropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeDelayStateData>(objData)->delayPropData = dlg.getExEditData();
+            });
+        }
+            break;
+        case GraphicObjectType::Node_Event_State: {
+            EventStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeEventStateData>(objData)->eventPropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeEventStateData>(objData)->eventPropData = dlg.getExEditData();
+            });
+        }
+            break;
+        case GraphicObjectType::Node_MultiEvent_State: {
+            MultiEventStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeMultiEventStateData>(objData)->eventPropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeMultiEventStateData>(objData)->eventPropData = dlg.getExEditData();
+            });
+        }
+            break;
+        case GraphicObjectType::Node_Condition_State: {
+            ConditionStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeConditionStateData>(objData)->conditionPropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeConditionStateData>(objData)->conditionPropData = dlg.getExEditData();
+            });
+        }
+            break;
+        case GraphicObjectType::Node_State_Group: {
+            GroupStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeStateGroupData>(objData)->groupPropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeStateGroupData>(objData)->groupPropData = dlg.getExEditData();
+            });
+        }
+            break;
+        case GraphicObjectType::Node_Recovery_State: {
+            RecoveryStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeRecoveryStateData>(objData)->recoveryPropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeRecoveryStateData>(objData)->recoveryPropData = dlg.getExEditData();
+            });
+        }
+            break;
+        case GraphicObjectType::Link_Line:
+            break;
+    }
+}
+
+void MouseActionControl::copyNodeObject(const QSharedPointer<GraphicObject> &obj) {
+    if (obj.isNull()) {
+        return;
+    }
+    preCopyObject = obj.toWeakRef();
+}
+
+void MouseActionControl::pasteNodeObject(const QPoint& mousePos) {
+    if (preCopyObject.isNull()) {
+        return;
+    }
+    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObject.toStrongRef(), mousePos);
+    d->view->repaint();
+}
+
+void MouseActionControl::deleteNodeObject(const QSharedPointer<GraphicObject> &obj) {
+    if (obj.isNull()) {
+        return;
+    }
+    d->getControl<GraphicObjCreateControl>()->removeNodeObject(obj);
+    d->view->repaint();
+}
+
+void MouseActionControl::removeLinkLine(const QSharedPointer<GraphicObject> &obj) {
+    d->getControl<GraphicObjCreateControl>()->removeLinkLine(obj);
+    d->view->update();
 }

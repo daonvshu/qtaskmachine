@@ -60,6 +60,16 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPoint& mo
     d->view->repaint();
 }
 
+void GraphicObjCreateControl::copyNodeToMousePoint(const QSharedPointer<GraphicObject> &nodeObject, const QPoint &mousePoint) {
+    auto newObj = nodeObject->clone();
+    newObj->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint);
+    if (newObj->data->selected) {
+        newObj->data->selected = false;
+    }
+    nodeObjects << newObj;
+    d->getControl<GraphicLayerControl>()->updateStaticNodes(nodeObjects);
+}
+
 QSharedPointer<GraphicObject> GraphicObjCreateControl::selectTest(const QPoint &mousePoint, bool testSelectedObject) {
     auto realPoint = d->getGraphicTransform().toRealPoint(mousePoint);
     for (const auto& object : nodeObjects) {
@@ -97,6 +107,19 @@ void GraphicObjCreateControl::objTranslate(const QPointF& delta) {
     }
 }
 
+void GraphicObjCreateControl::removeNodeObject(const QSharedPointer<GraphicObject> &object) {
+    nodeObjects.removeOne(object);
+    if (editingNodeObject == object) {
+        cancelObjActiveSelected();
+    }
+    d->getControl<GraphicLayerControl>()->updateStaticNodes(nodeObjects);
+    for (const auto& linkLine : linkLines) {
+        if (linkLine->linkData->linkFromNode == object || linkLine->linkData->linkToNode == object) {
+            removeLinkLine(linkLine);
+        }
+    }
+}
+
 void GraphicObjCreateControl::cancelObjActiveSelected() {
     if (editingNodeObject) {
         editingNodeObject->data->selected = false;
@@ -107,6 +130,10 @@ void GraphicObjCreateControl::cancelObjActiveSelected() {
         d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
     }
     cancelSelectedLinkLine();
+}
+
+QSharedPointer<GraphicObject> GraphicObjCreateControl::getSelectedNodeObj() {
+    return editingNodeObject;
 }
 
 void GraphicObjCreateControl::beginActiveLinkLine(const QSharedPointer<GraphicObject> &linkFrom, int linkPointIndex, const QPointF& curMousePoint) {
@@ -174,4 +201,8 @@ void GraphicObjCreateControl::removeLinkLine(const QSharedPointer<GraphicObject>
     cancelSelectedLinkLine();
     linkLines.removeOne(qSharedPointerCast<GraphicLinkLine>(linkLine));
     d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines);
+}
+
+QSharedPointer<GraphicLinkLine> GraphicObjCreateControl::getSelectedLinkLine() {
+    return selectedLinkLine;
 }

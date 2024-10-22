@@ -10,7 +10,11 @@ public:
     explicit NodeNormalState(const QSharedPointer<GraphicNodeData>& data);
 
     static QSharedPointer<NodeNormalState> create() {
-        return QSharedPointer<NodeNormalState>::create(QSharedPointer<GraphicNodeData>::create());
+        return objectCreate<NodeNormalState, GraphicNodeData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<NodeNormalState, GraphicNodeData>(*nodeData);
     }
 
     GraphicRenderInterface * getRender() override {

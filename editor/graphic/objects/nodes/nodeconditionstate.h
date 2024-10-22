@@ -11,7 +11,11 @@ public:
     explicit NodeConditionState(const QSharedPointer<NodeConditionStateData>& data);
 
     static QSharedPointer<NodeConditionState> create() {
-        return QSharedPointer<NodeConditionState>::create(QSharedPointer<NodeConditionStateData>::create());
+        return objectCreate<NodeConditionState, NodeConditionStateData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<NodeConditionState, NodeConditionStateData>(*conditionStateData);
     }
 
     GraphicRenderInterface * getRender() override {

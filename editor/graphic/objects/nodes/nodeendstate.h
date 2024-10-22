@@ -10,7 +10,11 @@ public:
     explicit NodeEndState(const QSharedPointer<GraphicNodeData>& data);
 
     static QSharedPointer<NodeEndState> create() {
-        return QSharedPointer<NodeEndState>::create(QSharedPointer<GraphicNodeData>::create());
+        return objectCreate<NodeEndState, GraphicNodeData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<NodeEndState, GraphicNodeData>(*nodeData);
     }
 
     GraphicRenderInterface * getRender() override {

@@ -12,7 +12,19 @@ class GraphicObjCreateControl : public GraphicControl {
 public:
     explicit GraphicObjCreateControl(const QSharedPointer<GraphicControlSharedData>& data, QObject *parent = nullptr);
 
+    /**
+     * @brief 鼠标位置添加对象
+     * @param type
+     * @param mousePoint
+     */
     void addObject(GraphicObjectType type, const QPoint& mousePoint);
+
+    /**
+     * @brief 复制节点到鼠标位置
+     * @param nodeObject
+     * @param mousePoint
+     */
+    void copyNodeToMousePoint(const QSharedPointer<GraphicObject>& nodeObject, const QPoint& mousePoint);
 
     /**
      * @brief 测试鼠标位置（GUI位置）是否可选中对象
@@ -35,9 +47,21 @@ public:
     void objTranslate(const QPointF& delta);
 
     /**
+     * @brief 删除指定节点对象
+     * @param object
+     */
+    void removeNodeObject(const QSharedPointer<GraphicObject>& object);
+
+    /**
      * @brief 取消节点选中
      */
     void cancelObjActiveSelected();
+
+    /**
+     * @brief 获取当前选中的节点对象
+     * @return
+     */
+    QSharedPointer<GraphicObject> getSelectedNodeObj();
 
     /**
      * @brief 创建链接线
@@ -76,6 +100,12 @@ public:
      * @param linkLine
      */
     void removeLinkLine(const QSharedPointer<GraphicObject>& linkLine);
+
+    /**
+     *  获取当前选中的链接线
+     * @return
+     */
+    QSharedPointer<GraphicLinkLine> getSelectedLinkLine();
 
 private:
     GraphicObjectList nodeObjects;

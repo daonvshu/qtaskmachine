@@ -18,6 +18,7 @@ GraphicView::GraphicView(QWidget *parent)
     controls->add<MouseActionControl>();
     controls->add<TransformControl>();
     controls->add<GraphicObjCreateControl>();
+    controls->get<MouseActionControl>()->installShortcut();
 
     setMouseTracking(true);
 }

@@ -13,7 +13,11 @@ public:
     explicit GraphicLinkLine(const QSharedPointer<GraphicLinkLineData>& data);
 
     static QSharedPointer<GraphicLinkLine> create() {
-        return QSharedPointer<GraphicLinkLine>::create(QSharedPointer<GraphicLinkLineData>::create());
+        return objectCreate<GraphicLinkLine, GraphicLinkLineData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<GraphicLinkLine, GraphicLinkLineData>(*linkData);
     }
 
     bool selectTest(const QPointF &point) override;

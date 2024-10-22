@@ -11,7 +11,11 @@ public:
     explicit NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData>& data);
 
     static QSharedPointer<NodeRecoveryState> create() {
-        return QSharedPointer<NodeRecoveryState>::create(QSharedPointer<NodeRecoveryStateData>::create());
+        return objectCreate<NodeRecoveryState, NodeRecoveryStateData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<NodeRecoveryState, NodeRecoveryStateData>(*recoveryStateData);
     }
 
     GraphicRenderInterface * getRender() override {

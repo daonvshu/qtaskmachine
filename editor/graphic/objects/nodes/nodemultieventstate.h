@@ -11,7 +11,11 @@ public:
     explicit NodeMultiEventState(const QSharedPointer<NodeMultiEventStateData>& data);
 
     static QSharedPointer<NodeMultiEventState> create() {
-        return QSharedPointer<NodeMultiEventState>::create(QSharedPointer<NodeMultiEventStateData>::create());
+        return objectCreate<NodeMultiEventState, NodeMultiEventStateData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<NodeMultiEventState, NodeMultiEventStateData>(*eventStateData);
     }
 
     GraphicRenderInterface * getRender() override {

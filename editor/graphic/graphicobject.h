@@ -18,10 +18,18 @@ public:
 
     virtual GraphicObjectType objectType() = 0;
 
+    virtual QSharedPointer<GraphicObject> clone() = 0;
+
     Q_DISABLE_COPY(GraphicObject);
 
 public:
     QSharedPointer<GraphicObjectData> data;
+
+protected:
+    template<typename T, typename D, typename... Args>
+    static QSharedPointer<T> objectCreate(Args... args) {
+        return QSharedPointer<T>::create(QSharedPointer<D>::create(args...));
+    }
 };
 
 typedef QList<QSharedPointer<GraphicObject>> GraphicObjectList;

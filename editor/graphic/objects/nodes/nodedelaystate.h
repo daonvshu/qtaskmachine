@@ -11,7 +11,11 @@ public:
     explicit NodeDelayState(const QSharedPointer<NodeDelayStateData>& data);
 
     static QSharedPointer<NodeDelayState> create() {
-        return QSharedPointer<NodeDelayState>::create(QSharedPointer<NodeDelayStateData>::create());
+        return objectCreate<NodeDelayState, NodeDelayStateData>();
+    }
+
+    QSharedPointer<GraphicObject> clone() override {
+        return objectCreate<NodeDelayState, NodeDelayStateData>(*delayStateData);
     }
 
     GraphicRenderInterface * getRender() override {
