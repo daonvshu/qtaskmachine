@@ -71,6 +71,12 @@ public:
      */
     void cancelSelectedLinkLine();
 
+    /**
+     * @brief 删除指定链接线
+     * @param linkLine
+     */
+    void removeLinkLine(const QSharedPointer<GraphicObject>& linkLine);
+
 private:
     GraphicObjectList nodeObjects;
     GraphicLinkLineList linkLines;

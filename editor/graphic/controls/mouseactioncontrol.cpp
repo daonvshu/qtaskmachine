@@ -158,8 +158,15 @@ void MouseActionControl::linkLineRelease() {
 void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
     auto selectedObject = d->getControl<GraphicObjCreateControl>()->selectTest(event->pos());
     if (!selectedObject.isNull()) {
-        d->getControl<GraphicObjCreateControl>()->setObjectSelected(selectedObject);
-        showSelectedObjectMenu(selectedObject, event);
+        if (selectedObject->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+            d->getControl<GraphicObjCreateControl>()->setObjectSelected(selectedObject);
+            d->view->update();
+            showSelectedObjectMenu(selectedObject, event);
+        } else if (selectedObject->objectType() == GraphicObjectType::Link_Line) { //选中连接线
+            d->getControl<GraphicObjCreateControl>()->setLinkLineSelected(selectedObject);
+            d->view->update();
+            showLinkLineMenu(selectedObject, event);
+        }
     } else {
         showBlackboardMenu(event);
     }
@@ -279,6 +286,21 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
                 case GraphicObjectType::Link_Line:
                     break;
             }
+        }
+    }
+}
+
+void MouseActionControl::showLinkLineMenu(const QSharedPointer<class GraphicObject> &obj, QContextMenuEvent *event) {
+    QMenu menu(d->view);
+    QList<QAction *> actions;
+    actions << menu.addAction(tr("删除 (Del)"));
+
+    auto selectedAction = menu.exec(event->globalPos());
+    int actionIndex = actions.indexOf(selectedAction);
+    if (actionIndex != -1) {
+        if (actionIndex == 0) {
+            d->getControl<GraphicObjCreateControl>()->removeLinkLine(obj);
+            d->view->update();
         }
     }
 }

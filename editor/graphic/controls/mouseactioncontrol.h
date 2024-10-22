@@ -62,6 +62,13 @@ private:
     void showSelectedObjectMenu(const QSharedPointer<class GraphicObject>& obj, QContextMenuEvent *event);
 
     /**
+     * @brief 显示链接线的右键菜单
+     * @param obj
+     * @param event
+     */
+    void showLinkLineMenu(const QSharedPointer<class GraphicObject>& obj, QContextMenuEvent *event);
+
+    /**
      * @brief 显示背景的右键菜单
      * @param event
      */

@@ -169,3 +169,9 @@ void GraphicObjCreateControl::cancelSelectedLinkLine() {
     selectedLinkLine->data->selected = false;
     d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(selectedLinkLine);
 }
+
+void GraphicObjCreateControl::removeLinkLine(const QSharedPointer<GraphicObject> &linkLine) {
+    cancelSelectedLinkLine();
+    linkLines.removeOne(qSharedPointerCast<GraphicLinkLine>(linkLine));
+    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(linkLines);
+}
