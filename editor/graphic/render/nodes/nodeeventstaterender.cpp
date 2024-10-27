@@ -13,13 +13,23 @@ void NodeEventStateRender::drawObject(bool isActiveState) {
     QStringList bindStrings;
     minSubItemWidth = qMax(minSubItemWidth, minPropertyWidth(bindStrings));
     minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(d->eventPropData.timeoutRetryCallback(), itemFontSize));
+
+    bool timeoutEnabled = d->eventPropData.timeout() != 0;
+    bool timeoutRetryEnabled = d->eventPropData.timeoutRetryCount() != 0;
+    bool timeoutCallbackEnabled = !d->eventPropData.timeoutRetryCallback().isEmpty();
     //...
     QString timeoutData = QString("超时时间：%1 ms").arg(d->eventPropData.timeout());
-    minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(timeoutData, itemFontSize));
+    if (timeoutEnabled) {
+        minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(timeoutData, itemFontSize));
+    }
     QString retryCountData = QString("重试次数：%1").arg(d->eventPropData.timeoutRetryCount());
-    minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(retryCountData, itemFontSize));
+    if (timeoutRetryEnabled) {
+        minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(retryCountData, itemFontSize));
+    }
     QString retryCallbackData = QString("重试回调：%1").arg(d->eventPropData.timeoutRetryCallback());
-    minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(retryCallbackData, itemFontSize));
+    if (timeoutCallbackEnabled) {
+        minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(retryCallbackData, itemFontSize));
+    }
     //...
     EventTriggerFunction* eventRows[2] = { &d->eventPropData.normalEvent(),
                                            &d->eventPropData.errorEvent() };
@@ -30,7 +40,16 @@ void NodeEventStateRender::drawObject(bool isActiveState) {
     minSubItemWidth += itemPadding * 2;
 
     // calc min item height
-    int minItemHeight = itemHeight * (2 + 2) + propertyItemHeight * 3;
+    int minItemHeight = itemHeight * (2 + 2);
+    if (timeoutEnabled) {
+        minItemHeight += propertyItemHeight;
+    }
+    if (timeoutRetryEnabled) {
+        minItemHeight += propertyItemHeight;
+    }
+    if (timeoutCallbackEnabled) {
+        minItemHeight += propertyItemHeight;
+    }
     if (!bindStrings.isEmpty()) {
         minItemHeight += propertyTitleHeight + propertyItemHeight * bindStrings.size();
     }
@@ -78,17 +97,27 @@ void NodeEventStateRender::drawObject(bool isActiveState) {
                             d->activeOutputLinkPointIndex == i);
     }
 
+    QRectF nextRowRect = itemExitRow.translated(0, itemHeight * 3 - propertyItemHeight);
+    nextRowRect.setHeight(propertyItemHeight);
     // draw extra data
-    QRectF timeoutDataRow = itemExitRow.translated(0, itemHeight * 3);
-    timeoutDataRow.setHeight(propertyItemHeight);
-    drawPropertyRow(timeoutDataRow, timeoutData, itemFontSize, outputColor, true);
+    if (timeoutEnabled) {
+        QRectF timeoutDataRow = nextRowRect.translated(0, propertyItemHeight);
+        nextRowRect = timeoutDataRow;
+        drawPropertyRow(timeoutDataRow, timeoutData, itemFontSize, outputColor, true);
+    }
 
-    QRectF retryCountDataRow = timeoutDataRow.translated(0, propertyItemHeight);
-    drawPropertyRow(retryCountDataRow, retryCountData, itemFontSize, outputColor, true);
+    if (timeoutRetryEnabled) {
+        QRectF retryCountDataRow = nextRowRect.translated(0, propertyItemHeight);
+        nextRowRect = retryCountDataRow;
+        drawPropertyRow(retryCountDataRow, retryCountData, itemFontSize, outputColor, true);
+    }
 
-    QRectF retryCallbackRow = retryCountDataRow.translated(0, propertyItemHeight);
-    drawPropertyRow(retryCallbackRow, retryCallbackData, itemFontSize, outputColor, true);
+    if (timeoutCallbackEnabled) {
+        QRectF retryCallbackRow = nextRowRect.translated(0, propertyItemHeight);
+        nextRowRect = retryCallbackRow;
+        drawPropertyRow(retryCallbackRow, retryCallbackData, itemFontSize, outputColor, true);
+    }
 
     // draw property rows
-    renderPropertyItems(bodyRect, retryCallbackRow.bottom(), bindStrings);
+    renderPropertyItems(bodyRect, nextRowRect.bottom(), bindStrings);
 }
