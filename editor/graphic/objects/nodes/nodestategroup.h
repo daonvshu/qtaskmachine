@@ -22,7 +22,7 @@ public:
         return new NodeGroupStateRender(groupData);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_State_Group;
     }
 

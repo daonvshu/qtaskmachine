@@ -9,15 +9,17 @@
 #include "../objects/graphiclinkline.h"
 
 class GraphicObjCreateControl : public GraphicControl {
+    Q_OBJECT
+
 public:
     explicit GraphicObjCreateControl(const QSharedPointer<GraphicControlSharedData>& data, QObject *parent = nullptr);
 
     /**
      * @brief 鼠标位置添加对象
      * @param type
-     * @param mousePoint
+     * @param realPoint
      */
-    void addObject(GraphicObjectType type, const QPoint& mousePoint);
+    void addObject(GraphicObjectType type, const QPointF& realPoint);
 
     /**
      * @brief 复制节点到鼠标位置
@@ -35,6 +37,12 @@ public:
     QSharedPointer<GraphicObject> selectTest(const QPoint& mousePoint, bool testSelectedObject = false);
 
     /**
+     * @brief 测试鼠标位置是否在选中节点上
+     * @param mousePoint
+     */
+    bool testOnSelectedNode(const QPointF& mousePoint);
+
+    /**
      * @brief 将指定对象选中
      * @param object
      */
@@ -45,6 +53,11 @@ public:
      * @param delta
      */
     void objTranslate(const QPointF& delta);
+
+    /**
+     * @brief 平移结束
+     */
+    void objTranslateFinished();
 
     /**
      * @brief 删除指定节点对象
@@ -115,10 +128,20 @@ public:
      */
     bool checkIsAnyLinkLineLinkedToNode(const QSharedPointer<GraphicNode>& node, int linkIndex);
 
+    /**
+     * @brief 清空所有对象
+     */
+    void clearAll();
+
+signals:
+    void graphicObjectChanged();
+
 private:
     GraphicObjectList nodeObjects;
     GraphicLinkLineList linkLines;
     QSharedPointer<GraphicObject> editingNodeObject;
     QSharedPointer<GraphicLinkLine> editingLinkLine;
     QSharedPointer<GraphicLinkLine> selectedLinkLine;
+
+    friend class GraphicView;
 };

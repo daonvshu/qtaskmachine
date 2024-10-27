@@ -8,3 +8,15 @@ NodeDelayState::NodeDelayState(const QSharedPointer<NodeDelayStateData> &data)
     data->inputLinkPointColors << 0x77E000;
     data->outputLinkPointColors << 0x00E0E0;
 }
+
+ConfigFlowExecutor NodeDelayState::toFlowExecutor() const {
+    auto executor = GraphicNode::toFlowExecutor();
+    executor.delay = delayStateData->delayPropData.delayMs();
+
+    return executor;
+}
+
+void NodeDelayState::fromExecutor(const ConfigFlowExecutor &executor) {
+    GraphicNode::fromExecutor(executor);
+    delayStateData->delayPropData.delayMs = executor.delay();
+}

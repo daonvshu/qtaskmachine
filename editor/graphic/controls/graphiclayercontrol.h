@@ -51,8 +51,9 @@ public:
     /**
      * @brief 刷新指定图层
      * @param layerType
+     * @param updateImmediately 是否立即刷新
      */
-    void reloadLayer(GraphicLayerTypes layerType);
+    void reloadLayer(GraphicLayerTypes layerType, bool updateImmediately = false);
 
     /**
      * @brief 清空所有图形

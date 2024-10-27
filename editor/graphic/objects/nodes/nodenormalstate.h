@@ -21,7 +21,7 @@ public:
         return new NodeNormalStateRender(data);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Normal_State;
     }
 };

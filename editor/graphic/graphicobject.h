@@ -16,7 +16,7 @@ public:
 
     virtual bool selectTest(const QPointF& point);
 
-    virtual GraphicObjectType objectType() = 0;
+    virtual GraphicObjectType objectType() const = 0;
 
     virtual QSharedPointer<GraphicObject> clone() = 0;
 

@@ -22,9 +22,13 @@ public:
         return new NodeRecoveryStateRender(recoveryStateData);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Recovery_State;
     }
+
+    ConfigFlowExecutor toFlowExecutor() const override;
+
+    void fromExecutor(const ConfigFlowExecutor &executor) override;
 
 public:
     QSharedPointer<NodeRecoveryStateData> recoveryStateData;

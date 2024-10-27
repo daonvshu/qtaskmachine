@@ -21,7 +21,7 @@ public:
         return new NodeEndStateRender(data);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_End_State;
     }
 };

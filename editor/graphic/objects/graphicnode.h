@@ -6,6 +6,8 @@
 
 #include "../graphicobject.h"
 
+#include "data/configflows.h"
+
 class GraphicNode : public GraphicObject {
 public:
     explicit GraphicNode(const QSharedPointer<GraphicNodeData>& data);
@@ -34,6 +36,10 @@ public:
      * @return
      */
     virtual QColor getLinkPointColor(int linkIndex, bool isInputPoint) const;
+
+    virtual ConfigFlowExecutor toFlowExecutor() const;
+
+    virtual void fromExecutor(const ConfigFlowExecutor& executor);
 
 public:
     QSharedPointer<GraphicNodeData> nodeData;

@@ -32,7 +32,7 @@ void GraphicLinkLineRender::drawObject(bool isActiveState) {
     path.moveTo(linkFromPoint);
     path.cubicTo(controlPoint1, controlPoint2, linkToPoint);
 
-    auto linkColor = d->linkFromNode->nodeData->outputLinkPointColors[d->linkFromPointIndex];
+    auto linkColor = qSharedPointerCast<GraphicNode>(d->linkFromNode)->getLinkPointColor(d->linkFromPointIndex, false);
     if (!d->selected) {
         linkColor = linkColor.darker(150);
     }

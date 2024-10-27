@@ -42,3 +42,24 @@ QColor GraphicNode::getLinkPointColor(int linkIndex, bool isInputPoint) const {
         return nodeData->outputLinkPointColors.last();
     }
 }
+
+ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
+    ConfigFlowExecutor executor;
+    executor.fromType(objectType());
+    executor.text = nodeData->propData.nodeName();
+    executor.x = nodeData->renderPosition.x();
+    executor.y = nodeData->renderPosition.y();
+    executor.enter = nodeData->propData.funcEnter();
+    executor.exit = nodeData->propData.funcExit();
+    executor.properties = nodeData->propData.properties();
+
+    return executor;
+}
+
+void GraphicNode::fromExecutor(const ConfigFlowExecutor &executor) {
+    nodeData->propData.nodeName = executor.text();
+    nodeData->renderPosition = executor.scenePos();
+    nodeData->propData.funcEnter = executor.enter();
+    nodeData->propData.funcExit = executor.exit();
+    nodeData->propData.properties = executor.properties();
+}

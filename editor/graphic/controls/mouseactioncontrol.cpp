@@ -100,6 +100,10 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
     linkLineCreating = false;
     lastMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
 
+    if (d->getControl<GraphicObjCreateControl>()->testOnSelectedNode(mousePos)) {
+        objectSelected = true;
+        return;
+    }
     auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
     if (selectedObj) {
         if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
@@ -139,6 +143,7 @@ void MouseActionControl::selectObjMove(const QPoint &mousePos) {
 
 void MouseActionControl::selectObjRelease() {
     objectSelected = false;
+    d->getControl<GraphicObjCreateControl>()->objTranslateFinished();
 }
 
 void MouseActionControl::linkLineMove(const QPoint &mousePos) {
@@ -244,7 +249,7 @@ void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) {
     auto selectedAction = menu.exec(event->globalPos());
     int actionIndex = actions.indexOf(selectedAction);
     if (actionIndex > 0) {
-        d->getControl<GraphicObjCreateControl>()->addObject(GraphicObjectType(actionIndex - 1), event->pos());
+        d->getControl<GraphicObjCreateControl>()->addObject(GraphicObjectType(actionIndex - 1), d->getGraphicTransform().toRealPoint(event->pos()));
     }
 }
 

@@ -22,9 +22,11 @@ public:
         return new NodeMultiEventStateRender(eventStateData);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_MultiEvent_State;
     }
+
+    void fromExecutor(const ConfigFlowExecutor &executor) override;
 
 public:
     QSharedPointer<NodeMultiEventStateData> eventStateData;

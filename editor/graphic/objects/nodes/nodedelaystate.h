@@ -22,9 +22,13 @@ public:
         return new NodeDelayStateRender(delayStateData);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Delay_State;
     }
+
+    ConfigFlowExecutor toFlowExecutor() const override;
+
+    void fromExecutor(const ConfigFlowExecutor &executor) override;
 
 public:
     QSharedPointer<NodeDelayStateData> delayStateData;

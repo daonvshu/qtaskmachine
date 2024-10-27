@@ -53,12 +53,30 @@ void GraphicLayerControl::gridEnable(bool enable) {
     reloadLayer(GraphicLayerType::Layer_Grid);
 }
 
-void GraphicLayerControl::reloadLayer(GraphicLayerTypes layerType) {
+void GraphicLayerControl::reloadLayer(GraphicLayerTypes layerType, bool updateImmediately) {
+    if (updateImmediately) {
+        auto viewSize = d->view->size();
+        auto transform = d->getGraphicTransform();
+        for (auto &i : layers) {
+            auto layer = i.second;
+            layer->graphicTransform = transform;
+            if (!layer->sizeAdjust(viewSize)) {
+                if (layerType.testFlag(i.first)) {
+                    layer->reCache();
+                }
+            }
+        }
+        return;
+    }
     graphicResetOption |= layerType;
 }
 
 void GraphicLayerControl::clearAllGraphic() {
-
+    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode.clear();
+    layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.clear();
+    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList.clear();
+    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->staticLinkLineList.clear();
+    graphLayerReload();
 }
 
 void GraphicLayerControl::setActiveNode(const QSharedPointer<GraphicObject> &activeNode) {

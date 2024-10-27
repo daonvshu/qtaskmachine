@@ -26,7 +26,7 @@ public:
         return new GraphicLinkLineRender(linkData);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Link_Line;
     }
 

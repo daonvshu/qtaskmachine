@@ -21,7 +21,7 @@ public:
         return new NodeBeginStateRender(data);
     }
 
-    GraphicObjectType objectType() override {
+    GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Begin_State;
     }
 };

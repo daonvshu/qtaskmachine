@@ -2,12 +2,18 @@
 
 #include <qwidget.h>
 
+struct ConfigFlow;
 class GraphicControlWrapper;
 class GraphicView : public QWidget {
     Q_OBJECT
 
 public:
     explicit GraphicView(QWidget *parent = nullptr);
+
+    void updateFlow(ConfigFlow* flow, int version);
+
+signals:
+    void configChanged();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -21,4 +27,10 @@ protected:
 private:
     GraphicControlWrapper* controls;
     QColor backgroundColor;
+
+    ConfigFlow* currentFlow = nullptr;
+    bool ignoreSaveState = false;
+
+private slots:
+    void saveFlow();
 };

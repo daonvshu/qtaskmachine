@@ -28,12 +28,15 @@ add_executable(${PROJECT_NAME} WIN32
 
     app.h
     app.cpp
+    app.m.cpp
     app.qrc
     myapplication.h
     myapplication.cpp
 
     dialogs/basepropertyeditdlg.h
     dialogs/basepropertyeditdlg.cpp
+    dialogs/flownameeditdlg.h
+    dialogs/flownameeditdlg.cpp
 
     dialogs/nodeedit/normalstatepropeditdlg.h
     dialogs/nodeedit/normalstatepropeditdlg.cpp
