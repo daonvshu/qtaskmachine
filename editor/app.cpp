@@ -6,6 +6,7 @@
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
 #include <qmimedata.h>
+#include <qlistview.h>
 
 #include "dialogs/flownameeditdlg.h"
 
@@ -13,6 +14,7 @@ App::App(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
+    ui.flow_list_cb->setView(new QListView);
 
     auto agent = new QWK::WidgetWindowAgent(this);
     agent->setup(this);
@@ -107,6 +109,7 @@ void App::on_btn_flow_add_clicked() {
         flowGroup.flows().append(configFlow);
         ui.flow_list_cb->addItem(newFlowName);
         ui.flow_list_cb->setCurrentIndex(ui.flow_list_cb->count() - 1);
+        updateFlowListWidth();
     }
 }
 
@@ -119,6 +122,7 @@ void App::on_btn_flow_edit_clicked() {
     if (!newFlowName.isEmpty()) {
         flowGroup.flows()[currentIndex].name = newFlowName;
         ui.flow_list_cb->setItemText(currentIndex, newFlowName);
+        updateFlowListWidth();
     }
 }
 
@@ -129,6 +133,7 @@ void App::on_btn_flow_remove_clicked() {
     }
     flowGroup.flows().removeAt(currentIndex);
     ui.flow_list_cb->removeItem(currentIndex);
+    updateFlowListWidth();
 }
 
 void App::on_graphic_view_configChanged() {

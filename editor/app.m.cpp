@@ -17,12 +17,15 @@ void App::reloadFlowList() {
 
     auto currentIndex = ui.flow_list_cb->currentIndex();
     on_flow_list_cb_currentIndexChanged(currentIndex);
+
+    updateFlowListWidth();
 }
 
 void App::createNewConfig(const QString &filePath) {
     configFilePath = filePath;
     flowGroup.flows().clear();
     refreshConfigPathLabel();
+    reloadFlowList();
 }
 
 void App::openExistConfig(const QString &filePath) {
@@ -62,3 +65,12 @@ void App::saveConfigToFile() {
     file.close();
 }
 
+void App::updateFlowListWidth() {
+    auto fm = ui.flow_list_cb->fontMetrics();
+    auto maxWidth = 80;
+    for (int i = 0; i < ui.flow_list_cb->count(); i++) {
+        auto itemText = ui.flow_list_cb->itemText(i);
+        maxWidth = qMax(maxWidth, fm.horizontalAdvance(itemText));
+    }
+    ui.flow_list_cb->setMinimumWidth(maxWidth + 20);
+}

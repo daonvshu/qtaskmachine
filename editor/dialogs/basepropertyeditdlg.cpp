@@ -1,6 +1,7 @@
 #include "basepropertyeditdlg.h"
 
 #include <QWKWidgets/widgetwindowagent.h>
+#include <qlistview.h>
 
 BasePropertyEditDlg::BasePropertyEditDlg(QWidget *parent)
     : QDialog(parent)
@@ -117,6 +118,7 @@ PropertyBindWidget::PropertyBindWidget(const PropertyBindData& bindData, QWidget
     ui.cb_value_type->setCurrentText(bindData.valueType());
     ui.input_key->setText(bindData.key());
     ui.input_value->setText(bindData.value());
+    ui.cb_value_type->setView(new QListView);
 
     connect(ui.btn_remove, &QPushButton::clicked, this, &PropertyBindWidget::removeRequest);
 }

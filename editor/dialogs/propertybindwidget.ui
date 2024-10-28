@@ -34,6 +34,15 @@ QComboBox::drop-down {
 
 QComboBox::down-arrow {
     image: url(:/res/down.svg);
+}
+QComboBox QAbstractItemView {
+	background: #26282D;
+}
+QComboBox QAbstractItemView::item {
+	height:32px;
+}
+QComboBox QAbstractItemView::item:selected {
+    background: #35363C;
 }</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1,0,1,0,0,0">

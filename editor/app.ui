@@ -30,6 +30,16 @@ QMenu::item {
 }
 QMenu::item:selected {
 	background:#35363C;
+}
+
+QComboBox QAbstractItemView {
+	background: #26282D;
+}
+QComboBox QAbstractItemView::item {
+	height:32px;
+}
+QComboBox QAbstractItemView::item:selected {
+    background: #35363C;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
@@ -147,7 +157,14 @@ QComboBox::down-arrow {
           <number>4</number>
          </property>
          <item>
-          <widget class="QComboBox" name="flow_list_cb"/>
+          <widget class="QComboBox" name="flow_list_cb">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="btn_flow_add">

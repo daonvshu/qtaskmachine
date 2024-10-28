@@ -41,4 +41,5 @@ private:
     void createNewConfig(const QString& filePath);
     void openExistConfig(const QString& filePath);
     void saveConfigToFile();
+    void updateFlowListWidth();
 };
