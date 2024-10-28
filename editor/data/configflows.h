@@ -90,23 +90,22 @@ struct ConfigFlow : DataDumpInterface {
     DATA_KEY(QList<ConfigFlowExecutor>, executors); //节点
     DATA_KEY(QList<ConfigFlowConnectLine>, lines); //连接线
 
-    qint64 flowId = -1;
+    DATA_KEY(int, version);
+
+    ConfigFlow() {
+        version = 1;
+    }
 
     QList<DataReadInterface *> prop() override {
-        return { &name, &executors, &lines };
+        return { &name, &executors, &lines, &version };
     }
 };
 
 struct ConfigFlowGroup : DataDumpInterface {
 
     DATA_KEY(QList<ConfigFlow>, flows);
-    DATA_KEY(int, version);
-
-    ConfigFlowGroup() {
-        version = 1;
-    }
 
     QList<DataReadInterface *> prop() override {
-        return { &flows, &version };
+        return { &flows };
     }
 };

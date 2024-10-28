@@ -58,7 +58,6 @@ void App::saveConfigToFile() {
         QMessageBox::critical(nullptr, QStringLiteral("错误"), QStringLiteral("文件无法写入！"));
         return;
     }
-    flowGroup.version = 2;
     auto obj = flowGroup.dumpToJson();
     auto data = QJsonDocument(obj).toJson(QJsonDocument::Compact);
     file.write(data);

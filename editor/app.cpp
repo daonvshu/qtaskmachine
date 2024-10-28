@@ -95,9 +95,9 @@ void App::on_btn_open_config_clicked() {
 
 void App::on_flow_list_cb_currentIndexChanged(int index) {
     if (index == -1) {
-        ui.graphic_view->updateFlow(nullptr, 2);
+        ui.graphic_view->updateFlow(nullptr);
     } else {
-        ui.graphic_view->updateFlow(&flowGroup.flows()[index], flowGroup.version());
+        ui.graphic_view->updateFlow(&flowGroup.flows()[index]);
     }
 }
 

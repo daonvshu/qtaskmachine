@@ -145,10 +145,12 @@ void GraphicView::saveFlow() {
         }
         currentFlow->lines() << line;
     }
+    currentFlow->version = 2;
+
     emit configChanged();
 }
 
-void GraphicView::updateFlow(ConfigFlow *flow, int version) {
+void GraphicView::updateFlow(ConfigFlow *flow) {
     ignoreSaveState = true;
     currentFlow = flow;
     controls->get<GraphicObjCreateControl>()->clearAll();
@@ -158,6 +160,7 @@ void GraphicView::updateFlow(ConfigFlow *flow, int version) {
         repaint();
         return;
     }
+    int version = flow->version();
 
     QHash<int, QSharedPointer<GraphicNode>> objMap;
     for (auto& executor : flow->executors()) {

@@ -10,7 +10,7 @@ class GraphicView : public QWidget {
 public:
     explicit GraphicView(QWidget *parent = nullptr);
 
-    void updateFlow(ConfigFlow* flow, int version);
+    void updateFlow(ConfigFlow* flow);
 
 signals:
     void configChanged();
