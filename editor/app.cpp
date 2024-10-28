@@ -5,6 +5,7 @@
 #include <qtimer.h>
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
+#include <qmimedata.h>
 
 #include "dialogs/flownameeditdlg.h"
 
@@ -24,6 +25,38 @@ App::App(QWidget *parent)
     refreshConfigPathLabel();
 }
 
+void App::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+
+    QTimer::singleShot(0, this, [=]() {
+        ui.btn_max->setIcon(isMaximized() ? QIcon(":/res/maxsize2.svg") : QIcon(":/res/maxsize1.svg"));
+    });
+}
+
+void App::dragEnterEvent(QDragEnterEvent *event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urlList = event->mimeData()->urls();
+        if (!urlList.isEmpty()) {
+            QString filePath = urlList.first().toLocalFile();
+            if (QFileInfo(filePath).suffix() == "json") {
+                event->acceptProposedAction(); // 接受拖放
+                return;
+            }
+        }
+    }
+    event->ignore();
+}
+
+void App::dropEvent(QDropEvent *event) {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        QList<QUrl> urlList = event->mimeData()->urls();
+        if (!urlList.isEmpty()) {
+            openExistConfig(urlList.first().toLocalFile());
+        }
+    }
+}
+
 void App::on_btn_min_clicked() {
     showMinimized();
 }
@@ -38,14 +71,6 @@ void App::on_btn_max_clicked() {
 
 void App::on_btn_close_clicked() {
     close();
-}
-
-void App::resizeEvent(QResizeEvent *event) {
-    QWidget::resizeEvent(event);
-
-    QTimer::singleShot(0, this, [=]() {
-        ui.btn_max->setIcon(isMaximized() ? QIcon(":/res/maxsize2.svg") : QIcon(":/res/maxsize1.svg"));
-    });
 }
 
 void App::on_btn_new_config_clicked() {
