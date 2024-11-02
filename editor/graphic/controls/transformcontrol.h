@@ -10,11 +10,6 @@ public:
     explicit TransformControl(const QSharedPointer<GraphicControlSharedData>& data, QObject *parent = nullptr);
 
     /**
-     * @brief 进行默认缩放，第一次绘制时进行放大
-     */
-    void scaleByDefault();
-
-    /**
      * @brief 重置坐标轴变换
      */
     void coordinateReload();
@@ -38,12 +33,6 @@ public:
      * @return
      */
     bool scale(bool zoomIn, const QPointF& mousePoint);
-
-    /**
-     * @brief 应用其他变换
-     * @param transform
-     */
-    void applyTransform(const QTransform& transform);
 
 private:
     QPointF lastMoveBeginPos;

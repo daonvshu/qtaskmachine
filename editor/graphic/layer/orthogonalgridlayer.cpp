@@ -10,12 +10,41 @@ OrthogonalGridLayer::OrthogonalGridLayer(QObject *parent)
 {
 }
 
+void OrthogonalGridLayer::reload(QPainter *painter) {
+    if (boxCache.isNull()) {
+        return;
+    }
+    auto center = graphicTransform.toGuiPoint(QPointF(0, 0));
+    //移动到0的左边
+    while (center.x() > 0) {
+        center.setX(center.x() - boxCache.width());
+    }
+    while (center.x() + boxCache.width() < 0) {
+        center.setX(center.x() + boxCache.width());
+    }
+    //移动到0的上边
+    while (center.y() > 0) {
+        center.setY(center.y() - boxCache.height());
+    }
+    while (center.y() + boxCache.height() < 0) {
+        center.setY(center.y() + boxCache.height());
+    }
+    //绘制所有box
+    for (int row = qRound(center.y()); row <= viewSize.height(); row += boxCache.height()) {
+        for (int col = qRound(center.x()); col <= viewSize.width(); col += boxCache.width()) {
+            painter->drawPixmap(col, row, boxCache);
+        }
+    }
+}
+
 void OrthogonalGridLayer::reCache() {
-    //TODO: cache block grid
-    layerCache.fill(Qt::transparent);
-    QPainter painter(&layerCache);
 
     if (!gridEnabled) {
+        return;
+    }
+
+    bool scaleChanged = checkAndUpdateScale();
+    if (!scaleChanged) {
         return;
     }
 
@@ -27,39 +56,25 @@ void OrthogonalGridLayer::reCache() {
         gridWidth *= 10;
     }
 
-    //qDebug() << "gui spacing:" << toGuiDx(gridWidth);
+    gridWidth = graphicTransform.toGuiDx(gridWidth);
     qreal metaGridWith = gridWidth * 5;
+
+    boxCache = QPixmap(qCeil(metaGridWith), qCeil(metaGridWith));
+    boxCache.fill(Qt::transparent);
+    QPainter painter(&boxCache);
 
     drawGridLine(&painter, gridWidth, gridColor());
     drawGridLine(&painter, metaGridWith, metaGridColor());
 }
 
-void OrthogonalGridLayer::drawGridLine(QPainter *painter, qreal gridWidth, const QColor& color) {
-    auto viewRect = graphicTransform.toRealPoint(layerCache.rect());
-    viewRect.setLeft(qFloor(viewRect.left() / gridWidth) * gridWidth);
-    viewRect.setRight(qCeil(viewRect.right() / gridWidth) * gridWidth);
-    viewRect.setTop(qFloor(viewRect.top() / gridWidth) * gridWidth);
-    viewRect.setBottom(qCeil(viewRect.bottom() / gridWidth) * gridWidth);
-
-    int numberX = qRound(viewRect.width() / gridWidth) + 1;
-    int numberY = qRound(viewRect.height() / gridWidth) + 1;
-    int number = numberX * numberY;
-
-    const int maxGridPoints = 1000000;
-    if (number <= 0 || number > maxGridPoints) {
-        return;
-    }
-
-    //qDebug() << "view rect:" << viewRect;
+void OrthogonalGridLayer::drawGridLine(QPainter *painter, qreal width, const QColor& color) {
     painter->setPen(color);
-    for (qreal r = viewRect.top(); r <= viewRect.bottom(); r += gridWidth) {
-        QLineF verticalLine(viewRect.left(), r, viewRect.right(), r);
-        verticalLine = graphicTransform.toGuiPoint(verticalLine);
+    for (qreal r = 0; r <= boxCache.height(); r += width) {
+        QLineF verticalLine(0, r, boxCache.width(), r);
         painter->drawLine(verticalLine);
     }
-    for (qreal c = viewRect.left(); c <= viewRect.right(); c += gridWidth) {
-        QLineF horizontalLine(c, viewRect.top(), c, viewRect.bottom());
-        horizontalLine = graphicTransform.toGuiPoint(horizontalLine);
+    for (qreal c = 0; c <= boxCache.width(); c += width) {
+        QLineF horizontalLine(c, 0, c, boxCache.height());
         painter->drawLine(horizontalLine);
     }
 }

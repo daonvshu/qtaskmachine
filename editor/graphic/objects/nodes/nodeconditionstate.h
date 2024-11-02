@@ -3,7 +3,6 @@
 #include <qobject.h>
 
 #include "../graphicnode.h"
-#include "../../render/nodes/nodeconditionstaterender.h"
 #include "nodeconditionstate.d.h"
 
 class NodeConditionState : public GraphicNode {
@@ -18,10 +17,6 @@ public:
         return objectCreate<NodeConditionState, NodeConditionStateData>(*conditionStateData);
     }
 
-    GraphicRenderInterface * getRender() override {
-        return new NodeConditionStateRender(conditionStateData);
-    }
-
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Condition_State;
     }
@@ -29,6 +24,8 @@ public:
     ConfigFlowExecutor toFlowExecutor() const override;
 
     void fromExecutor(const ConfigFlowExecutor &executor) override;
+
+    void drawObject() override;
 
 public:
     QSharedPointer<NodeConditionStateData> conditionStateData;

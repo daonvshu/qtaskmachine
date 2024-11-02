@@ -3,7 +3,6 @@
 #include <qobject.h>
 
 #include "../graphicnode.h"
-#include "../../render/nodes/nodeeventstaterender.h"
 #include "nodeeventstate.d.h"
 
 class NodeEventState : public GraphicNode {
@@ -18,10 +17,6 @@ public:
         return objectCreate<NodeEventState, NodeEventStateData>(*eventStateData);
     }
 
-    GraphicRenderInterface * getRender() override {
-        return new NodeEventStateRender(eventStateData);
-    }
-
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Event_State;
     }
@@ -29,6 +24,8 @@ public:
     ConfigFlowExecutor toFlowExecutor() const override;
 
     void fromExecutor(const ConfigFlowExecutor &executor) override;
+
+    void drawObject() override;
 
 public:
     QSharedPointer<NodeEventStateData> eventStateData;

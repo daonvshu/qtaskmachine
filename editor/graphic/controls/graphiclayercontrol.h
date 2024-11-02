@@ -37,12 +37,6 @@ public:
     void graphLayerRepaint(QPainter* painter);
 
     /**
-     * @brief 鼠标在视图中移动
-     * @param mousePoint
-     */
-    void hoverMoving(const QPoint& mousePoint);
-
-    /**
      * @brief 是否启用网格线
      * @param enable
      */
@@ -51,9 +45,8 @@ public:
     /**
      * @brief 刷新指定图层
      * @param layerType
-     * @param updateImmediately 是否立即刷新
      */
-    void reloadLayer(GraphicLayerTypes layerType, bool updateImmediately = false);
+    void reloadLayer(GraphicLayerTypes layerType);
 
     /**
      * @brief 清空所有图形

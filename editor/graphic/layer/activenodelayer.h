@@ -2,15 +2,16 @@
 
 #include <qobject.h>
 
-#include "../graphiclayer.h"
-#include "../graphicobject.h"
+#include "commonnodelayer.h"
 
 /**
  * @brief 编辑中的节点
  */
-class ActiveNodeLayer : public GraphicLayer {
+class ActiveNodeLayer : public CommonNodeLayer {
 public:
     explicit ActiveNodeLayer(QObject *parent = nullptr);
+
+    void reload(QPainter *painter) override;
 
     void reCache() override;
 

@@ -1,20 +1,37 @@
 #include "activenodelayer.h"
 
+#include "../objects/graphicnode.d.h"
+
 ActiveNodeLayer::ActiveNodeLayer(QObject *parent)
-    : GraphicLayer(parent)
+    : CommonNodeLayer(parent)
 {
 }
 
-void ActiveNodeLayer::reCache() {
-    layerCache.fill(Qt::transparent);
-
+void ActiveNodeLayer::reload(QPainter *painter) {
     if (activeNode.isNull()) {
         return;
     }
 
-    QPainter painter(&layerCache);
-    painter.setRenderHint(QPainter::Antialiasing);
+    //更新位置
+    auto& boundingRect = qSharedPointerCast<GraphicNodeData>(activeNode->data)->boundingRect;
+    boundingRect.moveTop(activeNode->data->renderPosition.y());
+    boundingRect.moveLeft(activeNode->data->renderPosition.x() - boundingRect.width() / 2);
 
-    activeNode->graphicTransform = graphicTransform;
-    activeNode->drawGraphicObject(&painter, true);
+    //绘制缓存图片
+    drawCache(activeNode, painter, true);
+
+    //绘制选中链接点
+    drawActiveLinkPoint(activeNode, painter);
 }
+
+void ActiveNodeLayer::reCache() {
+    if (activeNode.isNull()) {
+        return;
+    }
+
+    bool scaleChanged = checkAndUpdateScale();
+    if (activeNode->data->isChanged || scaleChanged) {
+        reCacheNodeObject(activeNode);
+    }
+}
+

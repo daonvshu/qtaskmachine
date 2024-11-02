@@ -4,24 +4,28 @@
 #include <qdebug.h>
 
 StaticNodeLayer::StaticNodeLayer(QObject *parent)
-    : GraphicLayer(parent)
+    : CommonNodeLayer(parent)
 {
 }
 
-void StaticNodeLayer::reCache() {
-    layerCache.fill(Qt::transparent);
-
-    QPainter painter(&layerCache);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    //QElapsedTimer elapsedTimer;
-    //elapsedTimer.start();
+void StaticNodeLayer::reload(QPainter *painter) {
     for (const auto& node : staticNodeList) {
         if (node->data->selected) { // 不绘制当前选中的节点，交给activeLayer绘制
             continue;
         }
-        node->graphicTransform = graphicTransform;
-        node->drawGraphicObject(&painter, true);
+        drawCache(node, painter);
+        drawActiveLinkPoint(node, painter);
     }
-    //qDebug() << "static node layer reload used time:" << elapsedTimer.elapsed();
+}
+
+void StaticNodeLayer::reCache() {
+    bool scaleChanged = checkAndUpdateScale();
+    for (const auto& node : staticNodeList) {
+        if (node->data->selected) { // 不绘制当前选中的节点，交给activeLayer绘制
+            continue;
+        }
+        if (node->data->isChanged || scaleChanged) {
+            reCacheNodeObject(node);
+        }
+    }
 }

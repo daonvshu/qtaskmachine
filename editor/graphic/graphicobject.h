@@ -5,8 +5,7 @@
 
 #include "graphicobject.d.h"
 #include "graphicobjecttype.h"
-
-#include "render/graphicrender.h"
+#include "graphicrender.h"
 
 class GraphicObject
         : public GraphicRenderInterface

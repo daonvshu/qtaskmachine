@@ -2,15 +2,16 @@
 
 #include <qobject.h>
 
-#include "../graphiclayer.h"
-#include "../graphicobject.h"
+#include "commonnodelayer.h"
 
 /**
  * @brief 静态节点图层
  */
-class StaticNodeLayer : public GraphicLayer {
+class StaticNodeLayer : public CommonNodeLayer {
 public:
     explicit StaticNodeLayer(QObject *parent = nullptr);
+
+    void reload(QPainter *painter) override;
 
     void reCache() override;
 

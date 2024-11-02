@@ -1,32 +1,19 @@
 #include "graphicrender.h"
 
-#include "../objects/graphicnode.d.h"
+#include "graphic/objects/graphicnode.d.h"
 
 #include <qmath.h>
 #include <qicon.h>
 #include <qelapsedtimer.h>
+#include <qapplication.h>
 
 // Qt internal function (qtbase/src/widgets/effects/qpixmapfilter.cpp)
 extern void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed);
 
-void GraphicRenderInterface::drawGraphicObject(QPainter *painter, bool isActiveState) {
-    auto render = getRender();
-    if (render == nullptr) {
-        return;
+void GraphicRenderInterface::drawObject() {
+    if (cachePainter) {
+        cachePainter->end();
     }
-    render->renderPainter = painter;
-    render->graphicTransform = graphicTransform;
-    render->drawObject(isActiveState);
-    delete render;
-}
-
-void GraphicRenderInterface::drawObject(bool isActiveState) {
-    qFatal("not implement graphic render!");
-}
-
-GraphicRenderInterface *GraphicRenderInterface::getRender() {
-    qFatal("not implement graphic render!");
-    return nullptr;
 }
 
 QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCenter, int requiredWidth, int requiredHeight) {
@@ -41,7 +28,7 @@ QRectF GraphicRenderInterface::getNodeBodyRectFromTopCenter(const QPointF &topCe
 }
 
 int GraphicRenderInterface::getTextWidthByFont(const QString& text, int pixelSize) const {
-    auto font = renderPainter->font();
+    auto font = qApp->font();
     font.setPixelSize(pixelSize);
     return QFontMetrics(font).horizontalAdvance(text);
 }
@@ -52,51 +39,31 @@ QRectF GraphicRenderInterface::getConnectPointRect(const QRectF &itemRect, bool 
     return { cx - 4, cy - 4, 8, 8 };
 }
 
-void GraphicRenderInterface::drawNodeBody(const QRectF& rect, QSharedPointer<GraphicNodeData>& nodeData) {
+void GraphicRenderInterface::drawNodeBody(const QRectF& rect) {
 
-    QRectF guiBodyRect = graphicTransform.toGuiPoint(rect);
     const qreal shadowRadius = 6;
+    auto radius = graphicTransform.toGuiDx(9);
 
-    if (nodeData->oldBackgroundGuiSize != guiBodyRect.size()) {
-        auto radius = graphicTransform.toGuiDx(9);
-
-        //TODO: draw only the visible region
-        QPixmap cacheImage(qRound(guiBodyRect.width()), qRound(guiBodyRect.height()));
-        cacheImage.fill(Qt::transparent);
-        QPainter cachePainter(&cacheImage);
-        cachePainter.setRenderHint(QPainter::Antialiasing);
-        cachePainter.setBrush(QColor(0x4A4B53));
-        cachePainter.setPen(Qt::NoPen);
-        cachePainter.drawRoundedRect(QRectF(0, 0, guiBodyRect.width(), guiBodyRect.height()), radius, radius);
-        cachePainter.end();
-
-        //QElapsedTimer elapsedTimer;
-        //elapsedTimer.start();
-        auto shadowImage = drawShadow(cacheImage, shadowRadius, 0xA01E1F22, QPointF(1, 1));
-        //qDebug() << "crete shadow image used time:" << elapsedTimer.elapsed();
-
-        nodeData->nodeBackgroundCache = QPixmap(shadowImage.size());
-        nodeData->nodeBackgroundCache.fill(Qt::transparent);
-        QPainter backgroundPainter(&nodeData->nodeBackgroundCache);
-        // draw shadow image
-        backgroundPainter.drawImage(QPointF(0, 0), shadowImage);
-        // draw source image
-        backgroundPainter.drawPixmap(QPointF(shadowRadius, shadowRadius), cacheImage);
-
-        nodeData->oldBackgroundGuiSize = guiBodyRect.size();
+    QPixmap bodyImage(qRound(rect.width()), qRound(rect.height()));
+    {
+        bodyImage.fill(Qt::transparent);
+        QPainter bodyPainter(&bodyImage);
+        bodyPainter.setRenderHint(QPainter::Antialiasing);
+        bodyPainter.setBrush(QColor(0x4A4B53));
+        bodyPainter.setPen(Qt::NoPen);
+        bodyPainter.drawRoundedRect(QRectF(0, 0, rect.width(), rect.height()), radius, radius);
+        bodyPainter.end();
     }
-    // draw cached image
-    renderPainter->drawPixmap(guiBodyRect.topLeft() - QPointF(shadowRadius, shadowRadius), nodeData->nodeBackgroundCache);
 
-    if (nodeData->selected) {
-        auto radius = graphicTransform.toGuiDx(9);
+    //QElapsedTimer elapsedTimer;
+    //elapsedTimer.start();
+    auto shadowImage = drawShadow(bodyImage, shadowRadius, 0xA01E1F22, QPointF(1, 1));
+    //qDebug() << "crete shadow image used time:" << elapsedTimer.elapsed();
 
-        renderPainter->save();
-        renderPainter->setPen(Qt::white);
-        auto offset = graphicTransform.toGuiDx(8);
-        renderPainter->drawRoundedRect(guiBodyRect.adjusted(-offset, -offset, offset, offset), radius, radius);
-        renderPainter->restore();
-    }
+    // draw shadow image
+    cachePainter->drawImage(QPointF(-shadowRadius, -shadowRadius), shadowImage);
+    // draw source image
+    cachePainter->drawPixmap(QPointF(0, 0), bodyImage);
 }
 
 // qtbase/src/widgets/effects/qpixmapfilter.cpp: line 1317
@@ -157,125 +124,107 @@ void GraphicRenderInterface::drawNodeSplitLine(const QRectF &nodeBodyRect, Graph
 
     auto drawRect = nodeBodyRect.translated(0, 40);
     drawRect = graphicTransform.toGuiPoint(drawRect);
-
-    renderPainter->save();
-    auto pen = renderPainter->pen();
+    
+    cachePainter->save();
+    auto pen = cachePainter->pen();
     pen.setColor(getColor().darker(150));
     pen.setWidthF(graphicTransform.toGuiDx(1));
     QPointF padding = QPointF(graphicTransform.toGuiDx(2), 0);
-    renderPainter->setPen(pen);
-    renderPainter->drawLine(drawRect.topLeft() + padding, drawRect.topRight() - padding);
-    renderPainter->restore();
+    cachePainter->setPen(pen);
+    cachePainter->drawLine(drawRect.topLeft() + padding, drawRect.topRight() - padding);
+    cachePainter->restore();
 }
 
 void GraphicRenderInterface::drawNodeTitle(const QRectF &renderRect, const QString &title, int pixelSize, int padding) {
-    auto font = renderPainter->font();
+    auto font = cachePainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
-    renderPainter->save();
-    renderPainter->setFont(font);
-    renderPainter->setPen(Qt::white);
+    cachePainter->save();
+    cachePainter->setFont(font);
+    cachePainter->setPen(Qt::white);
     auto titleDrawRect = graphicTransform.toGuiPoint(renderRect.translated(padding, 0));
-    renderPainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
-    renderPainter->restore();
+    cachePainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    cachePainter->restore();
 }
 
-void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive) {
+void GraphicRenderInterface::drawConnectableItem(const QRectF &renderRect, const QString &title, int pixelSize, const QColor& color, bool alignLeft) {
     // draw connect point
-    renderPainter->save();
-    renderPainter->setPen(Qt::NoPen);
-    renderPainter->setBrush(color);
+    cachePainter->save();
+    cachePainter->setPen(Qt::NoPen);
+    cachePainter->setBrush(color);
     auto connectPointRect = getConnectPointRect(renderRect, alignLeft);
     connectPointRect = graphicTransform.toGuiPoint(connectPointRect);
-    renderPainter->drawEllipse(connectPointRect);
-    renderPainter->restore();
-    if (linkPointActive) {
-        renderPainter->save();
-        auto pen = renderPainter->pen();
-        pen.setWidthF(graphicTransform.toGuiDx(1.5));
-        pen.setColor(color);
-        renderPainter->setPen(pen);
-        auto expandR = graphicTransform.toGuiDx(2);
-        renderPainter->drawEllipse(connectPointRect.adjusted(-expandR, -expandR, expandR, expandR));
-        renderPainter->restore();
-    }
+    cachePainter->drawEllipse(connectPointRect);
+    cachePainter->restore();
+
     // draw text
-    renderPainter->save();
-    auto font = renderPainter->font();
+    cachePainter->save();
+    auto font = cachePainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
-    renderPainter->setFont(font);
-    renderPainter->setPen(Qt::white);
+    cachePainter->setFont(font);
+    cachePainter->setPen(Qt::white);
     auto textRect = renderRect.adjusted(alignLeft ? 16 : 0, 0, alignLeft ? 0 : -16, 0);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
-    renderPainter->restore();
+    cachePainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
+    cachePainter->restore();
 
-    //renderPainter->setPen(Qt::yellow);
-    //renderPainter->drawRect(graphicTransform.toGuiPoint(renderRect));
+    //cachePainter->setPen(Qt::yellow);
+    //cachePainter->drawRect(graphicTransform.toGuiPoint(renderRect));
 }
 
 void GraphicRenderInterface::drawDoubleRowConnectableItem(const QRectF &renderRect, const QString &title,
                                                           const QString &subTitle, int pixelSize, const QColor &color,
-                                                          bool alignLeft, bool linkPointActive) {
+                                                          bool alignLeft) {
     if (subTitle.isEmpty()) {
-        drawConnectableItem(renderRect, title, pixelSize, color, alignLeft, linkPointActive);
+        drawConnectableItem(renderRect, title, pixelSize, color, alignLeft);
         return;
     }
     // draw connect point
-    renderPainter->save();
-    renderPainter->setPen(Qt::NoPen);
-    renderPainter->setBrush(color);
+    cachePainter->save();
+    cachePainter->setPen(Qt::NoPen);
+    cachePainter->setBrush(color);
     auto connectPointRect = getConnectPointRect(renderRect, alignLeft);
     connectPointRect = graphicTransform.toGuiPoint(connectPointRect);
-    renderPainter->drawEllipse(connectPointRect);
-    renderPainter->restore();
-    if (linkPointActive) {
-        renderPainter->save();
-        auto pen = renderPainter->pen();
-        pen.setWidthF(graphicTransform.toGuiDx(1.5));
-        pen.setColor(color);
-        renderPainter->setPen(pen);
-        auto expandR = graphicTransform.toGuiDx(2);
-        renderPainter->drawEllipse(connectPointRect.adjusted(-expandR, -expandR, expandR, expandR));
-        renderPainter->restore();
-    }
+    cachePainter->drawEllipse(connectPointRect);
+    cachePainter->restore();
+
     // draw text
-    renderPainter->save();
-    auto font = renderPainter->font();
+    cachePainter->save();
+    auto font = cachePainter->font();
     // main text
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize - 1)));
-    renderPainter->setFont(font);
-    renderPainter->setPen(Qt::white);
+    cachePainter->setFont(font);
+    cachePainter->setPen(Qt::white);
     auto textRect = renderRect.adjusted(alignLeft ? 16 : 2, 0, alignLeft ? 0 : -16, 0);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignTop | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
+    cachePainter->drawText(textRect, Qt::AlignTop | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
     // sub text
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize - 3)));
-    renderPainter->setFont(font);
-    renderPainter->setPen(Qt::gray);
+    cachePainter->setFont(font);
+    cachePainter->setPen(Qt::gray);
     textRect = renderRect.adjusted(alignLeft ? 16 : 0, 0, alignLeft ? 0 : -16, -2);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignBottom | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), subTitle);
+    cachePainter->drawText(textRect, Qt::AlignBottom | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), subTitle);
 
-    renderPainter->restore();
+    cachePainter->restore();
 }
 
 void GraphicRenderInterface::drawPropertyTitle(const QRectF &renderRect, const QString &title, int pixelSize, int padding) {
-    auto font = renderPainter->font();
+    auto font = cachePainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
     font.setItalic(true);
-    renderPainter->save();
-    renderPainter->setFont(font);
-    renderPainter->setPen(0xAFAFAF);
+    cachePainter->save();
+    cachePainter->setFont(font);
+    cachePainter->setPen(0xAFAFAF);
     auto titleDrawRect = graphicTransform.toGuiPoint(renderRect.translated(padding, 0));
-    renderPainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
-    renderPainter->restore();
+    cachePainter->drawText(titleDrawRect, Qt::AlignVCenter | Qt::AlignLeft, title);
+    cachePainter->restore();
 }
 
 void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QString &title, int pixelSize, const QColor &color, bool alignLeft) {
     // draw type indicator
-    renderPainter->save();
-    renderPainter->setPen(Qt::NoPen);
-    renderPainter->setBrush(color);
+    cachePainter->save();
+    cachePainter->setPen(Qt::NoPen);
+    cachePainter->setBrush(color);
     QRectF indicatorRect;
     if (alignLeft) {
         indicatorRect = QRectF(renderRect.left() + 4, renderRect.center().y() - 4, 8, 8);
@@ -283,23 +232,23 @@ void GraphicRenderInterface::drawPropertyRow(const QRectF &renderRect, const QSt
         indicatorRect = QRectF(renderRect.right() - 12, renderRect.center().y() - 4, 8, 8);
     }
     indicatorRect = graphicTransform.toGuiPoint(indicatorRect);
-    renderPainter->drawRect(indicatorRect);
-    renderPainter->restore();
+    cachePainter->drawRect(indicatorRect);
+    cachePainter->restore();
     // draw text
-    renderPainter->save();
-    auto font = renderPainter->font();
+    cachePainter->save();
+    auto font = cachePainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
-    renderPainter->setFont(font);
-    renderPainter->setPen(Qt::white);
+    cachePainter->setFont(font);
+    cachePainter->setPen(Qt::white);
     auto textRect = renderRect.adjusted(alignLeft ? 16 : 0, 0, alignLeft ? 0 : -16, 0);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
-    renderPainter->restore();
+    cachePainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), title);
+    cachePainter->restore();
 }
 
 void GraphicRenderInterface::drawIconRow(const QRectF &renderRect, const QString &iconPath, int iconSize, const QString &displayText, int pixelSize, bool alignLeft) {
     // draw icon
-    renderPainter->save();
+    cachePainter->save();
     QRectF iconRect(0, 0, iconSize, iconSize);
     if (alignLeft) {
         iconRect.moveCenter(QPointF(renderRect.left() + 8 + iconRect.width() / 2, renderRect.center().y()));
@@ -309,16 +258,16 @@ void GraphicRenderInterface::drawIconRow(const QRectF &renderRect, const QString
     iconRect = graphicTransform.toGuiPoint(iconRect);
     QIcon icon(iconPath);
     auto pixmap = icon.pixmap(qRound(iconRect.width()), qRound(iconRect.height()));
-    renderPainter->drawPixmap(iconRect.toRect(), pixmap);
-    renderPainter->restore();
+    cachePainter->drawPixmap(iconRect.toRect(), pixmap);
+    cachePainter->restore();
     // draw icon text
-    renderPainter->save();
-    auto font = renderPainter->font();
+    cachePainter->save();
+    auto font = cachePainter->font();
     font.setPixelSize(qRound(graphicTransform.toGuiDx(pixelSize)));
-    renderPainter->setFont(font);
-    renderPainter->setPen(Qt::white);
+    cachePainter->setFont(font);
+    cachePainter->setPen(Qt::white);
     auto textRect = renderRect.adjusted(alignLeft ? (iconSize + 12) : 0, 0, alignLeft ? 0 : -(iconSize + 12), 0);
     textRect = graphicTransform.toGuiPoint(textRect);
-    renderPainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), displayText);
-    renderPainter->restore();
+    cachePainter->drawText(textRect, Qt::AlignVCenter | (alignLeft ? Qt::AlignLeft : Qt::AlignRight), displayText);
+    cachePainter->restore();
 }

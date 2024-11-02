@@ -5,12 +5,7 @@ StaticLinkLineLayer::StaticLinkLineLayer(QObject *parent)
 {
 }
 
-void StaticLinkLineLayer::reCache() {
-    layerCache.fill(Qt::transparent);
-
-    QPainter painter(&layerCache);
-    painter.setRenderHint(QPainter::Antialiasing);
-
+void StaticLinkLineLayer::reload(QPainter *painter) {
     for (const auto& node : staticLinkLineList) {
         if (node->linkData->selected) {
             continue;
@@ -19,6 +14,10 @@ void StaticLinkLineLayer::reCache() {
             continue;
         }
         node->graphicTransform = graphicTransform;
-        node->drawGraphicObject(&painter, false);
+        node->renderPainter = painter;
+        node->drawObject();
     }
+}
+
+void StaticLinkLineLayer::reCache() {
 }

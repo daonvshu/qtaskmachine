@@ -10,18 +10,19 @@ public:
     explicit GraphicLayer(QObject *parent = nullptr);
 
     /**
-     * @brief 根据视图调整缓存大小
-     * @param viewSize
-     * @return 是否重置了缓存
+     * @brief 重绘图层
      */
-    bool sizeAdjust(const QSize& viewSize);
+    virtual void reload(QPainter* painter) = 0;
 
     /**
      * @brief 重置缓存
      */
     virtual void reCache() = 0;
 
+    bool checkAndUpdateScale();
+
 public:
-    QPixmap layerCache; //! 双缓冲图形层
+    QSize viewSize;
     GraphicTransform graphicTransform; //! 坐标变换，视图移动、缩放之后会改变变换器参数
+    qreal oldScaleRatio = 0;
 };

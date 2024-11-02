@@ -11,6 +11,8 @@ class OrthogonalGridLayer : public GraphicLayer {
 public:
     explicit OrthogonalGridLayer(QObject *parent = nullptr);
 
+    void reload(QPainter *painter) override;
+
     void reCache() override;
 
     /**
@@ -20,11 +22,12 @@ public:
     void snapTest(QPointF& point) const;
 
 private:
-    void drawGridLine(QPainter* painter, qreal gridWidth, const QColor& color);
+    void drawGridLine(QPainter* painter, qreal width, const QColor& color);
 
 public:
     bool gridEnabled;
     qreal gridWidth = 1; //网格间距，实际坐标系宽度
+    QPixmap boxCache;
 
 private:
     /**

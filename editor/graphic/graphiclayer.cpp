@@ -5,10 +5,10 @@ GraphicLayer::GraphicLayer(QObject *parent)
 {
 }
 
-bool GraphicLayer::sizeAdjust(const QSize &viewSize) {
-    if (layerCache.isNull() || layerCache.size() != viewSize) {
-        layerCache = QPixmap(viewSize);
-        reCache();
+bool GraphicLayer::checkAndUpdateScale() {
+    auto currentScale = graphicTransform.getTransform().m11();
+    if (oldScaleRatio != currentScale) {
+        oldScaleRatio = currentScale;
         return true;
     }
     return false;

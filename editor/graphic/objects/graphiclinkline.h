@@ -6,8 +6,6 @@
 
 #include "../graphicobject.h"
 
-#include "../render/graphiclinklinerender.h"
-
 class GraphicLinkLine : public GraphicObject {
 public:
     explicit GraphicLinkLine(const QSharedPointer<GraphicLinkLineData>& data);
@@ -22,13 +20,11 @@ public:
 
     bool selectTest(const QPointF &point) override;
 
-    GraphicRenderInterface * getRender() override {
-        return new GraphicLinkLineRender(linkData);
-    }
-
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Link_Line;
     }
+
+    void drawObject() override;
 
 public:
     QSharedPointer<GraphicLinkLineData> linkData;

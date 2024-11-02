@@ -5,14 +5,15 @@ ActiveLinkLineLayer::ActiveLinkLineLayer(QObject *parent)
 {
 }
 
-void ActiveLinkLineLayer::reCache() {
-    layerCache.fill(Qt::transparent);
-
-    QPainter painter(&layerCache);
-    painter.setRenderHint(QPainter::Antialiasing);
+void ActiveLinkLineLayer::reload(QPainter *painter) {
+    painter->setRenderHint(QPainter::Antialiasing);
 
     for (const auto& linkLine : activeLinkLineList) {
         linkLine->graphicTransform = graphicTransform;
-        linkLine->drawGraphicObject(&painter, true);
+        linkLine->renderPainter = painter;
+        linkLine->drawObject();
     }
+}
+
+void ActiveLinkLineLayer::reCache() {
 }

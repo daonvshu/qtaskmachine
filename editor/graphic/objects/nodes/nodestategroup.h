@@ -3,7 +3,6 @@
 #include <qobject.h>
 
 #include "../graphicnode.h"
-#include "../../render/nodes/nodegroupstaterender.h"
 #include "nodestategroup.d.h"
 
 class NodeStateGroup : public GraphicNode {
@@ -18,13 +17,11 @@ public:
         return objectCreate<NodeStateGroup, NodeStateGroupData>(*groupData);
     }
 
-    GraphicRenderInterface * getRender() override {
-        return new NodeGroupStateRender(groupData);
-    }
-
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_State_Group;
     }
+
+    void drawObject() override;
 
 public:
     QSharedPointer<NodeStateGroupData> groupData;

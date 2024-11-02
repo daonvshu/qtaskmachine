@@ -3,24 +3,27 @@
 #include <qobject.h>
 #include <qpainter.h>
 
-#include "../utils/transform.h"
+#include "graphic/utils/transform.h"
 
-#include "../graphicobjecttype.h"
+#include "graphicobjecttype.h"
 
 class GraphicRenderInterface {
 public:
-    void drawGraphicObject(QPainter* painter, bool isActiveState);
-
-    virtual GraphicRenderInterface* getRender();
-
     virtual ~GraphicRenderInterface() = default;
+
+    /**
+     * @brief 重新生成对象绘制缓存
+     */
+    virtual void drawObject();
 
 public:
     GraphicTransform graphicTransform;
+    QPainter* renderPainter = nullptr;
 
 protected:
-    virtual void drawObject(bool isActiveState);
+    QSharedPointer<QPainter> cachePainter;
 
+protected:
     /**
      * @brief 通过上中心点，获取节点主体背景框矩形，未进行Gui变换
      * @param topCenter
@@ -51,7 +54,7 @@ protected:
      * @param rect
      * @param nodeData
      */
-    void drawNodeBody(const QRectF& rect, QSharedPointer<struct GraphicNodeData>& nodeData);
+    void drawNodeBody(const QRectF& rect);
 
     /**
      * @brief 绘制节点分割线
@@ -86,9 +89,8 @@ protected:
      * @param pixelSize
      * @param color
      * @param alignLeft
-     * @param linkPointActive
      */
-    void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive);
+    void drawConnectableItem(const QRectF& renderRect, const QString& title, int pixelSize, const QColor& color, bool alignLeft);
 
     /**
      * @brief 绘制双行可连接的节点
@@ -98,9 +100,8 @@ protected:
      * @param pixelSize
      * @param color
      * @param alignLeft
-     * @param linkPointActive
      */
-    void drawDoubleRowConnectableItem(const QRectF& renderRect, const QString& title, const QString& subTitle, int pixelSize, const QColor& color, bool alignLeft, bool linkPointActive);
+    void drawDoubleRowConnectableItem(const QRectF& renderRect, const QString& title, const QString& subTitle, int pixelSize, const QColor& color, bool alignLeft);
 
     /**
      * @brief 绘制属性标题
@@ -131,7 +132,4 @@ protected:
      * @param alignLeft
      */
     void drawIconRow(const QRectF& renderRect, const QString& iconPath, int iconSize, const QString& displayText, int pixelSize, bool alignLeft);
-
-protected:
-    QPainter* renderPainter = nullptr;
 };

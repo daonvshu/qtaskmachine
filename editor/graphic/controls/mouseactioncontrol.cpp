@@ -39,6 +39,7 @@ void MouseActionControl::mousePress(QMouseEvent *e) {
 
 void MouseActionControl::mouseMove(QMouseEvent *e) {
     auto mousePos = e->pos();
+    //qDebug() << "current mouse pos:" << mousePos;
 
     if (e->buttons() & Qt::LeftButton) {
         if (objectSelected) {
@@ -273,6 +274,7 @@ void MouseActionControl::editNodeObject(const QSharedPointer<GraphicObject> &obj
             if (exDataWrite) {
                 exDataWrite(objData);
             }
+            objData->isChanged = true;
             d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
             d->view->repaint();
         }

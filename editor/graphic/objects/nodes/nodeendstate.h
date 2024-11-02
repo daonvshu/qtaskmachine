@@ -3,7 +3,6 @@
 #include <qobject.h>
 
 #include "../graphicnode.h"
-#include "../../render/nodes/nodeendstaterender.h"
 
 class NodeEndState : public GraphicNode {
 public:
@@ -17,11 +16,9 @@ public:
         return objectCreate<NodeEndState, GraphicNodeData>(*nodeData);
     }
 
-    GraphicRenderInterface * getRender() override {
-        return new NodeEndStateRender(data);
-    }
-
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_End_State;
     }
+
+    void drawObject() override;
 };

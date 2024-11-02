@@ -44,7 +44,6 @@ void GraphicView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.fillRect(rect(), backgroundColor);
 
-    controls->get<TransformControl>()->scaleByDefault();
     controls->get<GraphicLayerControl>()->graphLayerRepaint(&painter);
 }
 
@@ -171,6 +170,7 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             addObj->data->renderPosition += QPointF(5000, 5000);
             addObj->data->renderPosition *= 2;
         }
+        addObj->data->isChanged = true;
         objMap[executor.id()] = addObj;
     }
     controls->get<GraphicObjCreateControl>()->cancelObjActiveSelected();
@@ -263,7 +263,7 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
         controls->get<GraphicObjCreateControl>()->linkLines << lineLine;
     }
     controls->get<GraphicLayerControl>()->updateStaticLinkLines(controls->get<GraphicObjCreateControl>()->linkLines);
-    controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node, true);
+    controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
     controls->get<GraphicLayerControl>()->graphLayerReload();
     repaint();
 

@@ -3,7 +3,6 @@
 #include <qobject.h>
 
 #include "../graphicnode.h"
-#include "../../render/nodes/nodedelaystaterender.h"
 #include "nodedelaystate.d.h"
 
 class NodeDelayState : public GraphicNode {
@@ -18,10 +17,6 @@ public:
         return objectCreate<NodeDelayState, NodeDelayStateData>(*delayStateData);
     }
 
-    GraphicRenderInterface * getRender() override {
-        return new NodeDelayStateRender(delayStateData);
-    }
-
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Node_Delay_State;
     }
@@ -29,6 +24,8 @@ public:
     ConfigFlowExecutor toFlowExecutor() const override;
 
     void fromExecutor(const ConfigFlowExecutor &executor) override;
+
+    void drawObject() override;
 
 public:
     QSharedPointer<NodeDelayStateData> delayStateData;

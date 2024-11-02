@@ -69,6 +69,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/graphiclayer.cpp
     graphic/graphicobject.h
     graphic/graphicobject.cpp
+    graphic/graphicrender.h
+    graphic/graphicrender.cpp
 
     graphic/controls/mouseactioncontrol.h
     graphic/controls/mouseactioncontrol.cpp
@@ -89,6 +91,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/layer/staticnodelayer.cpp
     graphic/layer/staticlinklinelayer.h
     graphic/layer/staticlinklinelayer.cpp
+    graphic/layer/commonnodelayer.h
+    graphic/layer/commonnodelayer.cpp
 
     graphic/objects/graphicnode.h
     graphic/objects/graphicnode.cpp
@@ -113,31 +117,6 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/objects/nodes/nodestategroup.cpp
     graphic/objects/nodes/noderecoverystate.h
     graphic/objects/nodes/noderecoverystate.cpp
-
-    graphic/render/graphicrender.h
-    graphic/render/graphicrender.cpp
-    graphic/render/graphiclinklinerender.h
-    graphic/render/graphiclinklinerender.cpp
-    graphic/render/commonnodestaterender.h
-    graphic/render/commonnodestaterender.cpp
-    graphic/render/nodes/nodenormalstaterender.h
-    graphic/render/nodes/nodenormalstaterender.cpp
-    graphic/render/nodes/nodebeginstaterender.h
-    graphic/render/nodes/nodebeginstaterender.cpp
-    graphic/render/nodes/nodeendstaterender.h
-    graphic/render/nodes/nodeendstaterender.cpp
-    graphic/render/nodes/nodedelaystaterender.h
-    graphic/render/nodes/nodedelaystaterender.cpp
-    graphic/render/nodes/nodeconditionstaterender.h
-    graphic/render/nodes/nodeconditionstaterender.cpp
-    graphic/render/nodes/nodeeventstaterender.h
-    graphic/render/nodes/nodeeventstaterender.cpp
-    graphic/render/nodes/nodemultieventstaterender.h
-    graphic/render/nodes/nodemultieventstaterender.cpp
-    graphic/render/nodes/nodegroupstaterender.h
-    graphic/render/nodes/nodegroupstaterender.cpp
-    graphic/render/nodes/noderecoverystaterender.h
-    graphic/render/nodes/noderecoverystaterender.cpp
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp

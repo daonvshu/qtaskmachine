@@ -15,6 +15,8 @@ class ActiveLinkLineLayer : public GraphicLayer {
 public:
     explicit ActiveLinkLineLayer(QObject *parent = nullptr);
 
+    void reload(QPainter *painter) override;
+
     void reCache() override;
 
 public:

@@ -30,22 +30,18 @@ void GraphicLayerControl::graphLayerRepaint(QPainter* painter) {
     auto transform = d->getGraphicTransform();
     //QElapsedTimer elapsedTimer;
     //elapsedTimer.start();
+    painter->setRenderHint(QPainter::Antialiasing);
     for (auto &i : layers) {
         auto layer = i.second;
         layer->graphicTransform = transform;
-        if (!layer->sizeAdjust(viewSize)) {
-            if (graphicResetOption.testFlag(i.first)) {
-                layer->reCache();
-            }
+        layer->viewSize = viewSize;
+        if (graphicResetOption.testFlag(i.first)) {
+            layer->reCache();
         }
-        painter->drawPixmap(0, 0, layer->layerCache);
+        layer->reload(painter);
     }
     //qDebug() << "layer repaint time:" << elapsedTimer.elapsed();
     graphicResetOption = GraphicLayerType::Layer_None;
-}
-
-void GraphicLayerControl::hoverMoving(const QPoint &mousePoint) {
-    //auto realPoint = d->getGraphicTransform().toRealPoint(QPointF(mousePoint));
 }
 
 void GraphicLayerControl::gridEnable(bool enable) {
@@ -53,21 +49,7 @@ void GraphicLayerControl::gridEnable(bool enable) {
     reloadLayer(GraphicLayerType::Layer_Grid);
 }
 
-void GraphicLayerControl::reloadLayer(GraphicLayerTypes layerType, bool updateImmediately) {
-    if (updateImmediately) {
-        auto viewSize = d->view->size();
-        auto transform = d->getGraphicTransform();
-        for (auto &i : layers) {
-            auto layer = i.second;
-            layer->graphicTransform = transform;
-            if (!layer->sizeAdjust(viewSize)) {
-                if (layerType.testFlag(i.first)) {
-                    layer->reCache();
-                }
-            }
-        }
-        return;
-    }
+void GraphicLayerControl::reloadLayer(GraphicLayerTypes layerType) {
     graphicResetOption |= layerType;
 }
 

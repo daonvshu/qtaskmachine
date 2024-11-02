@@ -14,6 +14,8 @@ class StaticLinkLineLayer : public GraphicLayer {
 public:
     explicit StaticLinkLineLayer(QObject *parent = nullptr);
 
+    void reload(QPainter *painter) override;
+
     void reCache() override;
 
 public:
