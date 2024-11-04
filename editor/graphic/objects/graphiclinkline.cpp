@@ -16,6 +16,7 @@ bool GraphicLinkLine::selectTest(const QPointF &point) {
         return false;
     }
     auto linkFromPoint = linkData->linkFromNode->nodeData->outputLinkPoints[linkData->linkFromPointIndex].center();
+    linkFromPoint += linkData->linkFromNode->nodeData->boundingRect.topLeft();
     QPointF linkToPoint;
     if (linkData->isEditing) {
         linkToPoint = linkData->tempLinkToPoint;
@@ -24,6 +25,7 @@ bool GraphicLinkLine::selectTest(const QPointF &point) {
             return false;
         }
         linkToPoint = linkData->linkToNode->nodeData->inputLinkPoints[linkData->linkToPointIndex].center();
+        linkToPoint += linkData->linkToNode->nodeData->boundingRect.topLeft();
     }
 
     auto length = QLineF(linkFromPoint, linkToPoint).length();
