@@ -90,6 +90,11 @@ public:
      */
     void updateStaticLinkLines(const GraphicLinkLineList& linkLines, bool layerReload = true);
 
+    /**
+     * @brief 强制更新所有node
+     */
+    void makeAllStaticNodeChanged();
+
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层
     GraphicLayerTypes graphicResetOption = GraphicLayerType::Layer_None; //重置缓存

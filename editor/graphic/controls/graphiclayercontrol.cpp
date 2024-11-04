@@ -112,3 +112,10 @@ void GraphicLayerControl::updateStaticLinkLines(const GraphicLinkLineList &linkL
         reloadLayer(GraphicLayerType::Layer_Static_Link);
     }
 }
+
+void GraphicLayerControl::makeAllStaticNodeChanged() {
+    auto& nodeList = layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList;
+    for (auto& node : nodeList) {
+        node->data->isChanged = true;
+    }
+}
