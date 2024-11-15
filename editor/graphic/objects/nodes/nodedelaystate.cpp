@@ -16,7 +16,7 @@ ConfigFlowExecutor NodeDelayState::toFlowExecutor() const {
     return executor;
 }
 
-void NodeDelayState::fromExecutor(const ConfigFlowExecutor &executor) {
+void NodeDelayState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     delayStateData->delayPropData.delayMs = executor.delay();
 }

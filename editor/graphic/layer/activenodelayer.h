@@ -16,5 +16,5 @@ public:
     void reCache() override;
 
 public:
-    QSharedPointer<GraphicObject> activeNode;
+    GraphicObject* activeNode = nullptr;
 };

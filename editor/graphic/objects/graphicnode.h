@@ -12,7 +12,7 @@ class GraphicNode : public GraphicObject {
 public:
     explicit GraphicNode(const QSharedPointer<GraphicNodeData>& data);
 
-    bool selectTest(const QPointF& point) override;
+    bool selectTest(const QPointF& point) const override;
 
     /**
      * @brief 测试是否在链接点上
@@ -39,7 +39,7 @@ public:
 
     virtual ConfigFlowExecutor toFlowExecutor() const;
 
-    virtual void fromExecutor(const ConfigFlowExecutor& executor);
+    virtual void fromExecutor(const ConfigFlowExecutor& executor) const;
 
 protected:
     enum {

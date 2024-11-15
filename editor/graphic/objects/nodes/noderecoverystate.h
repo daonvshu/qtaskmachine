@@ -9,11 +9,11 @@ class NodeRecoveryState : public GraphicNode {
 public:
     explicit NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData>& data);
 
-    static QSharedPointer<NodeRecoveryState> create() {
+    static NodeRecoveryState* create() {
         return objectCreate<NodeRecoveryState, NodeRecoveryStateData>();
     }
 
-    QSharedPointer<GraphicObject> clone() override {
+    GraphicObject* clone() const override {
         return objectCreate<NodeRecoveryState, NodeRecoveryStateData>(*recoveryStateData);
     }
 
@@ -23,7 +23,7 @@ public:
 
     ConfigFlowExecutor toFlowExecutor() const override;
 
-    void fromExecutor(const ConfigFlowExecutor &executor) override;
+    void fromExecutor(const ConfigFlowExecutor &executor) const override;
 
     void drawObject() override;
 

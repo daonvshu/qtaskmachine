@@ -9,11 +9,11 @@ class NodeStateGroup : public GraphicNode {
 public:
     explicit NodeStateGroup(const QSharedPointer<NodeStateGroupData>& data);
 
-    static QSharedPointer<NodeStateGroup> create() {
+    static NodeStateGroup* create() {
         return objectCreate<NodeStateGroup, NodeStateGroupData>();
     }
 
-    QSharedPointer<GraphicObject> clone() override {
+    GraphicObject* clone() const override {
         return objectCreate<NodeStateGroup, NodeStateGroupData>(*groupData);
     }
 

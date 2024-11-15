@@ -9,7 +9,7 @@ GraphicNode::GraphicNode(const QSharedPointer<GraphicNodeData> &data)
 
 }
 
-bool GraphicNode::selectTest(const QPointF &point) {
+bool GraphicNode::selectTest(const QPointF &point) const {
     return nodeData->boundingRect.contains(point);
 }
 
@@ -62,7 +62,7 @@ ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
     return executor;
 }
 
-void GraphicNode::fromExecutor(const ConfigFlowExecutor &executor) {
+void GraphicNode::fromExecutor(const ConfigFlowExecutor &executor) const {
     nodeData->propData.nodeName = executor.text();
     nodeData->renderPosition = executor.scenePos();
     nodeData->propData.funcEnter = executor.enter();

@@ -57,19 +57,19 @@ public:
      * @brief 设置当前编辑节点
      * @param activeNode
      */
-    void setActiveNode(const QSharedPointer<GraphicObject>& activeNode);
+    void setActiveNode(const GraphicObject* activeNode);
 
     /**
      * @brief 设置当前编辑连线
      * @param activeLinkLine
      */
-    void setActiveLinkLine(const QSharedPointer<GraphicLinkLine>& activeLinkLine);
+    void setActiveLinkLine(GraphicLinkLine* activeLinkLine);
 
     /**
      * @brief 取消编辑连线
      * @param activeLinkLine
      */
-    void cancelActiveLinkLine(const QSharedPointer<GraphicLinkLine>& activeLinkLine);
+    void cancelActiveLinkLine(const GraphicLinkLine* activeLinkLine);
 
     /**
      * @brief 取消所有编辑连线
@@ -81,19 +81,19 @@ public:
      * @param nodes
      * @param layerReload
      */
-    void updateStaticNodes(const GraphicObjectList& nodes, bool layerReload = true);
+    void updateStaticNodes(QUndoStack* nodes, bool layerReload = true);
 
     /**
      * @brief 更新静态连线
      * @param linkLines
      * @param layerReload
      */
-    void updateStaticLinkLines(const GraphicLinkLineList& linkLines, bool layerReload = true);
+    void updateStaticLinkLines(QUndoStack* linkLines, bool layerReload = true);
 
     /**
      * @brief 强制更新所有node
      */
-    void makeAllStaticNodeChanged();
+    void makeAllStaticNodeChanged() const;
 
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层

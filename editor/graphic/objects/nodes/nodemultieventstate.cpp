@@ -9,7 +9,7 @@ NodeMultiEventState::NodeMultiEventState(const QSharedPointer<NodeMultiEventStat
     data->outputLinkPointColors << 0x00E0E0;
 }
 
-void NodeMultiEventState::fromExecutor(const ConfigFlowExecutor &executor) {
+void NodeMultiEventState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     eventStateData->eventPropData.events().clear();
 }

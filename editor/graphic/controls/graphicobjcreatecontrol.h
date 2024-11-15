@@ -26,7 +26,7 @@ public:
      * @param nodeObject
      * @param mousePoint
      */
-    void copyNodeToMousePoint(const QSharedPointer<GraphicObject>& nodeObject, const QPoint& mousePoint);
+    void copyNodeToMousePoint(const GraphicObject* nodeObject, const QPoint& mousePoint);
 
     /**
      * @brief 测试鼠标位置（GUI位置）是否可选中对象
@@ -34,25 +34,25 @@ public:
      * @param testSelectedObject
      * @return
      */
-    QSharedPointer<GraphicObject> selectTest(const QPoint& mousePoint, bool testSelectedObject = false);
+    const GraphicObject* selectTest(const QPoint& mousePoint, bool testSelectedObject = false) const;
 
     /**
      * @brief 测试鼠标位置是否在选中节点上
      * @param mousePoint
      */
-    bool testOnSelectedNode(const QPointF& mousePoint);
+    bool testOnSelectedNode(const QPointF& mousePoint) const;
 
     /**
      * @brief 将指定对象选中
      * @param object
      */
-    void setObjectSelected(const QSharedPointer<GraphicObject>& object);
+    void setObjectSelected(const GraphicObject* object);
 
     /**
      * @brief 平移选中对象
      * @param delta
      */
-    void objTranslate(const QPointF& delta);
+    void objTranslate(const QPointF& delta) const;
 
     /**
      * @brief 平移结束
@@ -63,7 +63,7 @@ public:
      * @brief 删除指定节点对象
      * @param object
      */
-    void removeNodeObject(const QSharedPointer<GraphicObject>& object);
+    void removeNodeObject(const GraphicObject* object);
 
     /**
      * @brief 取消节点选中
@@ -74,7 +74,7 @@ public:
      * @brief 获取当前选中的节点对象
      * @return
      */
-    QSharedPointer<GraphicObject> getSelectedNodeObj();
+    const GraphicObject* getSelectedNodeObj() const;
 
     /**
      * @brief 创建链接线
@@ -82,7 +82,7 @@ public:
      * @param linkPointIndex
      * @param curMousePoint
      */
-    void beginActiveLinkLine(const QSharedPointer<GraphicObject>& linkFrom, int linkPointIndex, const QPointF& curMousePoint);
+    void beginActiveLinkLine(const GraphicObject* linkFrom, int linkPointIndex, const QPointF& curMousePoint);
 
     /**
      * @brief 更新链接线终点位置
@@ -90,7 +90,7 @@ public:
      * @param linkPointIndex
      * @param curMousePoint
      */
-    void updateActiveLinkLineToPoint(const QSharedPointer<GraphicObject>& linkTo, int linkPointIndex, const QPointF& curMousePoint);
+    void updateActiveLinkLineToPoint(const GraphicObject* linkTo, int linkPointIndex, const QPointF& curMousePoint) const;
 
     /**
      * @brief 释放当前编辑链接线
@@ -101,24 +101,24 @@ public:
      * @brief 设置链接线选中
      * @param object
      */
-    void setLinkLineSelected(const QSharedPointer<GraphicObject>& object);
+    void setLinkLineSelected(const GraphicObject* object);
 
     /**
      * @brief 取消当前选中的线
      */
-    void cancelSelectedLinkLine();
+    void cancelSelectedLinkLine() const;
 
     /**
      * @brief 删除指定链接线
      * @param linkLine
      */
-    void removeLinkLine(const QSharedPointer<GraphicObject>& linkLine);
+    void removeLinkLine(const GraphicObject* linkLine);
 
     /**
      *  获取当前选中的链接线
      * @return
      */
-    QSharedPointer<GraphicLinkLine> getSelectedLinkLine();
+    const GraphicLinkLine* getSelectedLinkLine() const;
 
     /**
      * @brief 检查当前节点是否被其他链接线连接
@@ -126,7 +126,7 @@ public:
      * @param linkIndex
      * @return
      */
-    bool checkIsAnyLinkLineLinkedToNode(const QSharedPointer<GraphicNode>& node, int linkIndex);
+    bool checkIsAnyLinkLineLinkedToNode(const GraphicNode* node, int linkIndex) const;
 
     /**
      * @brief 清空所有对象
@@ -137,11 +137,9 @@ signals:
     void graphicObjectChanged();
 
 private:
-    GraphicObjectList nodeObjects;
-    GraphicLinkLineList linkLines;
-    QSharedPointer<GraphicObject> editingNodeObject;
-    QSharedPointer<GraphicLinkLine> editingLinkLine;
-    QSharedPointer<GraphicLinkLine> selectedLinkLine;
+    const GraphicObject* editingNodeObject = nullptr;
+    const GraphicLinkLine* editingLinkLine = nullptr;
+    const GraphicLinkLine* selectedLinkLine = nullptr;
 
     friend class GraphicView;
 };

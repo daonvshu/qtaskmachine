@@ -16,5 +16,8 @@ public:
     void reCache() override;
 
 public:
-    GraphicObjectList staticNodeList;
+    QUndoStack* graphicEntries = nullptr;
+
+private:
+    static bool isValidObject(const GraphicObject* obj);
 };

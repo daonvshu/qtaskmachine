@@ -4,7 +4,7 @@
 
 #include <qdebug.h>
 
-void CommonNodeLayer::reCacheNodeObject(const QSharedPointer<GraphicObject>& object) {
+void CommonNodeLayer::reCacheNodeObject(GraphicObject* object) {
     QTransform renderTransform;
     renderTransform.scale(graphicTransform.getTransform().m11(), graphicTransform.getTransform().m22());
     object->graphicTransform = renderTransform;
@@ -12,7 +12,7 @@ void CommonNodeLayer::reCacheNodeObject(const QSharedPointer<GraphicObject>& obj
     object->data->isChanged = false;
 }
 
-void CommonNodeLayer::drawCache(const QSharedPointer<GraphicObject> &object, QPainter *painter, bool drawSelectedBox) {
+void CommonNodeLayer::drawCache(const GraphicObject* object, QPainter *painter, bool drawSelectedBox) {
     auto cacheImage = object->data->objectRenderCache;
     auto topLeft = qSharedPointerCast<GraphicNodeData>(object->data)->boundingRect.topLeft();
     topLeft = graphicTransform.toGuiPoint(topLeft);
@@ -30,9 +30,9 @@ void CommonNodeLayer::drawCache(const QSharedPointer<GraphicObject> &object, QPa
     }
 }
 
-void CommonNodeLayer::drawActiveLinkPoint(const QSharedPointer<GraphicObject> &object, QPainter *painter) {
+void CommonNodeLayer::drawActiveLinkPoint(const GraphicObject* object, QPainter *painter) {
 
-    auto nodeObject = qSharedPointerCast<GraphicNode>(object);
+    auto nodeObject = dynamic_cast<const GraphicNode*>(object);
     auto offset = nodeObject->nodeData->boundingRect.topLeft();
 
     auto drawActiveCircle = [&] (const QColor& color, const QRectF& connectPointRect) {

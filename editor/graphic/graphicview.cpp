@@ -75,34 +75,31 @@ void GraphicView::saveFlow() {
     currentFlow->executors().clear();
     currentFlow->lines().clear();
 
-    auto ctl = controls->get<GraphicObjCreateControl>();
-
     int nodeId = 1;
-    QHash<QSharedPointer<GraphicObject>, int> objIdMap;
-    for (auto& node : ctl->nodeObjects) {
-        auto executor = qSharedPointerCast<GraphicNode>(node)->toFlowExecutor();
-        executor.id = nodeId++;
-        currentFlow->executors() << executor;
-        objIdMap[node] = executor.id();
-    }
+    auto* objects = controls->getObjects();
+    QHash<const GraphicObject*, int> objIdMap;
+    for (int i = 0; i < objects->index(); i++) {
+        if (auto node = dynamic_cast<const GraphicNode*>(objects->command(i))) {
+            auto executor = node->toFlowExecutor();
+            executor.id = nodeId++;
+            currentFlow->executors() << executor;
+            objIdMap[node] = executor.id();
+        } else if (auto linkLine = dynamic_cast<const GraphicLinkLine*>(objects->command(i))) {
+            ConfigFlowConnectLine line;
+            line.connectFrom = objIdMap[linkLine->linkData->linkFromNode];
+            if (line.connectFrom() == 0) {
+                continue;
+            }
+            line.connectFromPIndex = linkLine->linkData->linkFromPointIndex;
+            line.connectTo = objIdMap[linkLine->linkData->linkToNode];
+            if (line.connectTo() == 0) {
+                continue;
+            }
+            line.connectToPIndex = linkLine->linkData->linkToPointIndex;
 
-    for (auto& link : ctl->linkLines) {
-        auto linkLine = qSharedPointerCast<GraphicLinkLine>(link);
-        ConfigFlowConnectLine line;
-        line.connectFrom = objIdMap[linkLine->linkData->linkFromNode];
-        if (line.connectFrom() == 0) {
-            continue;
-        }
-        line.connectFromPIndex = linkLine->linkData->linkFromPointIndex;
-        line.connectTo = objIdMap[linkLine->linkData->linkToNode];
-        if (line.connectTo() == 0) {
-            continue;
-        }
-        line.connectToPIndex = linkLine->linkData->linkToPointIndex;
-
-        switch (linkLine->linkData->linkFromNode->objectType()) {
+            switch (linkLine->linkData->linkFromNode->objectType()) {
             case GraphicObjectType::Node_Event_State: {
-                auto eventNode = qSharedPointerCast<NodeEventState>(linkLine->linkData->linkFromNode);
+                auto eventNode = dynamic_cast<const NodeEventState*>(linkLine->linkData->linkFromNode);
                 EventTriggerFunction* trigger;
                 bool normalLine = line.connectFromPIndex() == 0;
                 if (normalLine) {
@@ -117,7 +114,7 @@ void GraphicView::saveFlow() {
             }
                 break;
             case GraphicObjectType::Node_MultiEvent_State: {
-                auto multiEventNode = qSharedPointerCast<NodeMultiEventState>(linkLine->linkData->linkFromNode);
+                auto multiEventNode = dynamic_cast<const NodeMultiEventState*>(linkLine->linkData->linkFromNode);
                 auto* trigger = &multiEventNode->eventStateData->eventPropData.events()[line.connectFromPIndex()];
                 line.trigger = trigger->triggerFunc();
                 line.checkFunc = trigger->checkFunc();
@@ -125,12 +122,12 @@ void GraphicView::saveFlow() {
             }
                 break;
             case GraphicObjectType::Node_Condition_State: {
-                auto conditionNode = qSharedPointerCast<NodeConditionState>(linkLine->linkData->linkFromNode);
+                auto conditionNode = dynamic_cast<const NodeConditionState*>(linkLine->linkData->linkFromNode);
                 line.branchId = conditionNode->conditionStateData->conditionPropData.branchIds()[line.connectFromPIndex()];
             }
                 break;
             case GraphicObjectType::Node_State_Group: {
-                auto groupNode = qSharedPointerCast<NodeStateGroup>(linkLine->linkData->linkFromNode);
+                auto groupNode = dynamic_cast<const NodeStateGroup*>(linkLine->linkData->linkFromNode);
                 if (line.connectFromPIndex() == 0) {
                     line.failBranch = true;
                     line.trigger = groupNode->groupData->groupPropData.errorTriggerFunc();
@@ -141,8 +138,9 @@ void GraphicView::saveFlow() {
                 break;
             default:
                 break;
+            }
+            currentFlow->lines() << line;
         }
-        currentFlow->lines() << line;
     }
     currentFlow->version = 2;
 
@@ -161,10 +159,10 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
     }
     int version = flow->version();
 
-    QHash<int, QSharedPointer<GraphicNode>> objMap;
+    QHash<int, const GraphicNode*> objMap;
     for (auto& executor : flow->executors()) {
         controls->get<GraphicObjCreateControl>()->addObject(executor.itemType(), executor.scenePos());
-        auto addObj = qSharedPointerCast<GraphicNode>(controls->get<GraphicObjCreateControl>()->getSelectedNodeObj());
+        auto addObj = dynamic_cast<const GraphicNode*>(controls->get<GraphicObjCreateControl>()->getSelectedNodeObj());
         addObj->fromExecutor(executor);
         if (version == 1) {
             addObj->data->renderPosition += QPointF(5000, 5000);
@@ -177,11 +175,11 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
     for (auto& line : flow->lines()) {
         auto lineLine = GraphicLinkLine::create();
         lineLine->linkData->linkFromNode = objMap[line.connectFrom()];
-        if (lineLine->linkData->linkFromNode.isNull()) {
+        if (lineLine->linkData->linkFromNode == nullptr) {
             continue;
         }
         lineLine->linkData->linkToNode = objMap[line.connectTo()];
-        if (lineLine->linkData->linkToNode.isNull()) {
+        if (lineLine->linkData->linkToNode == nullptr) {
             continue;
         }
         if (version > 1) {
@@ -194,7 +192,7 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
         lineLine->linkData->isEditing = false;
         switch (lineLine->linkData->linkFromNode->objectType()) {
             case GraphicObjectType::Node_Event_State: {
-                auto eventNode = qSharedPointerCast<NodeEventState>(lineLine->linkData->linkFromNode);
+                auto eventNode = dynamic_cast<const NodeEventState*>(lineLine->linkData->linkFromNode);
                 EventTriggerFunction* trigger;
                 if (line.failBranch()) {
                     trigger = &eventNode->eventStateData->eventPropData.errorEvent();
@@ -208,7 +206,7 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             }
                 break;
             case GraphicObjectType::Node_MultiEvent_State: {
-                auto multiEventNode = qSharedPointerCast<NodeMultiEventState>(lineLine->linkData->linkFromNode);
+                auto multiEventNode = dynamic_cast<const NodeMultiEventState*>(lineLine->linkData->linkFromNode);
                 QList<EventTriggerFunction> &events = multiEventNode->eventStateData->eventPropData.events();
                 EventTriggerFunction* trigger;
                 if (version == 1) {
@@ -227,7 +225,7 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             }
                 break;
             case GraphicObjectType::Node_Condition_State: {
-                auto conditionNode = qSharedPointerCast<NodeConditionState>(lineLine->linkData->linkFromNode);
+                auto conditionNode = dynamic_cast<const NodeConditionState*>(lineLine->linkData->linkFromNode);
                 QList<int>& branchIds = conditionNode->conditionStateData->conditionPropData.branchIds();
                 if (version == 1) {
                     branchIds.append(line.branchId());
@@ -241,7 +239,7 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             }
                 break;
             case GraphicObjectType::Node_State_Group: {
-                auto groupNode = qSharedPointerCast<NodeStateGroup>(lineLine->linkData->linkFromNode);
+                auto groupNode = dynamic_cast<const NodeStateGroup*>(lineLine->linkData->linkFromNode);
                 if (line.failBranch()) {
                     groupNode->groupData->groupPropData.errorTriggerFunc = line.trigger();
                 }
@@ -259,9 +257,9 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             default:
                 break;
         }
-        controls->get<GraphicObjCreateControl>()->linkLines << lineLine;
+        //controls->get<GraphicObjCreateControl>()->linkLines << lineLine;
     }
-    controls->get<GraphicLayerControl>()->updateStaticLinkLines(controls->get<GraphicObjCreateControl>()->linkLines);
+    //controls->get<GraphicLayerControl>()->updateStaticLinkLines(controls->get<GraphicObjCreateControl>()->linkLines);
     controls->get<GraphicLayerControl>()->graphLayerReload();
     controls->get<GraphicLayerControl>()->makeAllStaticNodeChanged();
     repaint();

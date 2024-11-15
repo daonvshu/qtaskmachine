@@ -10,15 +10,15 @@ class GraphicLinkLine : public GraphicObject {
 public:
     explicit GraphicLinkLine(const QSharedPointer<GraphicLinkLineData>& data);
 
-    static QSharedPointer<GraphicLinkLine> create() {
+    static GraphicLinkLine* create() {
         return objectCreate<GraphicLinkLine, GraphicLinkLineData>();
     }
 
-    QSharedPointer<GraphicObject> clone() override {
+    GraphicObject* clone() const override {
         return objectCreate<GraphicLinkLine, GraphicLinkLineData>(*linkData);
     }
 
-    bool selectTest(const QPointF &point) override;
+    bool selectTest(const QPointF &point) const override;
 
     GraphicObjectType objectType() const override {
         return GraphicObjectType::Link_Line;

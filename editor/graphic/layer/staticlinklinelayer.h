@@ -19,5 +19,5 @@ public:
     void reCache() override;
 
 public:
-    GraphicLinkLineList staticLinkLineList;
+    QUndoStack* graphicEntries = nullptr;
 };

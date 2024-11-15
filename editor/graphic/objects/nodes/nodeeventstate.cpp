@@ -18,7 +18,7 @@ ConfigFlowExecutor NodeEventState::toFlowExecutor() const {
     return executor;
 }
 
-void NodeEventState::fromExecutor(const ConfigFlowExecutor &executor) {
+void NodeEventState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     eventStateData->eventPropData.timeout = executor.timeout();
     eventStateData->eventPropData.timeoutRetryCount = executor.retry();

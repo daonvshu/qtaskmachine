@@ -16,7 +16,7 @@ ConfigFlowExecutor NodeConditionState::toFlowExecutor() const {
     return executor;
 }
 
-void NodeConditionState::fromExecutor(const ConfigFlowExecutor &executor) {
+void NodeConditionState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     conditionStateData->conditionPropData.conditionFunc = executor.condition();
     conditionStateData->conditionPropData.branchIds().clear();

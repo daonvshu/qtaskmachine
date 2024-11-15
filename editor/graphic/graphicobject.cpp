@@ -6,6 +6,14 @@ GraphicObject::GraphicObject(const QSharedPointer<GraphicObjectData> &data)
 
 }
 
-bool GraphicObject::selectTest(const QPointF &point) {
+bool GraphicObject::selectTest(const QPointF &point) const {
     return false;
+}
+
+void GraphicObject::undo() {
+    data->assignRemoved = true;
+}
+
+void GraphicObject::redo() {
+    data->assignRemoved = false;
 }

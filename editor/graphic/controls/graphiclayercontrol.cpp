@@ -54,39 +54,44 @@ void GraphicLayerControl::reloadLayer(GraphicLayerTypes layerType) {
 }
 
 void GraphicLayerControl::clearAllGraphic() {
-    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode.clear();
+    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode = nullptr;
     layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.clear();
-    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList.clear();
-    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->staticLinkLineList.clear();
+    d->graphicObjects.clear();
     graphLayerReload();
 }
 
-void GraphicLayerControl::setActiveNode(const QSharedPointer<GraphicObject> &activeNode) {
-    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode = activeNode;
+void GraphicLayerControl::setActiveNode(const GraphicObject* activeNode) {
+    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->activeNode = const_cast<GraphicObject*>(activeNode);
     reloadLayer(GraphicLayerType::Layer_Active_Node);
     if (activeNode != nullptr) {
         //测试是否有连接线
-        const auto& staticLinks = layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->staticLinkLineList;
-        for (const auto& linkLine : staticLinks) {
+        for (int i = 0; i < d->graphicObjects.index(); i++) {
+            auto linkLine = dynamic_cast<const GraphicLinkLine*>(d->graphicObjects.command(i));
+            if (linkLine == nullptr) {
+                continue;
+            }
+            if (linkLine->data->assignRemoved) {
+                continue;
+            }
             if (linkLine->linkData->linkFromNode == activeNode ||
                 linkLine->linkData->linkToNode == activeNode)
             {
                 linkLine->linkData->selected = true;
-                layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.insert(linkLine);
+                layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.insert(const_cast<GraphicLinkLine*>(linkLine));
             }
         }
         reloadLayer(GraphicLayerType::Layer_Active_Link);
     }
 }
 
-void GraphicLayerControl::setActiveLinkLine(const QSharedPointer<GraphicLinkLine> &activeLinkLine) {
+void GraphicLayerControl::setActiveLinkLine(GraphicLinkLine* activeLinkLine) {
     layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.insert(activeLinkLine);
     reloadLayer(GraphicLayerType::Layer_Active_Link);
 }
 
-void GraphicLayerControl::cancelActiveLinkLine(const QSharedPointer<GraphicLinkLine> &activeLinkLine) {
+void GraphicLayerControl::cancelActiveLinkLine(const GraphicLinkLine* activeLinkLine) {
     activeLinkLine->linkData->selected = false;
-    layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.remove(activeLinkLine);
+    layer<ActiveLinkLineLayer>(GraphicLayerType::Layer_Active_Link)->activeLinkLineList.remove(const_cast<GraphicLinkLine*>(activeLinkLine));
     reloadLayer(GraphicLayerType::Layer_Active_Link);
 }
 
@@ -99,23 +104,29 @@ void GraphicLayerControl::cancelAllActiveLinkLine() {
     reloadLayer(GraphicLayerType::Layer_Active_Link);
 }
 
-void GraphicLayerControl::updateStaticNodes(const GraphicObjectList &nodes, bool layerReload) {
-    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList = nodes;
+void GraphicLayerControl::updateStaticNodes(QUndoStack* nodes, bool layerReload) {
+    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->graphicEntries = nodes;
     if (layerReload) {
         reloadLayer(GraphicLayerType::Layer_Static_Node);
     }
 }
 
-void GraphicLayerControl::updateStaticLinkLines(const GraphicLinkLineList &linkLines, bool layerReload) {
-    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->staticLinkLineList = linkLines;
+void GraphicLayerControl::updateStaticLinkLines(QUndoStack* linkLines, bool layerReload) {
+    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->graphicEntries = linkLines;
     if (layerReload) {
         reloadLayer(GraphicLayerType::Layer_Static_Link);
     }
 }
 
-void GraphicLayerControl::makeAllStaticNodeChanged() {
-    auto& nodeList = layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->staticNodeList;
-    for (auto& node : nodeList) {
+void GraphicLayerControl::makeAllStaticNodeChanged() const {
+    for (int i = 0; i < d->graphicObjects.index(); i++) {
+        auto node = dynamic_cast<const GraphicNode*>(d->graphicObjects.command(i));
+        if (node == nullptr) {
+            continue;
+        }
+        if (node->data->assignRemoved) {
+            continue;
+        }
         node->data->isChanged = true;
     }
 }

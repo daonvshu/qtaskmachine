@@ -5,8 +5,8 @@
 #include <qsharedpointer.h>
 
 struct GraphicLinkLineData : GraphicObjectData {
-    QSharedPointer<GraphicNode> linkFromNode;  //链接的源节点
-    QSharedPointer<GraphicNode> linkToNode;    //链接的目标节点
+    const GraphicNode* linkFromNode = nullptr;  //链接的源节点
+    const GraphicNode* linkToNode = nullptr;    //链接的目标节点
 
     int linkFromPointIndex = -1; //链接的源节点输出连接点index
     int linkToPointIndex = -1;   //链接的目标节点输入连接点index

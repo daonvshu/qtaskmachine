@@ -15,7 +15,7 @@ ConfigFlowExecutor NodeRecoveryState::toFlowExecutor() const {
     return executor;
 }
 
-void NodeRecoveryState::fromExecutor(const ConfigFlowExecutor &executor) {
+void NodeRecoveryState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     recoveryStateData->recoveryPropData.nested = executor.nested();
 }

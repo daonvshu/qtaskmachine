@@ -9,11 +9,11 @@ class NodeDelayState : public GraphicNode {
 public:
     explicit NodeDelayState(const QSharedPointer<NodeDelayStateData>& data);
 
-    static QSharedPointer<NodeDelayState> create() {
+    static NodeDelayState* create() {
         return objectCreate<NodeDelayState, NodeDelayStateData>();
     }
 
-    QSharedPointer<GraphicObject> clone() override {
+    GraphicObject* clone() const override {
         return objectCreate<NodeDelayState, NodeDelayStateData>(*delayStateData);
     }
 
@@ -23,7 +23,7 @@ public:
 
     ConfigFlowExecutor toFlowExecutor() const override;
 
-    void fromExecutor(const ConfigFlowExecutor &executor) override;
+    void fromExecutor(const ConfigFlowExecutor &executor) const override;
 
     void drawObject() override;
 

@@ -9,11 +9,11 @@ class NodeMultiEventState : public GraphicNode {
 public:
     explicit NodeMultiEventState(const QSharedPointer<NodeMultiEventStateData>& data);
 
-    static QSharedPointer<NodeMultiEventState> create() {
+    static NodeMultiEventState* create() {
         return objectCreate<NodeMultiEventState, NodeMultiEventStateData>();
     }
 
-    QSharedPointer<GraphicObject> clone() override {
+    GraphicObject* clone() const override {
         return objectCreate<NodeMultiEventState, NodeMultiEventStateData>(*eventStateData);
     }
 
@@ -21,7 +21,7 @@ public:
         return GraphicObjectType::Node_MultiEvent_State;
     }
 
-    void fromExecutor(const ConfigFlowExecutor &executor) override;
+    void fromExecutor(const ConfigFlowExecutor &executor) const override;
 
     void drawObject() override;
 

@@ -8,7 +8,7 @@ ActiveNodeLayer::ActiveNodeLayer(QObject *parent)
 }
 
 void ActiveNodeLayer::reload(QPainter *painter) {
-    if (activeNode.isNull()) {
+    if (activeNode == nullptr) {
         return;
     }
 
@@ -25,7 +25,7 @@ void ActiveNodeLayer::reload(QPainter *painter) {
 }
 
 void ActiveNodeLayer::reCache() {
-    if (activeNode.isNull()) {
+    if (activeNode == nullptr) {
         return;
     }
 

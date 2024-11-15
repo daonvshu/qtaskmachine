@@ -20,5 +20,5 @@ public:
     void reCache() override;
 
 public:
-    QSet<QSharedPointer<GraphicLinkLine>> activeLinkLineList;
+    QSet<GraphicLinkLine*> activeLinkLineList;
 };

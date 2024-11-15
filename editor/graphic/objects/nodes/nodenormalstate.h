@@ -8,11 +8,11 @@ class NodeNormalState : public GraphicNode {
 public:
     explicit NodeNormalState(const QSharedPointer<GraphicNodeData>& data);
 
-    static QSharedPointer<NodeNormalState> create() {
+    static NodeNormalState* create() {
         return objectCreate<NodeNormalState, GraphicNodeData>();
     }
 
-    QSharedPointer<GraphicObject> clone() override {
+    GraphicObject* clone() const override {
         return objectCreate<NodeNormalState, GraphicNodeData>(*nodeData);
     }
 

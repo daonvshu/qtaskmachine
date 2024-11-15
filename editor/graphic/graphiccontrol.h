@@ -3,6 +3,7 @@
 #include <qobject.h>
 #include <qsharedpointer.h>
 #include <qtransform.h>
+#include <qundostack.h>
 
 #include "graphicview.h"
 
@@ -30,6 +31,8 @@ struct GraphicControlSharedData {
         }
         return nullptr;
     }
+
+    QUndoStack graphicObjects;
 };
 
 class GraphicControl : public QObject {
@@ -59,5 +62,9 @@ public:
     template<typename T>
     T* get() {
         return d->getControl<T>();
+    }
+
+    QUndoStack* getObjects() const {
+        return &d->graphicObjects;
     }
 };

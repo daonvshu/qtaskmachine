@@ -50,15 +50,15 @@ private:
     bool linkLineCreating = false;
     bool linkLineSelected = false;
     QPointF lastMousePoint;
-    QSharedPointer<class GraphicNode> lastHoverActiveNode;
-    QWeakPointer<GraphicObject> preCopyObject;
+    const class GraphicNode* lastHoverActiveNode = nullptr;
+    const GraphicObject* preCopyObject = nullptr;
 
 private:
     void selectObjPress(const QPoint& mousePos);
     void selectObjMove(const QPoint& mousePos);
     void selectObjRelease();
 
-    void linkLineMove(const QPoint& mousePos);
+    void linkLineMove(const QPoint& mousePos) const;
     void linkLineRelease();
 
     /**
@@ -66,48 +66,48 @@ private:
      * @param obj
      * @param event
      */
-    void showSelectedObjectMenu(const QSharedPointer<GraphicObject>& obj, QContextMenuEvent *event);
+    void showSelectedObjectMenu(const GraphicObject* obj, QContextMenuEvent *event);
 
     /**
      * @brief 显示链接线的右键菜单
      * @param obj
      * @param event
      */
-    void showLinkLineMenu(const QSharedPointer<GraphicObject>& obj, QContextMenuEvent *event);
+    void showLinkLineMenu(const GraphicObject* obj, QContextMenuEvent *event) const;
 
     /**
      * @brief 显示背景的右键菜单
      * @param event
      */
-    void showBlackboardMenu(QContextMenuEvent *event);
+    void showBlackboardMenu(QContextMenuEvent *event) const;
 
     /**
      * @brief 编辑节点对象
      * @param obj
      */
-    void editNodeObject(const QSharedPointer<GraphicObject>& obj);
+    void editNodeObject(const GraphicObject* obj) const;
 
     /**
      * @brief 预拷贝对象
      * @param obj
      */
-    void copyNodeObject(const QSharedPointer<GraphicObject>& obj);
+    void copyNodeObject(const GraphicObject* obj);
 
     /**
      * @brief 粘贴对象
      * @param mousePos
      */
-    void pasteNodeObject(const QPoint& mousePos);
+    void pasteNodeObject(const QPoint& mousePos) const;
 
     /**
      * @brief 删除对象
      * @param obj
      */
-    void deleteNodeObject(const QSharedPointer<GraphicObject>& obj);
+    void deleteNodeObject(const GraphicObject* obj) const;
 
     /**
      * @brief 删除链接线
      * @param obj
      */
-    void removeLinkLine(const QSharedPointer<GraphicObject>& obj);
+    void removeLinkLine(const GraphicObject* obj) const;
 };

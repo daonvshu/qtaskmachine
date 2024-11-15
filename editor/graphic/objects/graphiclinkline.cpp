@@ -11,7 +11,7 @@ GraphicLinkLine::GraphicLinkLine(const QSharedPointer<GraphicLinkLineData> &data
 {
 }
 
-bool GraphicLinkLine::selectTest(const QPointF &point) {
+bool GraphicLinkLine::selectTest(const QPointF &point) const {
     if (linkData->linkFromPointIndex >= linkData->linkFromNode->nodeData->outputLinkPoints.size()) {
         return false;
     }
@@ -74,7 +74,7 @@ void GraphicLinkLine::drawObject() {
     path.moveTo(linkFromPoint);
     path.cubicTo(controlPoint1, controlPoint2, linkToPoint);
 
-    auto linkColor = qSharedPointerCast<GraphicNode>(linkData->linkFromNode)->getLinkPointColor(linkData->linkFromPointIndex, false);
+    auto linkColor = dynamic_cast<const GraphicNode*>(linkData->linkFromNode)->getLinkPointColor(linkData->linkFromPointIndex, false);
     if (!linkData->selected) {
         linkColor = linkColor.darker(150);
     }

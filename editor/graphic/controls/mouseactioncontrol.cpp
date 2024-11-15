@@ -65,11 +65,11 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
     }
     if (selectedObj) {
         if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
-            lastHoverActiveNode = qSharedPointerCast<GraphicNode>(selectedObj);
+            lastHoverActiveNode = dynamic_cast<const GraphicNode*>(selectedObj);
             //测试是否在输出连接点上
             auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
-            auto inputLinkIndex = qSharedPointerCast<GraphicNode>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
-            auto outputLinkIndex = qSharedPointerCast<GraphicNode>(selectedObj)->testOnLinkPoint(currentMousePoint, false);
+            auto inputLinkIndex = dynamic_cast<const GraphicNode*>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
+            auto outputLinkIndex = dynamic_cast<const GraphicNode*>(selectedObj)->testOnLinkPoint(currentMousePoint, false);
             lastHoverActiveNode->makeLinkPointActive(inputLinkIndex, true);
             lastHoverActiveNode->makeLinkPointActive(outputLinkIndex, false);
             d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
@@ -109,12 +109,11 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
     if (selectedObj) {
         if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
             //测试是否在输出连接点上
-            auto node = qSharedPointerCast<GraphicNode>(selectedObj);
+            auto node = dynamic_cast<const GraphicNode*>(selectedObj);
             auto linkIndex = node->testOnLinkPoint(lastMousePoint, false);
             if (linkIndex != -1) {
                 //检查是否有链接线连接，输出节点只能连接一条线
-                bool linkLineLinked = d->getControl<GraphicObjCreateControl>()->checkIsAnyLinkLineLinkedToNode(node, linkIndex);
-                if (linkLineLinked) {
+                if (d->getControl<GraphicObjCreateControl>()->checkIsAnyLinkLineLinkedToNode(node, linkIndex)) {
                     linkIndex = -1;
                 }
             }
@@ -147,15 +146,15 @@ void MouseActionControl::selectObjRelease() {
     d->getControl<GraphicObjCreateControl>()->objTranslateFinished();
 }
 
-void MouseActionControl::linkLineMove(const QPoint &mousePos) {
+void MouseActionControl::linkLineMove(const QPoint &mousePos) const {
     auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
-    QSharedPointer<GraphicObject> linkToObject;
+    const GraphicObject* linkToObject = nullptr;
     int linkPointIndex = -1;
     //测试是否在对象的输入连接点上
     auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
     if (selectedObj) {
         if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
-            auto linkIndex = qSharedPointerCast<GraphicNode>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
+            auto linkIndex = dynamic_cast<const GraphicNode*>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
             if (linkIndex != -1) {
                 linkToObject = selectedObj;
                 linkPointIndex = linkIndex;
@@ -172,7 +171,7 @@ void MouseActionControl::linkLineRelease() {
 
 void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
     auto selectedObject = d->getControl<GraphicObjCreateControl>()->selectTest(event->pos());
-    if (!selectedObject.isNull()) {
+    if (selectedObject != nullptr) {
         if (selectedObject->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
             d->getControl<GraphicObjCreateControl>()->setObjectSelected(selectedObject);
             d->view->update();
@@ -198,12 +197,12 @@ void MouseActionControl::installShortcut() {
 
     new QShortcut(QKeySequence("Del"), d->view, [this] {
         auto activeNode = d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj();
-        if (!activeNode.isNull()) {
+        if (activeNode != nullptr) {
             deleteNodeObject(activeNode);
             return;
         }
         auto activeLinkLine = d->getControl<GraphicObjCreateControl>()->getSelectedLinkLine();
-        if (!activeLinkLine.isNull()) {
+        if (activeLinkLine != nullptr) {
             removeLinkLine(activeLinkLine);
             return;
         }
@@ -214,7 +213,7 @@ void MouseActionControl::installShortcut() {
     });
 }
 
-void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObject> &obj, QContextMenuEvent *event) {
+void MouseActionControl::showSelectedObjectMenu(const GraphicObject* obj, QContextMenuEvent *event) {
     QMenu menu(d->view);
     QList<QAction *> actions;
     actions << menu.addAction(tr("复制"), [this, obj] { copyNodeObject(obj); }, QKeySequence("Ctrl+C"));
@@ -225,14 +224,14 @@ void MouseActionControl::showSelectedObjectMenu(const QSharedPointer<GraphicObje
     menu.exec(event->globalPos());
 }
 
-void MouseActionControl::showLinkLineMenu(const QSharedPointer<GraphicObject> &obj, QContextMenuEvent *event) {
+void MouseActionControl::showLinkLineMenu(const GraphicObject* obj, QContextMenuEvent *event) const {
     QMenu menu(d->view);
     QList<QAction *> actions;
     actions << menu.addAction(tr("删除"), [this, obj] { removeLinkLine(obj); }, QKeySequence("Del"));
     menu.exec(event->globalPos());
 }
 
-void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) {
+void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) const {
     QMenu menu(d->view);
     QList<QAction *> actions;
     actions << menu.addAction(tr("粘贴"), [this, event] { pasteNodeObject(event->pos()); }, QKeySequence("Ctrl+V"));
@@ -254,8 +253,8 @@ void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) {
     }
 }
 
-void MouseActionControl::editNodeObject(const QSharedPointer<GraphicObject> &obj) {
-    if (obj.isNull()) {
+void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
+    if (obj == nullptr) {
         return;
     }
 
@@ -356,30 +355,30 @@ void MouseActionControl::editNodeObject(const QSharedPointer<GraphicObject> &obj
     }
 }
 
-void MouseActionControl::copyNodeObject(const QSharedPointer<GraphicObject> &obj) {
-    if (obj.isNull()) {
+void MouseActionControl::copyNodeObject(const GraphicObject* obj) {
+    if (obj == nullptr) {
         return;
     }
-    preCopyObject = obj.toWeakRef();
+    preCopyObject = obj;
 }
 
-void MouseActionControl::pasteNodeObject(const QPoint& mousePos) {
-    if (preCopyObject.isNull()) {
+void MouseActionControl::pasteNodeObject(const QPoint& mousePos) const {
+    if (preCopyObject == nullptr) {
         return;
     }
-    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObject.toStrongRef(), mousePos);
+    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObject, mousePos);
     d->view->repaint();
 }
 
-void MouseActionControl::deleteNodeObject(const QSharedPointer<GraphicObject> &obj) {
-    if (obj.isNull()) {
+void MouseActionControl::deleteNodeObject(const GraphicObject* obj) const {
+    if (obj == nullptr) {
         return;
     }
     d->getControl<GraphicObjCreateControl>()->removeNodeObject(obj);
     d->view->repaint();
 }
 
-void MouseActionControl::removeLinkLine(const QSharedPointer<GraphicObject> &obj) {
+void MouseActionControl::removeLinkLine(const GraphicObject* obj) const {
     d->getControl<GraphicObjCreateControl>()->removeLinkLine(obj);
     d->view->update();
 }
