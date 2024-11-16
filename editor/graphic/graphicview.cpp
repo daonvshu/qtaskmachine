@@ -80,11 +80,17 @@ void GraphicView::saveFlow() {
     QHash<const GraphicObject*, int> objIdMap;
     for (int i = 0; i < objects->index(); i++) {
         if (auto node = dynamic_cast<const GraphicNode*>(objects->command(i))) {
+            if (node->data->assignRemoved) {
+                continue;
+            }
             auto executor = node->toFlowExecutor();
             executor.id = nodeId++;
             currentFlow->executors() << executor;
             objIdMap[node] = executor.id();
         } else if (auto linkLine = dynamic_cast<const GraphicLinkLine*>(objects->command(i))) {
+            if (linkLine->data->assignRemoved) {
+                continue;
+            }
             ConfigFlowConnectLine line;
             line.connectFrom = objIdMap[linkLine->linkData->linkFromNode];
             if (line.connectFrom() == 0) {
@@ -257,11 +263,13 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             default:
                 break;
         }
-        //controls->get<GraphicObjCreateControl>()->linkLines << lineLine;
+        controls->getObjects()->push(lineLine);
     }
-    //controls->get<GraphicLayerControl>()->updateStaticLinkLines(controls->get<GraphicObjCreateControl>()->linkLines);
     controls->get<GraphicLayerControl>()->graphLayerReload();
     controls->get<GraphicLayerControl>()->makeAllStaticNodeChanged();
+
+    controls->getObjects()->push(new QUndoCommand("DocumentLoad"));
+
     repaint();
 
     ignoreSaveState = false;

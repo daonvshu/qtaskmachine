@@ -14,6 +14,7 @@ class GraphicObject
 {
 public:
     explicit GraphicObject(const QSharedPointer<GraphicObjectData>& data);
+    ~GraphicObject();
 
     virtual bool selectTest(const QPointF& point) const;
 

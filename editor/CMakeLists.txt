@@ -99,6 +99,11 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/objects/graphiclinkline.h
     graphic/objects/graphiclinkline.cpp
 
+    graphic/objects/actions/nodemoveaction.h
+    graphic/objects/actions/nodemoveaction.cpp
+    graphic/objects/actions/objectremoveaction.h
+    graphic/objects/actions/objectremoveaction.cpp
+
     graphic/objects/nodes/nodebeginstate.h
     graphic/objects/nodes/nodebeginstate.cpp
     graphic/objects/nodes/nodeendstate.h

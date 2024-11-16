@@ -6,6 +6,10 @@ StaticLinkLineLayer::StaticLinkLineLayer(QObject *parent)
 }
 
 void StaticLinkLineLayer::reload(QPainter *painter) {
+    if (graphicEntries == nullptr) {
+        return;
+    }
+
     for (int i = 0; i < graphicEntries->index(); i++) {
         auto linkLine = const_cast<GraphicLinkLine*>(dynamic_cast<const GraphicLinkLine*>(graphicEntries->command(i)));
         if (linkLine == nullptr) {

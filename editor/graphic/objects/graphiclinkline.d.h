@@ -2,8 +2,6 @@
 
 #include "graphicnode.h"
 
-#include <qsharedpointer.h>
-
 struct GraphicLinkLineData : GraphicObjectData {
     const GraphicNode* linkFromNode = nullptr;  //链接的源节点
     const GraphicNode* linkToNode = nullptr;    //链接的目标节点

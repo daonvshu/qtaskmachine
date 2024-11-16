@@ -12,4 +12,7 @@ enum class GraphicObjectType {
     Node_Recovery_State,        // 恢复点
 
     Link_Line,                  // 连接线
+
+    Action_Node_Move,           // 节点移动
+    Action_Object_Remove,       // 对象删除
 };

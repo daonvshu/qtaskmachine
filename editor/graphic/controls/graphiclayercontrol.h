@@ -77,20 +77,6 @@ public:
     void cancelAllActiveLinkLine();
 
     /**
-     * @brief 更新静态节点
-     * @param nodes
-     * @param layerReload
-     */
-    void updateStaticNodes(QUndoStack* nodes, bool layerReload = true);
-
-    /**
-     * @brief 更新静态连线
-     * @param linkLines
-     * @param layerReload
-     */
-    void updateStaticLinkLines(QUndoStack* linkLines, bool layerReload = true);
-
-    /**
      * @brief 强制更新所有node
      */
     void makeAllStaticNodeChanged() const;

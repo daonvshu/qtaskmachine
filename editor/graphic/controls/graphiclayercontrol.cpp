@@ -18,6 +18,9 @@ GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlShar
     layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Active_Link, new ActiveLinkLineLayer(this));
     graphLayerReload();
+
+    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->graphicEntries = &d->graphicObjects;
+    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->graphicEntries = &d->graphicObjects;
 }
 
 void GraphicLayerControl::graphLayerReload() {
@@ -102,20 +105,6 @@ void GraphicLayerControl::cancelAllActiveLinkLine() {
     }
     activeLinkLines.clear();
     reloadLayer(GraphicLayerType::Layer_Active_Link);
-}
-
-void GraphicLayerControl::updateStaticNodes(QUndoStack* nodes, bool layerReload) {
-    layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->graphicEntries = nodes;
-    if (layerReload) {
-        reloadLayer(GraphicLayerType::Layer_Static_Node);
-    }
-}
-
-void GraphicLayerControl::updateStaticLinkLines(QUndoStack* linkLines, bool layerReload) {
-    layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->graphicEntries = linkLines;
-    if (layerReload) {
-        reloadLayer(GraphicLayerType::Layer_Static_Link);
-    }
 }
 
 void GraphicLayerControl::makeAllStaticNodeChanged() const {

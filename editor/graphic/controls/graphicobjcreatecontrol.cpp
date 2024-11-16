@@ -10,6 +10,9 @@
 #include "../objects/nodes/nodestategroup.h"
 #include "../objects/nodes/noderecoverystate.h"
 
+#include "../objects/actions/nodemoveaction.h"
+#include "../objects/actions/objectremoveaction.h"
+
 #include "graphiclayercontrol.h"
 
 GraphicObjCreateControl::GraphicObjCreateControl(const QSharedPointer<GraphicControlSharedData> &data, QObject *parent)
@@ -56,7 +59,6 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPointF& r
         editingNodeObject->data->renderPosition = realPoint;
         editingNodeObject->data->selected = true;
         d->graphicObjects.push(newObject);
-        d->getControl<GraphicLayerControl>()->updateStaticNodes(&d->graphicObjects, false);
     }
     d->getControl<GraphicLayerControl>()->setActiveNode(newObject);
     d->view->repaint();
@@ -70,7 +72,7 @@ void GraphicObjCreateControl::copyNodeToMousePoint(const GraphicObject* nodeObje
         newObj->data->selected = false;
     }
     d->graphicObjects.push(newObj);
-    d->getControl<GraphicLayerControl>()->updateStaticNodes(&d->graphicObjects);
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
     emit graphicObjectChanged();
 }
 
@@ -112,6 +114,7 @@ void GraphicObjCreateControl::setObjectSelected(const GraphicObject* object) {
     cancelObjActiveSelected();
     editingNodeObject = object;
     editingNodeObject->data->selected = true;
+    editingNodeObject->data->saveRenderPosition();
     d->getControl<GraphicLayerControl>()->setActiveNode(object);
     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
 }
@@ -124,15 +127,18 @@ void GraphicObjCreateControl::objTranslate(const QPointF& delta) const {
 }
 
 void GraphicObjCreateControl::objTranslateFinished() {
+    if (editingNodeObject->data->renderPositionChanged()) {
+        d->graphicObjects.push(NodeMoveAction::create(dynamic_cast<const GraphicNode *>(editingNodeObject)));
+    }
     emit graphicObjectChanged();
 }
 
 void GraphicObjCreateControl::removeNodeObject(const GraphicObject* object) {
-    //nodeObjects.removeOne(object);
+    d->graphicObjects.push(ObjectRemoveAction::create(object));
     if (editingNodeObject == object) {
         cancelObjActiveSelected();
     }
-    d->getControl<GraphicLayerControl>()->updateStaticNodes(&d->graphicObjects);
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
     for (int i = 0; i < d->graphicObjects.index(); i++) {
         auto linkLine = dynamic_cast<const GraphicLinkLine*>(d->graphicObjects.command(i));
         if (linkLine == nullptr) {
@@ -173,7 +179,6 @@ void GraphicObjCreateControl::beginActiveLinkLine(const GraphicObject* linkFrom,
     editingLinkLine->linkData->selected = true;
     d->graphicObjects.push(newLinkLine);
     d->getControl<GraphicLayerControl>()->setActiveLinkLine(newLinkLine);
-    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(&d->graphicObjects, false);
 }
 
 void GraphicObjCreateControl::updateActiveLinkLineToPoint(const GraphicObject* linkTo, int linkPointIndex, const QPointF &curMousePoint) const {
@@ -189,8 +194,8 @@ void GraphicObjCreateControl::releaseActiveLinkLine() {
     if (editingLinkLine) {
         editingLinkLine->linkData->isEditing = false;
         if (editingLinkLine->linkData->linkToNode == nullptr) {
-            //linkLines.removeOne(editingLinkLine);
-            d->getControl<GraphicLayerControl>()->updateStaticLinkLines(&d->graphicObjects);
+            d->graphicObjects.undo(); //undo to assign link line is removed
+            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
             d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(editingLinkLine);
             editingLinkLine = nullptr;
         } else {
@@ -216,7 +221,6 @@ void GraphicObjCreateControl::setLinkLineSelected(const GraphicObject* object) {
     selectedLinkLine = dynamic_cast<const GraphicLinkLine*>(object);
     selectedLinkLine->data->selected = true;
     d->getControl<GraphicLayerControl>()->setActiveLinkLine(const_cast<GraphicLinkLine*>(selectedLinkLine));
-    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(&d->graphicObjects, false);
 }
 
 void GraphicObjCreateControl::cancelSelectedLinkLine() const {
@@ -229,8 +233,8 @@ void GraphicObjCreateControl::cancelSelectedLinkLine() const {
 
 void GraphicObjCreateControl::removeLinkLine(const GraphicObject* linkLine) {
     cancelSelectedLinkLine();
-    //linkLines.removeOne(dynamic_cast<const GraphicLinkLine*>(linkLine));
-    d->getControl<GraphicLayerControl>()->updateStaticLinkLines(&d->graphicObjects);
+    d->graphicObjects.push(ObjectRemoveAction::create(linkLine));
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
     emit graphicObjectChanged();
 }
 

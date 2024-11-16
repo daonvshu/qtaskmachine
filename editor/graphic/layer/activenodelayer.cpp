@@ -12,6 +12,10 @@ void ActiveNodeLayer::reload(QPainter *painter) {
         return;
     }
 
+    if (activeNode->data->assignRemoved) {
+        return;
+    }
+
     //更新位置
     auto& boundingRect = qSharedPointerCast<GraphicNodeData>(activeNode->data)->boundingRect;
     boundingRect.moveTop(activeNode->data->renderPosition.y());
@@ -26,6 +30,10 @@ void ActiveNodeLayer::reload(QPainter *painter) {
 
 void ActiveNodeLayer::reCache() {
     if (activeNode == nullptr) {
+        return;
+    }
+
+    if (activeNode->data->assignRemoved) {
         return;
     }
 

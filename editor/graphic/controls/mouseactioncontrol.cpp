@@ -25,6 +25,7 @@
 #include <qmenu.h>
 #include <qaction.h>
 #include <qshortcut.h>
+#include <qtimer.h>
 
 void MouseActionControl::mousePress(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
@@ -101,11 +102,12 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
     linkLineCreating = false;
     lastMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
 
+    const GraphicObject* selectedObj = nullptr;
     if (d->getControl<GraphicObjCreateControl>()->testOnSelectedNode(mousePos)) {
-        objectSelected = true;
-        return;
+        selectedObj = d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj();
+    } else {
+        selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
     }
-    auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
     if (selectedObj) {
         if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
             //测试是否在输出连接点上
@@ -210,6 +212,37 @@ void MouseActionControl::installShortcut() {
 
     new QShortcut(QKeySequence("Ctrl+D"), d->view, [this] {
         editNodeObject(d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj());
+    });
+
+    new QShortcut(QKeySequence("Ctrl+Z"), d->view, [&] {
+        if (!d->graphicObjects.canUndo()) {
+            return;
+        }
+        if (d->graphicObjects.command(d->graphicObjects.index() - 1)->text() == "DocumentLoad") {
+            return;
+        }
+        d->graphicObjects.undo();
+        d->getControl<GraphicLayerControl>()->graphLayerReload();
+        d->getControl<GraphicObjCreateControl>()->graphicObjectChanged();
+        d->view->update();
+        QTimer::singleShot(20, this, [&] {
+            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Link | GraphicLayerType::Layer_Static_Link);
+            d->view->update();
+        });
+    });
+
+    new QShortcut(QKeySequence("Ctrl+Shift+Z"), d->view, [&] {
+        if (!d->graphicObjects.canRedo()) {
+            return;
+        }
+        d->graphicObjects.redo();
+        d->getControl<GraphicLayerControl>()->graphLayerReload();
+        d->getControl<GraphicObjCreateControl>()->graphicObjectChanged();
+        d->view->update();
+        QTimer::singleShot(20, this, [&] {
+            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Link | GraphicLayerType::Layer_Static_Link);
+            d->view->update();
+        });
     });
 }
 

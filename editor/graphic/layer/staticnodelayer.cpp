@@ -1,5 +1,7 @@
 #include "staticnodelayer.h"
 
+#include "../objects/graphicnode.h"
+
 #include <qelapsedtimer.h>
 #include <qdebug.h>
 
@@ -13,7 +15,7 @@ void StaticNodeLayer::reload(QPainter *painter) {
         return;
     }
     for (int i = 0; i < graphicEntries->index(); i++) {
-        auto node = dynamic_cast<const GraphicObject*>(graphicEntries->command(i));
+        auto node = dynamic_cast<const GraphicNode*>(graphicEntries->command(i));
         if (!isValidObject(node)) {
             continue;
         }
@@ -23,14 +25,17 @@ void StaticNodeLayer::reload(QPainter *painter) {
 }
 
 void StaticNodeLayer::reCache() {
+    if (graphicEntries == nullptr) {
+        return;
+    }
     bool scaleChanged = checkAndUpdateScale();
     for (int i = 0; i < graphicEntries->index(); i++) {
-        auto node = dynamic_cast<const GraphicObject*>(graphicEntries->command(i));
+        auto node = dynamic_cast<const GraphicNode*>(graphicEntries->command(i));
         if (!isValidObject(node)) {
             continue;
         }
         if (node->data->isChanged || scaleChanged) {
-            reCacheNodeObject(const_cast<GraphicObject*>(node));
+            reCacheNodeObject(const_cast<GraphicNode*>(node));
         }
     }
 }
