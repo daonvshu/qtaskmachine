@@ -31,6 +31,7 @@ App::App(QWidget *parent)
 
     refreshConfigPathLabel();
 
+    AppSettings::init();
     auto lastOpenFilePath = AppSettings::lastOpenFilePath();
     if (!lastOpenFilePath.isEmpty()) {
         if (!QFileInfo::exists(lastOpenFilePath)) {
