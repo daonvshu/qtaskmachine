@@ -42,38 +42,46 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
     auto mousePos = e->pos();
     //qDebug() << "current mouse pos:" << mousePos;
 
+    bool selectTestRequired = true;
     if (e->buttons() & Qt::LeftButton) {
         if (objectSelected) {
             selectObjMove(mousePos);
+            selectTestRequired = false;
         } else if (linkLineCreating) {
             linkLineMove(mousePos);
+            selectTestRequired = true;
         } else if (linkLineSelected) {
             //...
         } else {
             d->getControl<TransformControl>()->dragMoving(mousePos);
             d->getControl<GraphicLayerControl>()->graphLayerReload();
+            selectTestRequired = false;
         }
     }
 
-    auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos, true);
-    if (selectedObj != lastHoverActiveNode) {
-        if (lastHoverActiveNode) {
-            lastHoverActiveNode->makeLinkPointActive(-1, true);
-            lastHoverActiveNode->makeLinkPointActive(-1, false);
-            lastHoverActiveNode = nullptr;
-            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
+    if (selectTestRequired) {
+        auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos, true);
+        if (selectedObj != lastHoverActiveNode) {
+            if (lastHoverActiveNode) {
+                lastHoverActiveNode->makeLinkPointActive(-1, true);
+                lastHoverActiveNode->makeLinkPointActive(-1, false);
+                lastHoverActiveNode = nullptr;
+                d->getControl<GraphicLayerControl>()->reloadLayer(
+                        GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
+            }
         }
-    }
-    if (selectedObj) {
-        if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
-            lastHoverActiveNode = dynamic_cast<const GraphicNode*>(selectedObj);
-            //测试是否在输出连接点上
-            auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
-            auto inputLinkIndex = dynamic_cast<const GraphicNode*>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
-            auto outputLinkIndex = dynamic_cast<const GraphicNode*>(selectedObj)->testOnLinkPoint(currentMousePoint, false);
-            lastHoverActiveNode->makeLinkPointActive(inputLinkIndex, true);
-            lastHoverActiveNode->makeLinkPointActive(outputLinkIndex, false);
-            d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
+        if (selectedObj) {
+            if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+                lastHoverActiveNode = dynamic_cast<const GraphicNode *>(selectedObj);
+                //测试是否在输出连接点上
+                auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
+                auto inputLinkIndex = dynamic_cast<const GraphicNode *>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
+                auto outputLinkIndex = dynamic_cast<const GraphicNode *>(selectedObj)->testOnLinkPoint(
+                        currentMousePoint, false);
+                lastHoverActiveNode->makeLinkPointActive(inputLinkIndex, true);
+                lastHoverActiveNode->makeLinkPointActive(outputLinkIndex, false);
+                d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Active_Node);
+            }
         }
     }
 

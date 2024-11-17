@@ -106,7 +106,7 @@ public:
     /**
      * @brief 取消当前选中的线
      */
-    void cancelSelectedLinkLine() const;
+    void cancelSelectedLinkLine();
 
     /**
      * @brief 删除指定链接线

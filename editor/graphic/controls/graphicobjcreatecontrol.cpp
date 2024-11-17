@@ -223,12 +223,13 @@ void GraphicObjCreateControl::setLinkLineSelected(const GraphicObject* object) {
     d->getControl<GraphicLayerControl>()->setActiveLinkLine(const_cast<GraphicLinkLine*>(selectedLinkLine));
 }
 
-void GraphicObjCreateControl::cancelSelectedLinkLine() const {
+void GraphicObjCreateControl::cancelSelectedLinkLine() {
     if (selectedLinkLine == nullptr) {
         return;
     }
     selectedLinkLine->data->selected = false;
     d->getControl<GraphicLayerControl>()->cancelActiveLinkLine(selectedLinkLine);
+    selectedLinkLine = nullptr;
 }
 
 void GraphicObjCreateControl::removeLinkLine(const GraphicObject* linkLine) {
