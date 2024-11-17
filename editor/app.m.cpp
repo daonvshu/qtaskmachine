@@ -1,7 +1,8 @@
 #include "app.h"
 
+#include "dialogs/messagedlg.h"
+
 #include <qfile.h>
-#include <qmessagebox.h>
 
 void App::refreshConfigPathLabel() {
     ui.config_path->setText(QStringLiteral("配置文件：%1").arg(configFilePath.isEmpty() ? QStringLiteral("（未设置）") : configFilePath));
@@ -24,6 +25,10 @@ void App::reloadFlowList() {
 void App::createNewConfig(const QString &filePath) {
     configFilePath = filePath;
     flowGroup.flows().clear();
+    auto newFlow = ConfigFlow();
+    newFlow.version = 2;
+    newFlow.name = QStringLiteral("新流程");
+    flowGroup.flows() << newFlow;
     refreshConfigPathLabel();
     reloadFlowList();
 }
@@ -31,13 +36,13 @@ void App::createNewConfig(const QString &filePath) {
 void App::openExistConfig(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(nullptr, QStringLiteral("错误"), QStringLiteral("文件无法打开！"));
+        MessageDlg::showMessage(QStringLiteral("错误"), QStringLiteral("文件无法打开！"), this);
         return;
     }
     auto data = file.readAll();
     auto doc = QJsonDocument::fromJson(data);
     if (doc.isNull()) {
-        QMessageBox::critical(nullptr, QStringLiteral("错误"), QStringLiteral("配置文件格式错误！"));
+        MessageDlg::showMessage(QStringLiteral("错误"), QStringLiteral("配置文件格式错误！"), this);
         return;
     }
     auto obj = doc.object();
@@ -55,7 +60,7 @@ void App::saveConfigToFile() {
 
     QFile file(configFilePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QMessageBox::critical(nullptr, QStringLiteral("错误"), QStringLiteral("文件无法写入！"));
+        MessageDlg::showMessage(QStringLiteral("错误"), QStringLiteral("文件无法写入！"), this);
         return;
     }
     auto obj = flowGroup.dumpToJson();

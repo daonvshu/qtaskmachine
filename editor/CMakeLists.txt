@@ -30,6 +30,8 @@ add_executable(${PROJECT_NAME} WIN32
     app.cpp
     app.m.cpp
     app.qrc
+    appsettings.h
+    appsettings.cpp
     myapplication.h
     myapplication.cpp
 
@@ -37,6 +39,8 @@ add_executable(${PROJECT_NAME} WIN32
     dialogs/basepropertyeditdlg.cpp
     dialogs/flownameeditdlg.h
     dialogs/flownameeditdlg.cpp
+    dialogs/messagedlg.h
+    dialogs/messagedlg.cpp
 
     dialogs/nodeedit/normalstatepropeditdlg.h
     dialogs/nodeedit/normalstatepropeditdlg.cpp

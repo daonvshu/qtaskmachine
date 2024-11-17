@@ -7,8 +7,13 @@
 #include <qstandardpaths.h>
 #include <qmimedata.h>
 #include <qlistview.h>
+#include <qaction.h>
+#include <qmenu.h>
+
+#include "appsettings.h"
 
 #include "dialogs/flownameeditdlg.h"
+#include "dialogs/messagedlg.h"
 
 App::App(QWidget *parent)
     : QWidget(parent)
@@ -25,6 +30,16 @@ App::App(QWidget *parent)
     agent->setHitTestVisible(ui.btn_open_config);
 
     refreshConfigPathLabel();
+
+    auto lastOpenFilePath = AppSettings::lastOpenFilePath();
+    if (!lastOpenFilePath.isEmpty()) {
+        if (!QFileInfo::exists(lastOpenFilePath)) {
+            return;
+        }
+        QTimer::singleShot(200, [&, lastOpenFilePath] {
+            openExistConfig(lastOpenFilePath);
+        });
+    }
 }
 
 void App::resizeEvent(QResizeEvent *event) {
@@ -76,21 +91,50 @@ void App::on_btn_close_clicked() {
 }
 
 void App::on_btn_new_config_clicked() {
+    auto openFilePath = configFilePath;
+    if (openFilePath.isEmpty()) {
+        openFilePath = AppSettings::lastOpenFilePath();
+    }
     auto path = QFileDialog::getSaveFileName(nullptr, tr("创建配置"),
-                                             configFilePath.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) : configFilePath, "*.json");
+                                             openFilePath.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) : openFilePath, "*.json");
     if (path.isEmpty()) {
         return;
     }
+    saveLastOpenFilePathRecord(path);
     createNewConfig(path);
 }
 
 void App::on_btn_open_config_clicked() {
-    auto path = QFileDialog::getOpenFileName(nullptr, tr("打开配置"),
-                                             configFilePath.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) : configFilePath, "*.json");
-    if (path.isEmpty()) {
-        return;
+
+    auto loadRecentFile = [&] (const QString& filePath) {
+        if (!QFileInfo::exists(filePath)) {
+            MessageDlg::showMessage(tr("提示"), tr("文件不存在：%1").arg(filePath), this);
+            return;
+        }
+        saveLastOpenFilePathRecord(filePath);
+        openExistConfig(filePath);
+    };
+
+    QMenu menu(ui.btn_open_config);
+    for (const auto& filePath : AppSettings::recentFiles()) {
+        menu.addAction(filePath, [=] {
+            loadRecentFile(filePath);
+        });
     }
-    openExistConfig(path);
+    menu.addSeparator();
+    menu.addAction(tr("打开新配置"), [&] {
+        auto openFilePath = configFilePath;
+        if (openFilePath.isEmpty()) {
+            openFilePath = AppSettings::lastOpenFilePath();
+        }
+        auto path = QFileDialog::getOpenFileName(nullptr, tr("打开配置"),
+                                                 openFilePath.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) : openFilePath, "*.json");
+        if (path.isEmpty()) {
+            return;
+        }
+        loadRecentFile(path);
+    });
+    menu.exec(ui.btn_open_config->mapToGlobal(QPoint(0, ui.btn_open_config->height())));
 }
 
 void App::on_flow_list_cb_currentIndexChanged(int index) {
@@ -138,5 +182,18 @@ void App::on_btn_flow_remove_clicked() {
 
 void App::on_graphic_view_configChanged() {
     saveConfigToFile();
+}
+
+void App::saveLastOpenFilePathRecord(const QString &filePath) {
+    AppSettings::lastOpenFilePath = filePath;
+    auto& recentFiles = AppSettings::recentFiles();
+    if (recentFiles.contains(filePath)) {
+        recentFiles.removeOne(filePath);
+    }
+    if (recentFiles.size() > 20) {
+        recentFiles.removeLast();
+    }
+    recentFiles.prepend(filePath);
+    AppSettings::recentFiles.save();
 }
 

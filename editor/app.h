@@ -42,4 +42,5 @@ private:
     void openExistConfig(const QString& filePath);
     void saveConfigToFile();
     void updateFlowListWidth();
+    static void saveLastOpenFilePathRecord(const QString& filePath);
 };
