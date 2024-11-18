@@ -70,7 +70,9 @@ void App::dropEvent(QDropEvent *event) {
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = event->mimeData()->urls();
         if (!urlList.isEmpty()) {
-            openExistConfig(urlList.first().toLocalFile());
+            auto filePath = urlList.first().toLocalFile();
+            saveLastOpenFilePathRecord(filePath);
+            openExistConfig(filePath);
         }
     }
 }
