@@ -51,7 +51,7 @@ private:
     bool linkLineSelected = false;
     QPointF lastMousePoint;
     const class GraphicNode* lastHoverActiveNode = nullptr;
-    const GraphicObject* preCopyObject = nullptr;
+    QSharedPointer<GraphicObject> preCopyObject;
 
 private:
     void selectObjPress(const QPoint& mousePos);

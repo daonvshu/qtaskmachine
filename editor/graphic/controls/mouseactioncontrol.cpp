@@ -401,14 +401,14 @@ void MouseActionControl::copyNodeObject(const GraphicObject* obj) {
     if (obj == nullptr) {
         return;
     }
-    preCopyObject = obj;
+    preCopyObject.reset(obj->clone());
 }
 
 void MouseActionControl::pasteNodeObject(const QPoint& mousePos) const {
     if (preCopyObject == nullptr) {
         return;
     }
-    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObject, mousePos);
+    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObject.data(), mousePos);
     d->view->repaint();
 }
 
