@@ -68,6 +68,7 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPointF& r
 void GraphicObjCreateControl::copyNodeToMousePoint(const GraphicObject* nodeObject, const QPoint &mousePoint) {
     auto newObj = nodeObject->clone();
     newObj->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint);
+    newObj->data->isChanged = true;
     if (newObj->data->selected) {
         newObj->data->selected = false;
     }
