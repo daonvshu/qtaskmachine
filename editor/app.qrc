@@ -13,5 +13,6 @@
         <file>res/checked.svg</file>
         <file>res/unchecked.svg</file>
         <file>res/edit.svg</file>
+        <file>res/copy.svg</file>
     </qresource>
 </RCC>

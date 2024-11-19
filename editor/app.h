@@ -26,6 +26,7 @@ private slots:
     void on_btn_open_config_clicked();
     void on_flow_list_cb_currentIndexChanged(int index);
     void on_btn_flow_add_clicked();
+    void on_btn_flow_copy_clicked();
     void on_btn_flow_edit_clicked();
     void on_btn_flow_remove_clicked();
     void on_graphic_view_configChanged();

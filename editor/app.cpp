@@ -156,6 +156,25 @@ void App::on_btn_flow_add_clicked() {
         flowGroup.flows().append(configFlow);
         ui.flow_list_cb->addItem(newFlowName);
         ui.flow_list_cb->setCurrentIndex(ui.flow_list_cb->count() - 1);
+        saveConfigToFile();
+        updateFlowListWidth();
+    }
+}
+
+void App::on_btn_flow_copy_clicked() {
+    auto currentIndex = ui.flow_list_cb->currentIndex();
+    if (currentIndex == -1) {
+        return;
+    }
+    auto& currentFlow = flowGroup.flows()[currentIndex];
+    auto newFlowName = FlowNameEditDlg::showDialog(currentFlow.name(), tr("复制流程"), this);
+    if (!newFlowName.isEmpty()) {
+        ConfigFlow configFlow = currentFlow;
+        configFlow.name = newFlowName;
+        flowGroup.flows().append(configFlow);
+        ui.flow_list_cb->addItem(newFlowName);
+        ui.flow_list_cb->setCurrentIndex(ui.flow_list_cb->count() - 1);
+        saveConfigToFile();
         updateFlowListWidth();
     }
 }
@@ -168,6 +187,7 @@ void App::on_btn_flow_edit_clicked() {
     auto newFlowName = FlowNameEditDlg::showDialog(flowGroup.flows()[currentIndex].name(), tr("重命名流程"), this);
     if (!newFlowName.isEmpty()) {
         flowGroup.flows()[currentIndex].name = newFlowName;
+        saveConfigToFile();
         ui.flow_list_cb->setItemText(currentIndex, newFlowName);
         updateFlowListWidth();
     }
@@ -180,6 +200,7 @@ void App::on_btn_flow_remove_clicked() {
     }
     flowGroup.flows().removeAt(currentIndex);
     ui.flow_list_cb->removeItem(currentIndex);
+    saveConfigToFile();
     updateFlowListWidth();
 }
 
