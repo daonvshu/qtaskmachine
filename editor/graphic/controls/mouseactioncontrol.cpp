@@ -315,6 +315,7 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
                 exDataWrite(objData);
             }
             objData->isChanged = true;
+            d->getControl<GraphicObjCreateControl>()->graphicObjectChanged();
             d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
             d->view->repaint();
         }
