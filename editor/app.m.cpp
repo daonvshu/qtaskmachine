@@ -64,7 +64,7 @@ void App::saveConfigToFile() {
         return;
     }
     auto obj = flowGroup.dumpToJson();
-    auto data = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    auto data = QJsonDocument(obj).toJson(QJsonDocument::Indented);
     file.write(data);
     file.close();
 }
