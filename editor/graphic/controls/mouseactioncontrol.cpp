@@ -102,6 +102,8 @@ void MouseActionControl::mouseRelease(QMouseEvent *) {
         linkLineRelease();
     } else if (linkLineSelected) {
         linkLineSelected = false;
+    } else {
+        positionChanged();
     }
     if (multiSelecting) {
         auto selectArea = d->getControl<GraphicLayerControl>()->getMultiSelectRect();
@@ -279,6 +281,10 @@ void MouseActionControl::installShortcut() {
             d->view->update();
         });
     });
+}
+
+void MouseActionControl::clearTempData() {
+    lastHoverActiveNode = nullptr;
 }
 
 void MouseActionControl::showSelectedObjectMenu(const GraphicObject* obj, QContextMenuEvent *event) {

@@ -34,6 +34,13 @@ public:
      */
     bool scale(bool zoomIn, const QPointF& mousePoint);
 
+    /**
+     * @brief 重置变换参数
+     * @param offsetX
+     * @param offsetY
+     */
+    void resetTransform(qreal offsetX, qreal offsetY) const;
+
 private:
     QPointF lastMoveBeginPos;
     QPointF oldViewCenter;

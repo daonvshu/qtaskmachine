@@ -90,14 +90,21 @@ struct ConfigFlow : DataDumpInterface {
     DATA_KEY(QList<ConfigFlowExecutor>, executors); //节点
     DATA_KEY(QList<ConfigFlowConnectLine>, lines); //连接线
 
+    DATA_KEY(qreal, viewCenterOffsetX); //视图中心偏移x
+    DATA_KEY(qreal, viewCenterOffsetY); //视图中心偏移y
+
     DATA_KEY(int, version);
 
     ConfigFlow() {
         version = 1;
+        viewCenterOffsetX = 0;
+        viewCenterOffsetY = 0;
     }
 
     QList<DataReadInterface *> prop() override {
-        return { &name, &executors, &lines, &version };
+        return { &name, &executors, &lines,
+            &viewCenterOffsetX, &viewCenterOffsetY,
+            &version };
     }
 };
 

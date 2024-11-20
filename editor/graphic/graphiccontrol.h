@@ -70,4 +70,8 @@ public:
     QUndoStack* getObjects() const {
         return &d->graphicObjects;
     }
+
+    GraphicTransform getTransform() const {
+        return d->getGraphicTransform();
+    }
 };

@@ -33,4 +33,5 @@ private:
 
 private slots:
     void saveFlow();
+    void savePosition();
 };

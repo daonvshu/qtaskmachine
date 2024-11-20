@@ -46,3 +46,13 @@ bool TransformControl::scale(bool zoomIn, const QPointF& mousePoint) {
 
     return true;
 }
+
+void TransformControl::resetTransform(qreal offsetX, qreal offsetY) const {
+    QPointF realCenter(offsetX, offsetY);
+    auto targetCenter = d->getGraphicTransform().toGuiPoint(realCenter);
+    auto currentCenter = d->view->rect().center();
+    auto delta = currentCenter - targetCenter;
+    QTransform translation;
+    translation.translate(delta.x(), delta.y());
+    d->graphicTransform *= translation;
+}

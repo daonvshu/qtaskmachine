@@ -7,6 +7,8 @@
 #include "../graphicobject.h"
 
 class MouseActionControl : public GraphicControl {
+    Q_OBJECT
+
 public:
     using GraphicControl::GraphicControl;
 
@@ -45,13 +47,21 @@ public:
      */
     void installShortcut();
 
+    /**
+     * @brief 清除临时数据
+     */
+    void clearTempData();
+
+signals:
+    void positionChanged();
+
 private:
     bool objectSelected = false;
     bool linkLineCreating = false;
     bool linkLineSelected = false;
     bool multiSelecting = false;
     QPointF lastMousePoint;
-    const class GraphicNode* lastHoverActiveNode = nullptr;
+    const GraphicNode* lastHoverActiveNode = nullptr;
     QList<QSharedPointer<GraphicObject>> preCopyObjects;
 
 private:

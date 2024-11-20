@@ -15,6 +15,7 @@
 #include "data/configflows.h"
 
 #include <qpainter.h>
+#include <qtimer.h>
 
 GraphicView::GraphicView(QWidget *parent)
     : QWidget(parent)
@@ -28,6 +29,7 @@ GraphicView::GraphicView(QWidget *parent)
 
     controls->get<MouseActionControl>()->installShortcut();
     connect(controls->get<GraphicObjCreateControl>(), &GraphicObjCreateControl::graphicObjectChanged, this, &GraphicView::saveFlow);
+    connect(controls->get<MouseActionControl>(), &MouseActionControl::positionChanged, this, &GraphicView::savePosition);
 
     setMouseTracking(true);
 }
@@ -147,10 +149,20 @@ void GraphicView::saveFlow() {
     emit configChanged();
 }
 
+void GraphicView::savePosition() {
+    auto currentTransform = controls->getTransform();
+    auto center = currentTransform.toRealPoint(this->rect().center());
+    currentFlow->viewCenterOffsetX = center.x();
+    currentFlow->viewCenterOffsetY = center.y();
+
+    emit configChanged();
+}
+
 void GraphicView::updateFlow(ConfigFlow *flow) {
     ignoreSaveState = true;
     currentFlow = flow;
     controls->get<GraphicObjCreateControl>()->clearAll();
+    controls->get<MouseActionControl>()->clearTempData();
 
     if (flow == nullptr) {
         ignoreSaveState = true;
@@ -267,4 +279,11 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
     repaint();
 
     ignoreSaveState = false;
+
+    qreal offsetX = flow->viewCenterOffsetX();
+    qreal offsetY = flow->viewCenterOffsetY();
+    QTimer::singleShot(200, this, [&, offsetX, offsetY] {
+        controls->get<TransformControl>()->resetTransform(offsetX, offsetY);
+        repaint();
+    });
 }
