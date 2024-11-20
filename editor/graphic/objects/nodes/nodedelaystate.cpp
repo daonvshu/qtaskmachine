@@ -1,12 +1,14 @@
 #include "nodedelaystate.h"
 
-NodeDelayState::NodeDelayState(const QSharedPointer<NodeDelayStateData> &data)
+NodeDelayState::NodeDelayState(const QSharedPointer<NodeDelayStateData> &data, bool initialData)
     : GraphicNode(data)
     , delayStateData(data)
 {
-    data->propData.nodeName = "延时状态";
-    data->inputLinkPointColors << 0x77E000;
-    data->outputLinkPointColors << 0x00E0E0;
+    if (initialData) {
+        data->propData.nodeName = "延时状态";
+        data->inputLinkPointColors << 0x77E000;
+        data->outputLinkPointColors << 0x00E0E0;
+    }
 }
 
 ConfigFlowExecutor NodeDelayState::toFlowExecutor() const {

@@ -7,14 +7,14 @@
 
 class NodeRecoveryState : public GraphicNode {
 public:
-    explicit NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData>& data);
+    explicit NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData>& data, bool initialData = true);
 
     static NodeRecoveryState* create() {
         return objectCreate<NodeRecoveryState, NodeRecoveryStateData>();
     }
 
     GraphicObject* clone() const override {
-        return objectCreate<NodeRecoveryState, NodeRecoveryStateData>(*recoveryStateData);
+        return objectClone<NodeRecoveryState, NodeRecoveryStateData>(recoveryStateData, false);
     }
 
     GraphicObjectType objectType() const override {

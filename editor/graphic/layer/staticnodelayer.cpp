@@ -14,9 +14,9 @@ void StaticNodeLayer::reload(QPainter *painter) {
     if (graphicEntries == nullptr) {
         return;
     }
-    for (int i = 0; i < graphicEntries->index(); i++) {
-        auto node = dynamic_cast<const GraphicNode*>(graphicEntries->command(i));
-        if (!isValidObject(node)) {
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(graphicEntries);
+    for (const auto& node : nodes) {
+        if (node->data->selected) { // 不绘制当前选中的节点，交给activeLayer绘制
             continue;
         }
         drawCache(node, painter);
@@ -29,29 +29,13 @@ void StaticNodeLayer::reCache() {
         return;
     }
     bool scaleChanged = checkAndUpdateScale();
-    for (int i = 0; i < graphicEntries->index(); i++) {
-        auto node = dynamic_cast<const GraphicNode*>(graphicEntries->command(i));
-        if (!isValidObject(node)) {
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(graphicEntries);
+    for (const auto& node : nodes) {
+        if (node->data->selected) {
             continue;
         }
         if (node->data->isChanged || scaleChanged) {
             reCacheNodeObject(const_cast<GraphicNode*>(node));
         }
     }
-}
-
-bool StaticNodeLayer::isValidObject(const GraphicObject* obj) {
-    if (obj == nullptr) {
-        return false;
-    }
-    if (obj->data->assignRemoved) {
-        return false;
-    }
-    if (obj->data->selected) { // 不绘制当前选中的节点，交给activeLayer绘制
-        return false;
-    }
-    if (obj->objectType() == GraphicObjectType::Link_Line) {
-        return false;
-    }
-    return true;
 }

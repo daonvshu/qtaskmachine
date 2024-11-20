@@ -1,10 +1,12 @@
 #include "nodebeginstate.h"
 
-NodeBeginState::NodeBeginState(const QSharedPointer<GraphicNodeData> &data)
+NodeBeginState::NodeBeginState(const QSharedPointer<GraphicNodeData> &data, bool initialData)
     : GraphicNode(data)
 {
-    data->propData.nodeName = "开始";
-    data->outputLinkPointColors << 0x00E0E0;
+    if (initialData) {
+        data->propData.nodeName = "开始";
+        data->outputLinkPointColors << 0x00E0E0;
+    }
 }
 
 void NodeBeginState::drawObject() {

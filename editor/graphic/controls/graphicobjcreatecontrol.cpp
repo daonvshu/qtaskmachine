@@ -12,6 +12,7 @@
 
 #include "../objects/actions/nodemoveaction.h"
 #include "../objects/actions/objectremoveaction.h"
+#include "../objects/actions/objectcopyaction.h"
 
 #include "graphiclayercontrol.h"
 
@@ -65,28 +66,31 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPointF& r
     emit graphicObjectChanged();
 }
 
-void GraphicObjCreateControl::copyNodeToMousePoint(const GraphicObject* nodeObject, const QPoint &mousePoint) {
-    auto newObj = nodeObject->clone();
-    newObj->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint);
-    newObj->data->isChanged = true;
-    if (newObj->data->selected) {
-        newObj->data->selected = false;
+void GraphicObjCreateControl::copyNodeToMousePoint(const QList<QSharedPointer<GraphicObject>>& nodeObjects, const QPoint &mousePoint) {
+    d->graphicObjects.beginMacro("MultiObjectCopy");
+    QList<const GraphicObject*> newObjs;
+    for (const auto& nodeObject : nodeObjects) {
+        auto newObj = nodeObject->clone();
+        auto offset = nodeObject->data->renderPosition - nodeObjects.first()->data->renderPosition;
+        newObj->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint) + offset;
+        newObj->data->isChanged = true;
+        if (newObj->data->selected) {
+            newObj->data->selected = false;
+        }
+        d->graphicObjects.push(newObj);
+        newObjs << newObj;
     }
-    d->graphicObjects.push(newObj);
+    d->graphicObjects.push(ObjectCopyAction::create(newObjs));
+    d->graphicObjects.endMacro();
+
     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
     emit graphicObjectChanged();
 }
 
 const GraphicObject* GraphicObjCreateControl::selectTest(const QPoint &mousePoint, bool testSelectedObject) const {
     auto realPoint = d->getGraphicTransform().toRealPoint(mousePoint);
-    for (int i = 0; i < d->graphicObjects.index(); i++) {
-        auto obj = dynamic_cast<const GraphicObject*>(d->graphicObjects.command(i));
-        if (obj == nullptr) {
-            continue;
-        }
-        if (obj->data->assignRemoved) {
-            continue;
-        }
+    auto objects = GraphicObject::getVisibleObjects<GraphicObject>(&d->graphicObjects);
+    for (const auto& obj : objects) {
         if (obj->selectTest(realPoint)) {
             return obj;
         }
@@ -113,23 +117,51 @@ bool GraphicObjCreateControl::testOnSelectedNode(const QPointF &mousePoint) cons
 
 void GraphicObjCreateControl::setObjectSelected(const GraphicObject* object) {
     cancelObjActiveSelected();
-    editingNodeObject = object;
-    editingNodeObject->data->selected = true;
-    editingNodeObject->data->saveRenderPosition();
-    d->getControl<GraphicLayerControl>()->setActiveNode(object);
-    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
-}
-
-void GraphicObjCreateControl::objTranslate(const QPointF& delta) const {
-    if (editingNodeObject) {
-        editingNodeObject->data->renderPosition += delta;
-        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
+    if (!d->multiSelectData.selectedNodes.contains(dynamic_cast<const GraphicNode*>(object))) {
+        cancelMultiSelectSelectedState();
+        editingNodeObject = object;
+        editingNodeObject->data->selected = true;
+        editingNodeObject->data->saveRenderPosition();
+        d->getControl<GraphicLayerControl>()->setActiveNode(object);
+        d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
+    } else {
+        editingNodeObject = object;
+        for (const auto& selectNode : d->multiSelectData.selectedNodes) {
+            selectNode->data->saveRenderPosition();
+        }
     }
 }
 
+void GraphicObjCreateControl::objTranslate(const QPointF& delta) {
+    if (editingNodeObject) {
+        editingNodeObject->data->renderPosition += delta;
+        editingNodeObject->data->isChanged = true;
+    }
+    for (const auto& selectNode : d->multiSelectData.selectedNodes) {
+        if (selectNode == editingNodeObject) {
+            continue;
+        }
+        selectNode->data->renderPosition += delta;
+        selectNode->data->isChanged = true;
+    }
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node |
+        GraphicLayerType::Layer_Active_Link | GraphicLayerType::Layer_Static_Node);
+    emit graphicObjectChanged();
+}
+
 void GraphicObjCreateControl::objTranslateFinished() {
-    if (editingNodeObject->data->renderPositionChanged()) {
-        d->graphicObjects.push(NodeMoveAction::create(dynamic_cast<const GraphicNode *>(editingNodeObject)));
+    if (editingNodeObject) {
+        if (editingNodeObject->data->renderPositionChanged()) {
+            d->graphicObjects.push(NodeMoveAction::create(
+                d->multiSelectData.selectedNodes + QList { dynamic_cast<const GraphicNode *>(editingNodeObject) })
+            );
+        } else {
+            auto node = dynamic_cast<const GraphicNode*>(editingNodeObject);
+            if (d->multiSelectData.selectedNodes.contains(node)) {
+                d->multiSelectData.selectedNodes.removeOne(node);
+                editingNodeObject = nullptr;
+            }
+        }
     }
     emit graphicObjectChanged();
 }
@@ -140,14 +172,8 @@ void GraphicObjCreateControl::removeNodeObject(const GraphicObject* object) {
         cancelObjActiveSelected();
     }
     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
-    for (int i = 0; i < d->graphicObjects.index(); i++) {
-        auto linkLine = dynamic_cast<const GraphicLinkLine*>(d->graphicObjects.command(i));
-        if (linkLine == nullptr) {
-            continue;
-        }
-        if (linkLine->data->assignRemoved) {
-            continue;
-        }
+    auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
+    for (const auto& linkLine : linkLines) {
         if (linkLine->linkData->linkFromNode == object || linkLine->linkData->linkToNode == object) {
             removeLinkLine(linkLine);
         }
@@ -245,18 +271,8 @@ const GraphicLinkLine* GraphicObjCreateControl::getSelectedLinkLine() const {
 }
 
 bool GraphicObjCreateControl::checkIsAnyLinkLineLinkedToNode(const GraphicNode* node, int linkIndex) const {
-    for (int i = 0; i < d->graphicObjects.index(); i++) {
-        auto obj = dynamic_cast<const GraphicObject*>(d->graphicObjects.command(i));
-        if (obj == nullptr) {
-            continue;
-        }
-        if (obj->data->assignRemoved) {
-            continue;
-        }
-        auto linkLine = dynamic_cast<const GraphicLinkLine*>(obj);
-        if (linkLine == nullptr) {
-            continue;
-        }
+    auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
+    for (const auto& linkLine: linkLines) {
         if (linkLine->linkData->linkFromNode == node &&
             linkLine->linkData->linkFromPointIndex == linkIndex)
         {
@@ -272,4 +288,50 @@ void GraphicObjCreateControl::clearAll() {
     editingLinkLine = nullptr;
     selectedLinkLine = nullptr;
     d->getControl<GraphicLayerControl>()->clearAllGraphic();
+    cancelMultiSelectSelectedState();
+}
+
+void GraphicObjCreateControl::createMultiSelect(const QRectF& rect) {
+    if (!rect.isValid()) {
+        return;
+    }
+
+    auto realRect = d->getGraphicTransform().toRealPoint(rect);
+    QList<const GraphicNode*> selectedNodes;
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(&d->graphicObjects);
+    for (const auto& node : nodes) {
+        if (realRect.intersects(node->nodeData->boundingRect)) {
+            selectedNodes << node;
+        }
+    }
+    if (selectedNodes.isEmpty()) {
+        return;
+    }
+
+    cancelObjActiveSelected();
+
+    d->multiSelectData.selectedNodes = selectedNodes;
+    d->getControl<GraphicLayerControl>()->multiSelectObjectsChanged();
+}
+
+void GraphicObjCreateControl::cancelMultiSelectSelectedState() const {
+    d->multiSelectData.selectedNodes.clear();
+    d->getControl<GraphicLayerControl>()->multiSelectObjectsChanged();
+}
+
+void GraphicObjCreateControl::removeMultiSelectedObjects() {
+    QList<const GraphicObject*> objects;
+    auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
+    for (const auto& node : d->multiSelectData.selectedNodes) {
+        objects << node;
+        for (const auto& linkLine : linkLines) {
+            if (linkLine->linkData->linkFromNode == node || linkLine->linkData->linkToNode == node) {
+                objects << linkLine;
+            }
+        }
+    }
+    d->graphicObjects.push(ObjectRemoveAction::create(objects));
+    d->multiSelectData.selectedNodes.clear();
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link | GraphicLayerType::Layer_Active_Node);
+    emit graphicObjectChanged();
 }

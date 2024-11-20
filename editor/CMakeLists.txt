@@ -97,6 +97,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/layer/staticlinklinelayer.cpp
     graphic/layer/commonnodelayer.h
     graphic/layer/commonnodelayer.cpp
+    graphic/layer/multiselectlayer.h
+    graphic/layer/multiselectlayer.cpp
 
     graphic/objects/graphicnode.h
     graphic/objects/graphicnode.cpp
@@ -107,6 +109,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/objects/actions/nodemoveaction.cpp
     graphic/objects/actions/objectremoveaction.h
     graphic/objects/actions/objectremoveaction.cpp
+    graphic/objects/actions/objectcopyaction.h
+    graphic/objects/actions/objectcopyaction.cpp
 
     graphic/objects/nodes/nodebeginstate.h
     graphic/objects/nodes/nodebeginstate.cpp

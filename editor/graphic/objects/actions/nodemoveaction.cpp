@@ -4,16 +4,22 @@ NodeMoveAction::NodeMoveAction(const QSharedPointer<NodeMoveActionData> &data)
     : GraphicObject(data)
     , actionData(data)
 {
-    actionData->oldRenderPosition = data->target->data->oldRenderPosition;
-    actionData->renderPosition = data->target->data->renderPosition;
+    for (const auto& node : data->targets) {
+        actionData->oldRenderPositions << node->data->oldRenderPosition;
+        actionData->renderPositions << node->data->renderPosition;
+    }
 }
 
 void NodeMoveAction::undo() {
-    actionData->target->data->renderPosition = actionData->oldRenderPosition;
-    actionData->target->data->isChanged = true;
+    for (int i = 0; i < actionData->targets.size(); i++) {
+        actionData->targets[i]->data->renderPosition = actionData->oldRenderPositions[i];
+        actionData->targets[i]->data->isChanged = true;
+    }
 }
 
 void NodeMoveAction::redo() {
-    actionData->target->data->renderPosition = actionData->renderPosition;
-    actionData->target->data->isChanged = true;
+    for (int i = 0; i < actionData->targets.size(); i++) {
+        actionData->targets[i]->data->renderPosition = actionData->renderPositions[i];
+        actionData->targets[i]->data->isChanged = true;
+    }
 }

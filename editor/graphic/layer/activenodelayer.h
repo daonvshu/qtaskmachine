@@ -3,6 +3,7 @@
 #include <qobject.h>
 
 #include "commonnodelayer.h"
+#include "../objects/actions/multiselectaction.d.h"
 
 /**
  * @brief 编辑中的节点
@@ -17,4 +18,5 @@ public:
 
 public:
     GraphicObject* activeNode = nullptr;
+    MultiSelectActionData* multiSelectData = nullptr;
 };

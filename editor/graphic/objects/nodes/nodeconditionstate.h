@@ -7,14 +7,14 @@
 
 class NodeConditionState : public GraphicNode {
 public:
-    explicit NodeConditionState(const QSharedPointer<NodeConditionStateData>& data);
+    explicit NodeConditionState(const QSharedPointer<NodeConditionStateData>& data, bool initialData = true);
 
     static NodeConditionState* create() {
         return objectCreate<NodeConditionState, NodeConditionStateData>();
     }
 
     GraphicObject* clone() const override {
-        return objectCreate<NodeConditionState, NodeConditionStateData>(*conditionStateData);
+        return objectClone<NodeConditionState, NodeConditionStateData>(conditionStateData, false);
     }
 
     GraphicObjectType objectType() const override {

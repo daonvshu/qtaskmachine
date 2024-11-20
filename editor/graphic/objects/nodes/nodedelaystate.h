@@ -7,14 +7,14 @@
 
 class NodeDelayState : public GraphicNode {
 public:
-    explicit NodeDelayState(const QSharedPointer<NodeDelayStateData>& data);
+    explicit NodeDelayState(const QSharedPointer<NodeDelayStateData>& data, bool initialData = true);
 
     static NodeDelayState* create() {
         return objectCreate<NodeDelayState, NodeDelayStateData>();
     }
 
     GraphicObject* clone() const override {
-        return objectCreate<NodeDelayState, NodeDelayStateData>(*delayStateData);
+        return objectClone<NodeDelayState, NodeDelayStateData>(delayStateData, false);
     }
 
     GraphicObjectType objectType() const override {

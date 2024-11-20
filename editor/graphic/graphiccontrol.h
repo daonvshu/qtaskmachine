@@ -8,6 +8,7 @@
 #include "graphicview.h"
 
 #include "utils/transform.h"
+#include "objects/actions/multiselectaction.d.h"
 
 class GraphicControl;
 struct GraphicControlSharedData {
@@ -33,6 +34,8 @@ struct GraphicControlSharedData {
     }
 
     QUndoStack graphicObjects;
+
+    MultiSelectActionData multiSelectData;
 };
 
 class GraphicControl : public QObject {

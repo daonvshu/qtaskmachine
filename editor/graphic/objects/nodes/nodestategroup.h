@@ -7,14 +7,14 @@
 
 class NodeStateGroup : public GraphicNode {
 public:
-    explicit NodeStateGroup(const QSharedPointer<NodeStateGroupData>& data);
+    explicit NodeStateGroup(const QSharedPointer<NodeStateGroupData>& data, bool initialData = true);
 
     static NodeStateGroup* create() {
         return objectCreate<NodeStateGroup, NodeStateGroupData>();
     }
 
     GraphicObject* clone() const override {
-        return objectCreate<NodeStateGroup, NodeStateGroupData>(*groupData);
+        return objectClone<NodeStateGroup, NodeStateGroupData>(groupData, false);
     }
 
     GraphicObjectType objectType() const override {

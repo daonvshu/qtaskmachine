@@ -1,12 +1,14 @@
 #include "nodemultieventstate.h"
 
-NodeMultiEventState::NodeMultiEventState(const QSharedPointer<NodeMultiEventStateData> &data)
+NodeMultiEventState::NodeMultiEventState(const QSharedPointer<NodeMultiEventStateData> &data, bool initialData)
     : GraphicNode(data)
     , eventStateData(data)
 {
-    data->propData.nodeName = "复合事件状态";
-    data->inputLinkPointColors << 0x77E000;
-    data->outputLinkPointColors << 0x00E0E0;
+    if (initialData) {
+        data->propData.nodeName = "复合事件状态";
+        data->inputLinkPointColors << 0x77E000;
+        data->outputLinkPointColors << 0x00E0E0;
+    }
 }
 
 void NodeMultiEventState::fromExecutor(const ConfigFlowExecutor &executor) const {

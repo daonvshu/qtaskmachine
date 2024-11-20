@@ -1,10 +1,12 @@
 #include "nodeendstate.h"
 
-NodeEndState::NodeEndState(const QSharedPointer<GraphicNodeData> &data)
+NodeEndState::NodeEndState(const QSharedPointer<GraphicNodeData> &data, bool initialData)
     : GraphicNode(data)
 {
-    data->propData.nodeName = "结束";
-    data->inputLinkPointColors << 0x77E000;
+    if (initialData) {
+        data->propData.nodeName = "结束";
+        data->inputLinkPointColors << 0x77E000;
+    }
 }
 
 void NodeEndState::drawObject() {

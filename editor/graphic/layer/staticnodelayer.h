@@ -17,7 +17,4 @@ public:
 
 public:
     QUndoStack* graphicEntries = nullptr;
-
-private:
-    static bool isValidObject(const GraphicObject* obj);
 };

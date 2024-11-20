@@ -6,9 +6,13 @@ ObjectRemoveAction::ObjectRemoveAction(const QSharedPointer<ObjectRemoveActionDa
 {}
 
 void ObjectRemoveAction::undo() {
-    actionData->target->data->assignRemoved = false;
+    for (const auto& obj : actionData->targets) {
+        obj->data->assignRemoved = false;
+    }
 }
 
 void ObjectRemoveAction::redo() {
-    actionData->target->data->assignRemoved = true;
+    for (const auto& obj : actionData->targets) {
+        obj->data->assignRemoved = true;
+    }
 }

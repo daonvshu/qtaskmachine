@@ -8,8 +8,8 @@ class NodeMoveAction : public GraphicObject {
 public:
     explicit NodeMoveAction(const QSharedPointer<NodeMoveActionData>& data);
 
-    static NodeMoveAction* create(const GraphicNode* target) {
-        return objectCreate<NodeMoveAction, NodeMoveActionData>(target);
+    static NodeMoveAction* create(const QList<const GraphicNode*>& targets) {
+        return objectCreate<NodeMoveAction, NodeMoveActionData>(targets);
     }
 
     GraphicObject * clone() const override {

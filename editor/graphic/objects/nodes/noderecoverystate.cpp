@@ -1,11 +1,13 @@
 #include "noderecoverystate.h"
 
-NodeRecoveryState::NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData> &data)
+NodeRecoveryState::NodeRecoveryState(const QSharedPointer<NodeRecoveryStateData> &data, bool initialData)
     : GraphicNode(data)
     , recoveryStateData(data)
 {
-    data->propData.nodeName = "恢复点";
-    data->inputLinkPointColors << 0x77E000;
+    if (initialData) {
+        data->propData.nodeName = "恢复点";
+        data->inputLinkPointColors << 0x77E000;
+    }
 }
 
 ConfigFlowExecutor NodeRecoveryState::toFlowExecutor() const {

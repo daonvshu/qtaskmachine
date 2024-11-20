@@ -8,15 +8,16 @@
 #include "../objects/graphiclinkline.h"
 
 enum class GraphicLayerType {
-    Layer_None =        0,
+    Layer_None =         0,
 
-    Layer_Grid =        1 << 0,   //网格线
-    Layer_Static_Node = 1 << 1,   //静态节点
-    Layer_Static_Link = 1 << 2,   //静态连线
-    Layer_Active_Node = 1 << 3,   //动态节点
-    Layer_Active_Link = 1 << 4,   //动态连线
+    Layer_Grid =         1 << 0,   //网格线
+    Layer_Static_Node  = 1 << 1,   //静态节点
+    Layer_Static_Link  = 1 << 2,   //静态连线
+    Layer_Active_Node  = 1 << 3,   //动态节点
+    Layer_Active_Link  = 1 << 4,   //动态连线
+    Layer_Multi_Select = 1 << 5,   //多选状态
 
-    Layer_All = Layer_Grid | Layer_Static_Node | Layer_Static_Link | Layer_Active_Node | Layer_Active_Link,
+    Layer_All = Layer_Grid | Layer_Static_Node | Layer_Static_Link | Layer_Active_Node | Layer_Active_Link | Layer_Multi_Select,
 };
 Q_DECLARE_FLAGS(GraphicLayerTypes, GraphicLayerType)
 Q_DECLARE_OPERATORS_FOR_FLAGS(GraphicLayerTypes)
@@ -80,6 +81,34 @@ public:
      * @brief 强制更新所有node
      */
     void makeAllStaticNodeChanged() const;
+
+    /**
+     * @brief 多选开始
+     * @param mousePoint
+     */
+    void beginMultiSelect(const QPointF& mousePoint);
+
+    /**
+     * @brief 多选更新
+     * @param mousePoint
+     */
+    void updateMultiSelect(const QPointF& mousePoint);
+
+    /**
+     * @brief 多选结束
+     */
+    void endMultiSelect();
+
+    /**
+     * @brief 获取多选区域
+     * @return
+     */
+    QRectF getMultiSelectRect() const;
+
+    /**
+     * @brief 通知多选对象改变
+     */
+    void multiSelectObjectsChanged();
 
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层

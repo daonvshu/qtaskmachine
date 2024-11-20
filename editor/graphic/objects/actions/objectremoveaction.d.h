@@ -3,7 +3,7 @@
 #include "../../graphicobject.h"
 
 struct ObjectRemoveActionData : GraphicObjectData {
-    const GraphicObject* target = nullptr;
+    QList<const GraphicObject*> targets;
 
-    explicit ObjectRemoveActionData(const GraphicObject* target): target(target) {}
+    explicit ObjectRemoveActionData(const QList<const GraphicObject*>& targets): targets(targets) {}
 };

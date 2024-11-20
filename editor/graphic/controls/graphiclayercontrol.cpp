@@ -5,6 +5,7 @@
 #include "../layer/activelinklinelayer.h"
 #include "../layer/staticnodelayer.h"
 #include "../layer/staticlinklinelayer.h"
+#include "../layer/multiselectlayer.h"
 
 #include <qelapsedtimer.h>
 #include <qdebug.h>
@@ -17,10 +18,12 @@ GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlShar
     layers << qMakePair(GraphicLayerType::Layer_Static_Node, new StaticNodeLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Active_Link, new ActiveLinkLineLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Multi_Select, new MultiSelectLayer(this));
     graphLayerReload();
 
     layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->graphicEntries = &d->graphicObjects;
     layer<StaticLinkLineLayer>(GraphicLayerType::Layer_Static_Link)->graphicEntries = &d->graphicObjects;
+    layer<ActiveNodeLayer>(GraphicLayerType::Layer_Active_Node)->multiSelectData = &d->multiSelectData;
 }
 
 void GraphicLayerControl::graphLayerReload() {
@@ -68,14 +71,8 @@ void GraphicLayerControl::setActiveNode(const GraphicObject* activeNode) {
     reloadLayer(GraphicLayerType::Layer_Active_Node);
     if (activeNode != nullptr) {
         //测试是否有连接线
-        for (int i = 0; i < d->graphicObjects.index(); i++) {
-            auto linkLine = dynamic_cast<const GraphicLinkLine*>(d->graphicObjects.command(i));
-            if (linkLine == nullptr) {
-                continue;
-            }
-            if (linkLine->data->assignRemoved) {
-                continue;
-            }
+        auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
+        for (const auto& linkLine : linkLines) {
             if (linkLine->linkData->linkFromNode == activeNode ||
                 linkLine->linkData->linkToNode == activeNode)
             {
@@ -108,14 +105,31 @@ void GraphicLayerControl::cancelAllActiveLinkLine() {
 }
 
 void GraphicLayerControl::makeAllStaticNodeChanged() const {
-    for (int i = 0; i < d->graphicObjects.index(); i++) {
-        auto node = dynamic_cast<const GraphicNode*>(d->graphicObjects.command(i));
-        if (node == nullptr) {
-            continue;
-        }
-        if (node->data->assignRemoved) {
-            continue;
-        }
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(&d->graphicObjects);
+    for (const auto& node : nodes) {
         node->data->isChanged = true;
     }
+}
+
+void GraphicLayerControl::beginMultiSelect(const QPointF& mousePoint) {
+    layer<MultiSelectLayer>(GraphicLayerType::Layer_Multi_Select)->beginSelect(mousePoint);
+    reloadLayer(GraphicLayerType::Layer_Multi_Select);
+}
+
+void GraphicLayerControl::updateMultiSelect(const QPointF& mousePoint) {
+    layer<MultiSelectLayer>(GraphicLayerType::Layer_Multi_Select)->updateSelect(mousePoint);
+    reloadLayer(GraphicLayerType::Layer_Multi_Select);
+}
+
+void GraphicLayerControl::endMultiSelect() {
+    layer<MultiSelectLayer>(GraphicLayerType::Layer_Multi_Select)->endSelect();
+    reloadLayer(GraphicLayerType::Layer_Multi_Select);
+}
+
+QRectF GraphicLayerControl::getMultiSelectRect() const {
+    return layer<MultiSelectLayer>(GraphicLayerType::Layer_Multi_Select)->selectRect;
+}
+
+void GraphicLayerControl::multiSelectObjectsChanged() {
+    reloadLayer(GraphicLayerType::Layer_Active_Node);
 }

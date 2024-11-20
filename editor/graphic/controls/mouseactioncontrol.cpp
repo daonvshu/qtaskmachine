@@ -35,6 +35,9 @@ void MouseActionControl::mousePress(QMouseEvent *e) {
         } else {
             d->getControl<TransformControl>()->moveBegin(e->pos());
         }
+    } else if (e->button() == Qt::RightButton) {
+        multiSelecting = false;
+        d->getControl<GraphicLayerControl>()->beginMultiSelect(e->pos());
     }
 }
 
@@ -57,6 +60,10 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
             d->getControl<GraphicLayerControl>()->graphLayerReload();
             selectTestRequired = false;
         }
+    } else if (e->buttons() & Qt::RightButton) {
+        selectTestRequired = false;
+        multiSelecting = true;
+        d->getControl<GraphicLayerControl>()->updateMultiSelect(mousePos);
     }
 
     if (selectTestRequired) {
@@ -95,6 +102,11 @@ void MouseActionControl::mouseRelease(QMouseEvent *) {
         linkLineRelease();
     } else if (linkLineSelected) {
         linkLineSelected = false;
+    }
+    if (multiSelecting) {
+        auto selectArea = d->getControl<GraphicLayerControl>()->getMultiSelectRect();
+        d->getControl<GraphicLayerControl>()->endMultiSelect();
+        d->getControl<GraphicObjCreateControl>()->createMultiSelect(selectArea);
     }
     d->view->repaint();
 }
@@ -140,6 +152,7 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
         }
     } else {
         d->getControl<GraphicObjCreateControl>()->cancelObjActiveSelected();
+        d->getControl<GraphicObjCreateControl>()->cancelMultiSelectSelectedState();
     }
 }
 
@@ -180,6 +193,9 @@ void MouseActionControl::linkLineRelease() {
 }
 
 void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
+    if (multiSelecting) {
+        return;
+    }
     auto selectedObject = d->getControl<GraphicObjCreateControl>()->selectTest(event->pos());
     if (selectedObject != nullptr) {
         if (selectedObject->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
@@ -197,19 +213,30 @@ void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
 }
 
 void MouseActionControl::installShortcut() {
-    new QShortcut(QKeySequence("Ctrl+C"), d->view, [this] {
-        copyNodeObject(d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj());
+    new QShortcut(QKeySequence("Ctrl+C"), d->view, [&] {
+        if (!d->multiSelectData.selectedNodes.isEmpty()) {
+            copyNodeObject(d->multiSelectData.selectedNodes);
+        } else {
+            copyNodeObject({
+                dynamic_cast<const GraphicNode*>(d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj())
+            });
+        }
     });
 
-    new QShortcut(QKeySequence("Ctrl+V"), d->view, [this] {
+    new QShortcut(QKeySequence("Ctrl+V"), d->view, [&] {
         pasteNodeObject(d->view->mapFromGlobal(QCursor::pos()));
     });
 
-    new QShortcut(QKeySequence("Del"), d->view, [this] {
-        auto activeNode = d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj();
-        if (activeNode != nullptr) {
-            deleteNodeObject(activeNode);
-            return;
+    new QShortcut(QKeySequence("Del"), d->view, [&] {
+        if (!d->multiSelectData.selectedNodes.isEmpty()) {
+            d->getControl<GraphicObjCreateControl>()->removeMultiSelectedObjects();
+            d->view->repaint();
+        } else {
+            auto activeNode = d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj();
+            if (activeNode != nullptr) {
+                deleteNodeObject(activeNode);
+                return;
+            }
         }
         auto activeLinkLine = d->getControl<GraphicObjCreateControl>()->getSelectedLinkLine();
         if (activeLinkLine != nullptr) {
@@ -218,7 +245,7 @@ void MouseActionControl::installShortcut() {
         }
     });
 
-    new QShortcut(QKeySequence("Ctrl+D"), d->view, [this] {
+    new QShortcut(QKeySequence("Ctrl+D"), d->view, [&] {
         editNodeObject(d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj());
     });
 
@@ -257,7 +284,7 @@ void MouseActionControl::installShortcut() {
 void MouseActionControl::showSelectedObjectMenu(const GraphicObject* obj, QContextMenuEvent *event) {
     QMenu menu(d->view);
     QList<QAction *> actions;
-    actions << menu.addAction(tr("复制"), [this, obj] { copyNodeObject(obj); }, QKeySequence("Ctrl+C"));
+    actions << menu.addAction(tr("复制"), [this, obj] { copyNodeObject({ dynamic_cast<const GraphicNode*>(obj) }); }, QKeySequence("Ctrl+C"));
     actions << menu.addAction(tr("粘贴"), [this, event] { pasteNodeObject(event->pos()); }, QKeySequence("Ctrl+V"));
     actions << menu.addAction(tr("删除"), [this, obj] { deleteNodeObject(obj); }, QKeySequence("Del"));
     menu.addSeparator();
@@ -321,8 +348,7 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
         }
     };
 
-    auto objectType = obj->objectType();
-    switch (objectType) {
+    switch (obj->objectType()) {
         case GraphicObjectType::Node_Begin_State: {
             BeginStatePropEditDlg dlg;
             showPropertyDlg(dlg);
@@ -392,23 +418,26 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
             });
         }
             break;
-        case GraphicObjectType::Link_Line:
+        default:
             break;
     }
 }
 
-void MouseActionControl::copyNodeObject(const GraphicObject* obj) {
-    if (obj == nullptr) {
-        return;
+void MouseActionControl::copyNodeObject(const QList<const GraphicNode*>& objs) {
+    preCopyObjects.clear();
+    for (auto node : objs) {
+        if (node == nullptr) {
+            continue;
+        }
+        preCopyObjects.append(QSharedPointer<GraphicObject>(node->clone()));
     }
-    preCopyObject.reset(obj->clone());
 }
 
 void MouseActionControl::pasteNodeObject(const QPoint& mousePos) const {
-    if (preCopyObject == nullptr) {
+    if (preCopyObjects.isEmpty()) {
         return;
     }
-    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObject.data(), mousePos);
+    d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObjects, mousePos);
     d->view->repaint();
 }
 

@@ -4,7 +4,7 @@
 
 #include <qdebug.h>
 
-void CommonNodeLayer::reCacheNodeObject(GraphicObject* object) {
+void CommonNodeLayer::reCacheNodeObject(GraphicObject* object) const {
     QTransform renderTransform;
     renderTransform.scale(graphicTransform.getTransform().m11(), graphicTransform.getTransform().m22());
     object->graphicTransform = renderTransform;
@@ -12,11 +12,13 @@ void CommonNodeLayer::reCacheNodeObject(GraphicObject* object) {
     object->data->isChanged = false;
 }
 
-void CommonNodeLayer::drawCache(const GraphicObject* object, QPainter *painter, bool drawSelectedBox) {
+void CommonNodeLayer::drawCache(const GraphicObject* object, QPainter *painter, bool drawSelectedBox, bool drawSelectedBoxOnly) const {
     auto cacheImage = object->data->objectRenderCache;
     auto topLeft = qSharedPointerCast<GraphicNodeData>(object->data)->boundingRect.topLeft();
     topLeft = graphicTransform.toGuiPoint(topLeft);
-    painter->drawPixmap(topLeft, cacheImage);
+    if (!drawSelectedBoxOnly) {
+        painter->drawPixmap(topLeft, cacheImage);
+    }
 
     //绘制选中框
     if (drawSelectedBox) {
@@ -30,7 +32,7 @@ void CommonNodeLayer::drawCache(const GraphicObject* object, QPainter *painter, 
     }
 }
 
-void CommonNodeLayer::drawActiveLinkPoint(const GraphicObject* object, QPainter *painter) {
+void CommonNodeLayer::drawActiveLinkPoint(const GraphicObject* object, QPainter *painter) const {
 
     auto nodeObject = dynamic_cast<const GraphicNode*>(object);
     auto offset = nodeObject->nodeData->boundingRect.topLeft();

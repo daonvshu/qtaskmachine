@@ -7,14 +7,14 @@
 
 class NodeMultiEventState : public GraphicNode {
 public:
-    explicit NodeMultiEventState(const QSharedPointer<NodeMultiEventStateData>& data);
+    explicit NodeMultiEventState(const QSharedPointer<NodeMultiEventStateData>& data, bool initialData = true);
 
     static NodeMultiEventState* create() {
         return objectCreate<NodeMultiEventState, NodeMultiEventStateData>();
     }
 
     GraphicObject* clone() const override {
-        return objectCreate<NodeMultiEventState, NodeMultiEventStateData>(*eventStateData);
+        return objectClone<NodeMultiEventState, NodeMultiEventStateData>(eventStateData, false);
     }
 
     GraphicObjectType objectType() const override {

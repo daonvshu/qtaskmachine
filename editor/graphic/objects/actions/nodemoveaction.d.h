@@ -5,7 +5,10 @@
 #include "../graphicnode.h"
 
 struct NodeMoveActionData : GraphicObjectData {
-    const GraphicNode* target = nullptr;
+    QList<const GraphicNode*> targets;
 
-    explicit NodeMoveActionData(const GraphicNode* target): target(target) {}
+    QList<QPointF> renderPositions; // 绘图位置
+    QList<QPointF> oldRenderPositions; // 旧的绘图位置
+
+    explicit NodeMoveActionData(const QList<const GraphicNode*>& targets): targets(targets) {}
 };

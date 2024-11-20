@@ -6,14 +6,14 @@
 
 class NodeBeginState : public GraphicNode {
 public:
-    explicit NodeBeginState(const QSharedPointer<GraphicNodeData>& data);
+    explicit NodeBeginState(const QSharedPointer<GraphicNodeData>& data, bool initialData = true);
 
     static NodeBeginState* create() {
         return objectCreate<NodeBeginState, GraphicNodeData>();
     }
 
     GraphicObject* clone() const override {
-        return objectCreate<NodeBeginState, GraphicNodeData>(*nodeData);
+        return objectClone<NodeBeginState, GraphicNodeData>(nodeData, false);
     }
 
     GraphicObjectType objectType() const override {

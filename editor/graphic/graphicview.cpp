@@ -76,21 +76,15 @@ void GraphicView::saveFlow() {
     currentFlow->lines().clear();
 
     int nodeId = 1;
-    auto* objects = controls->getObjects();
     QHash<const GraphicObject*, int> objIdMap;
-    for (int i = 0; i < objects->index(); i++) {
-        if (auto node = dynamic_cast<const GraphicNode*>(objects->command(i))) {
-            if (node->data->assignRemoved) {
-                continue;
-            }
+    auto objects = GraphicObject::getVisibleObjects<GraphicObject>(controls->getObjects());
+    for (const auto& obj : objects) {
+        if (auto node = dynamic_cast<const GraphicNode*>(obj)) {
             auto executor = node->toFlowExecutor();
             executor.id = nodeId++;
             currentFlow->executors() << executor;
             objIdMap[node] = executor.id();
-        } else if (auto linkLine = dynamic_cast<const GraphicLinkLine*>(objects->command(i))) {
-            if (linkLine->data->assignRemoved) {
-                continue;
-            }
+        } else if (auto linkLine = dynamic_cast<const GraphicLinkLine*>(obj)) {
             ConfigFlowConnectLine line;
             line.connectFrom = objIdMap[linkLine->linkData->linkFromNode];
             if (line.connectFrom() == 0) {

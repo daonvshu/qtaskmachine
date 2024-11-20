@@ -23,10 +23,10 @@ public:
 
     /**
      * @brief 复制节点到鼠标位置
-     * @param nodeObject
+     * @param nodeObjects
      * @param mousePoint
      */
-    void copyNodeToMousePoint(const GraphicObject* nodeObject, const QPoint& mousePoint);
+    void copyNodeToMousePoint(const QList<QSharedPointer<GraphicObject>>& nodeObjects, const QPoint& mousePoint);
 
     /**
      * @brief 测试鼠标位置（GUI位置）是否可选中对象
@@ -52,7 +52,7 @@ public:
      * @brief 平移选中对象
      * @param delta
      */
-    void objTranslate(const QPointF& delta) const;
+    void objTranslate(const QPointF& delta);
 
     /**
      * @brief 平移结束
@@ -132,6 +132,22 @@ public:
      * @brief 清空所有对象
      */
     void clearAll();
+
+    /**
+     * @brief 创建多选对象
+     * @param rect
+     */
+    void createMultiSelect(const QRectF& rect);
+
+    /**
+     * @brief 取消多选对象选中状态
+     */
+    void cancelMultiSelectSelectedState() const;
+
+    /**
+     * @brief 删除多选对象
+     */
+    void removeMultiSelectedObjects();
 
 signals:
     void graphicObjectChanged();

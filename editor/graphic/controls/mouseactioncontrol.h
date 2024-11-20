@@ -49,9 +49,10 @@ private:
     bool objectSelected = false;
     bool linkLineCreating = false;
     bool linkLineSelected = false;
+    bool multiSelecting = false;
     QPointF lastMousePoint;
     const class GraphicNode* lastHoverActiveNode = nullptr;
-    QSharedPointer<GraphicObject> preCopyObject;
+    QList<QSharedPointer<GraphicObject>> preCopyObjects;
 
 private:
     void selectObjPress(const QPoint& mousePos);
@@ -89,9 +90,9 @@ private:
 
     /**
      * @brief 预拷贝对象
-     * @param obj
+     * @param objs
      */
-    void copyNodeObject(const GraphicObject* obj);
+    void copyNodeObject(const QList<const GraphicNode*>& objs);
 
     /**
      * @brief 粘贴对象

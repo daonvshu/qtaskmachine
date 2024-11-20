@@ -1,12 +1,14 @@
 #include "nodeconditionstate.h"
 
-NodeConditionState::NodeConditionState(const QSharedPointer<NodeConditionStateData>& data)
+NodeConditionState::NodeConditionState(const QSharedPointer<NodeConditionStateData>& data, bool initialData)
     : GraphicNode(data)
     , conditionStateData(data)
 {
-    data->propData.nodeName = "条件分支状态";
-    data->inputLinkPointColors << 0x77E000;
-    data->outputLinkPointColors << 0x00E0E0;
+    if (initialData) {
+        data->propData.nodeName = "条件分支状态";
+        data->inputLinkPointColors << 0x77E000;
+        data->outputLinkPointColors << 0x00E0E0;
+    }
 }
 
 ConfigFlowExecutor NodeConditionState::toFlowExecutor() const {

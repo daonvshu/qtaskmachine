@@ -8,8 +8,12 @@ class ObjectRemoveAction : public GraphicObject {
 public:
     explicit ObjectRemoveAction(const QSharedPointer<ObjectRemoveActionData>& data);
 
+    static ObjectRemoveAction* create(const QList<const GraphicObject*>& targets) {
+        return objectCreate<ObjectRemoveAction, ObjectRemoveActionData>(targets);
+    }
+
     static ObjectRemoveAction* create(const GraphicObject* target) {
-        return objectCreate<ObjectRemoveAction, ObjectRemoveActionData>(target);
+        return objectCreate<ObjectRemoveAction, ObjectRemoveActionData>(QList { target });
     }
 
     GraphicObject * clone() const override {

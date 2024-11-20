@@ -15,4 +15,5 @@ enum class GraphicObjectType {
 
     Action_Node_Move,           // 节点移动
     Action_Object_Remove,       // 对象删除
+    Action_Object_Copy,         // 对象复制
 };
