@@ -19,6 +19,7 @@ const config: Config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'daonvshu', // Usually your GitHub org/user name.
   projectName: 'qtaskmachine', // Usually your repo name.
+  trailingSlash: false,
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -38,6 +39,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
         },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -49,17 +51,35 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'My Site',
+      title: 'QTaskMachine Doc',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'QTaskMachine Doc Logo',
         src: 'img/logo.svg',
       },
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'guides',
           position: 'left',
-          label: 'Tutorial',
+          label: '使用说明',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'editor',
+          position: 'left',
+          label: '编辑器',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'api',
+          position: 'left',
+          label: 'API',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'config',
+          position: 'left',
+          label: '配置文件',
         },
         {
           href: 'https://github.com/daonvshu/qtaskmachine',
