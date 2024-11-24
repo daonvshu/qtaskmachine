@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkqtaskmachine_doc=self.webpackChunkqtaskmachine_doc||[]).push([[583],{6866:(e,s,a)=>{a.r(s),a.d(s,{default:()=>n});a(6540);var c=a(6347),t=a(4848);function n(){return(0,t.jsx)(c.rd,{to:"/qtaskmachine/docs/guides/intro"})}}}]);
