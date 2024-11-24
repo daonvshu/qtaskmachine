@@ -27,10 +27,10 @@ add_library(${PROJECT_NAME}
     targetsignaltransition.cpp
     conditionaltransition.h
 
-    utils/taskmachinerunner.h
-    utils/taskmachinerunner.cpp
-    utils/taskmachinesteputil.h
-    utils/taskmachinesteputil.cpp
+    stateutils/taskmachinerunner.h
+    stateutils/taskmachinerunner.cpp
+    stateutils/taskmachinesteputil.h
+    stateutils/taskmachinesteputil.cpp
 
     state/directstate.h
     state/directstate.cpp
