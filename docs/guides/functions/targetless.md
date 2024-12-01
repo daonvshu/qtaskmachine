@@ -6,7 +6,7 @@ sidebar_position: 4
 
 基础类型中`DelayState`、`EventState`、`GroupState`支持不设置切换目标，当没有切换目标时，状态退出后会立即重新进入自身。  
 
-一个典型的例子，子状态中反复执行一个操作，知道父状态触发失败分支退出：
+一个典型的例子，子状态中反复执行一个操作，直到父状态触发失败分支退出：
 
 ```cpp
 auto machine = new QStateMachine;
@@ -38,3 +38,5 @@ groupState->setFailState(failState);
 machine->setInitialState(beginState);
 machine->start();
 ```
+
+上面的例子中，触发**trigger**的**finish**事件使得**s2**退出后，**s2**立即重新进入等待下一次**finish**事件的触发。
