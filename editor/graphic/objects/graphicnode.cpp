@@ -49,6 +49,10 @@ QColor GraphicNode::getLinkPointColor(int linkIndex, bool isInputPoint) const {
     }
 }
 
+bool GraphicNode::testLinkLineIndexValid(int linkIndex, bool isInputPoint) const {
+    return true;
+}
+
 ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
     ConfigFlowExecutor executor;
     executor.fromType(objectType());

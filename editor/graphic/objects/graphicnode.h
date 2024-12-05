@@ -37,6 +37,14 @@ public:
      */
     virtual QColor getLinkPointColor(int linkIndex, bool isInputPoint) const;
 
+    /**
+     * @brief 测试链接点是否有效
+     * @param linkIndex
+     * @param isInputPoint
+     * @return
+     */
+    virtual bool testLinkLineIndexValid(int linkIndex, bool isInputPoint) const;
+
     virtual ConfigFlowExecutor toFlowExecutor() const;
 
     virtual void fromExecutor(const ConfigFlowExecutor& executor) const;

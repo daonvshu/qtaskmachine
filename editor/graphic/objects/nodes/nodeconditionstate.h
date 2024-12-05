@@ -21,6 +21,8 @@ public:
         return GraphicObjectType::Node_Condition_State;
     }
 
+    bool testLinkLineIndexValid(int linkIndex, bool isInputPoint) const override;
+
     ConfigFlowExecutor toFlowExecutor() const override;
 
     void fromExecutor(const ConfigFlowExecutor &executor) const override;

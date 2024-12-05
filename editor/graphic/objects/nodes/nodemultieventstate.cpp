@@ -11,6 +11,13 @@ NodeMultiEventState::NodeMultiEventState(const QSharedPointer<NodeMultiEventStat
     }
 }
 
+bool NodeMultiEventState::testLinkLineIndexValid(int linkIndex, bool isInputPoint) const {
+    if (isInputPoint) {
+        return linkIndex <= 0;
+    }
+    return linkIndex < eventStateData->eventPropData.events().size();
+}
+
 void NodeMultiEventState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     eventStateData->eventPropData.events().clear();

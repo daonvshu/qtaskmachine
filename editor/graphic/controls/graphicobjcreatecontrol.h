@@ -115,6 +115,12 @@ public:
     void removeLinkLine(const GraphicObject* linkLine);
 
     /**
+     * @brief 移除只想该对象超出索引的连接线
+     * @param node
+     */
+    void removeLinkLineOutOfIndex(const GraphicObject* node);
+
+    /**
      *  获取当前选中的链接线
      * @return
      */

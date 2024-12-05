@@ -266,6 +266,21 @@ void GraphicObjCreateControl::removeLinkLine(const GraphicObject* linkLine) {
     emit graphicObjectChanged();
 }
 
+void GraphicObjCreateControl::removeLinkLineOutOfIndex(const GraphicObject* node) {
+    cancelSelectedLinkLine();
+    auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
+    for (const auto& linkLine : linkLines) {
+        if (linkLine->linkData->linkFromNode == node) {
+            if (auto nodeObj = dynamic_cast<const GraphicNode*>(node)) {
+                if (!nodeObj->testLinkLineIndexValid(linkLine->linkData->linkFromPointIndex, false)) {
+                    d->graphicObjects.push(ObjectRemoveAction::create(linkLine));
+                }
+            }
+        }
+    }
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
+}
+
 const GraphicLinkLine* GraphicObjCreateControl::getSelectedLinkLine() const {
     return selectedLinkLine;
 }

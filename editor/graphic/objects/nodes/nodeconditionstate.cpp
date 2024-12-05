@@ -11,6 +11,13 @@ NodeConditionState::NodeConditionState(const QSharedPointer<NodeConditionStateDa
     }
 }
 
+bool NodeConditionState::testLinkLineIndexValid(int linkIndex, bool isInputPoint) const {
+    if (isInputPoint) {
+        return linkIndex <= 0;
+    }
+    return linkIndex < conditionStateData->conditionPropData.branchIds().size();
+}
+
 ConfigFlowExecutor NodeConditionState::toFlowExecutor() const {
     auto executor = GraphicNode::toFlowExecutor();
     executor.condition = conditionStateData->conditionPropData.conditionFunc();

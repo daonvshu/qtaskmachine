@@ -21,6 +21,8 @@ public:
         return GraphicObjectType::Node_MultiEvent_State;
     }
 
+    bool testLinkLineIndexValid(int linkIndex, bool isInputPoint) const override;
+
     void fromExecutor(const ConfigFlowExecutor &executor) const override;
 
     void drawObject() override;
