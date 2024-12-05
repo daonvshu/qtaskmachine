@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>568</width>
-    <height>470</height>
+    <height>599</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -361,10 +361,16 @@ background: #4C4E56;
    </item>
    <item>
     <widget class="QTextBrowser" name="input_hint_message">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>96</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>80</height>
+       <height>96</height>
       </size>
      </property>
      <property name="styleSheet">

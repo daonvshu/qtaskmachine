@@ -17,7 +17,9 @@ ConditionStatePropEditDlg::ConditionStatePropEditDlg(QWidget *parent)
     });
 
     registerMessageHint(exUi.input_check_func, tr("设置条件函数，返回分支id切换到指定分支路径\n"
-                                                  "函数签名：\nQ_INVOKABLE int function()"));
+                                                  "如果函数不以‘()’结尾，则当做属性读取其值作为Id，属性类型仅支持int、bool、QString\n"
+                                                  "如果属性是QString类型，则以分支名称作为判断依据\n"
+                                                  "函数签名：Q_INVOKABLE int function()"));
 }
 
 void ConditionStatePropEditDlg::setExData(const ConditionStatePropertyData &data) {

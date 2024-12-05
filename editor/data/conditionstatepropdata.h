@@ -11,6 +11,7 @@ struct ConditionStatePropertyData : DataDumpInterface {
 
     ConditionStatePropertyData() {
         branchIds() << 0 << 1;
+        branchNames() << QString() << QString();
     }
 
     QList<DataReadInterface *> prop() override {

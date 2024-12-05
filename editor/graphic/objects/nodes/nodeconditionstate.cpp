@@ -39,7 +39,13 @@ void NodeConditionState::drawObject() {
         minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(branchDisplayName, itemFontSize));
         branchIdStrings << branchDisplayName;
     }
-    QString checkFunction = QString("检查函数：") + conditionStateData->conditionPropData.conditionFunc();
+
+    auto checkFunction = conditionStateData->conditionPropData.conditionFunc();
+    if (checkFunction.isEmpty() || checkFunction.endsWith("()")) {
+        checkFunction.prepend("检查函数：");
+    } else {
+        checkFunction.prepend("检查属性值：");
+    }
     minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(checkFunction, itemFontSize));
     minSubItemWidth += itemPadding * 2;
 
