@@ -12,31 +12,22 @@ ConditionStatePropEditDlg::ConditionStatePropEditDlg(QWidget *parent)
     exUi.setupUi(exWidget);
     ui.prop_layout->insertWidget(2, exWidget);
 
-    branchLayout = new FlowLayout(exUi.branch_list_widget);
-    branchLayout->setContentsMargins(0, 0, 0, 0);
-    branchLayout->setSpacing(8);
+    connect(exUi.btn_branch_add, &QPushButton::clicked, this, [&] {
+        addBranchEditItem(-1, QString());
+    });
 
     registerMessageHint(exUi.input_check_func, tr("设置条件函数，返回分支id切换到指定分支路径\n"
-                                                  "函数签名：\nQ_INVOKABLE int function()"));
+                                                  "如果函数不以‘()’结尾，则当做属性读取其值作为Id，属性类型仅支持int、bool、QString\n"
+                                                  "如果属性是QString类型，则以分支名称作为判断依据\n"
+                                                  "函数签名：Q_INVOKABLE int function()"));
 }
 
 void ConditionStatePropEditDlg::setExData(const ConditionStatePropertyData &data) {
     exData = data;
     exUi.input_check_func->setText(exData.conditionFunc());
 
-    auto addBtn = new QPushButton(exUi.branch_list_widget);
-    addBtn->setFixedSize(32, 32);
-    addBtn->setIcon(QIcon(":/res/add.svg"));
-    addBtn->setStyleSheet("QPushButton{background: transparent;} QPushButton:hover{background: #4C4E56;}");
-    addBtn->setDefault(false);
-    addBtn->setAutoDefault(false);
-    connect(addBtn, &QPushButton::clicked, this, [&] {
-        addBranchEditItem(-1);
-    });
-    branchLayout->addWidget(addBtn);
-
-    for (int branch : exData.branchIds()) {
-        addBranchEditItem(branch);
+    for (int i = 0; i < qMin(exData.branchIds().size(), exData.branchNames().size()); i++) {
+        addBranchEditItem(exData.branchIds().at(i), exData.branchNames().at(i));
     }
 }
 
@@ -47,47 +38,40 @@ ConditionStatePropertyData ConditionStatePropEditDlg::getExEditData() const {
 void ConditionStatePropEditDlg::on_btn_confirm_clicked() {
     exData.conditionFunc = exUi.input_check_func->text();
     exData.branchIds().clear();
-    auto lineEdits = exUi.branch_list_widget->findChildren<QLineEdit*>();
-    for (auto item : lineEdits) {
-        auto branchId = item->text().toInt();
-        exData.branchIds().append(branchId);
+    exData.branchNames().clear();
+    for (int i = 0; i < exUi.layout_branch_list->count() - 1; i++) {
+        auto item = exUi.layout_branch_list->itemAt(i)->widget();
+        if (auto branchItemWidget = dynamic_cast<ConditionBranchItemWidget*>(item)) {
+            exData.branchIds().append(branchItemWidget->getId());
+            exData.branchNames().append(branchItemWidget->getName());
+        }
     }
     BasePropertyEditDlg::on_btn_confirm_clicked();
 }
 
-void ConditionStatePropEditDlg::addBranchEditItem(int branchId) {
-
-    auto itemWidget = new QWidget(exUi.branch_list_widget);
-    itemWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-    itemWidget->setStyleSheet("QWidget{border-radius:4px;} QWidget:hover{background:#4C4E56;}");
-    auto itemLayout = new QHBoxLayout(itemWidget);
-    itemLayout->setContentsMargins(6, 4, 6, 6);
-    itemLayout->setSpacing(0);
-
-    auto branchEditor = new QLineEdit(QString::number(branchId), itemWidget);
-    branchEditor->setStyleSheet("border:none");
-    branchEditor->installEventFilter(this);
-    auto editorResize = [=] (const QString& text) {
-        auto fontMetrics = branchEditor->fontMetrics();
-        branchEditor->setFixedWidth(fontMetrics.horizontalAdvance(text) + 16 + 8);
-    };
-    connect(branchEditor, &QLineEdit::textChanged, this, editorResize);
-    editorResize(branchEditor->text());
-    auto intValidator = new QIntValidator(branchEditor);
-    intValidator->setRange(-1, 1000000);
-    branchEditor->setValidator(intValidator);
-    itemLayout->addWidget(branchEditor);
-
-    auto removeBtn = new QPushButton(itemWidget);
-    removeBtn->setIcon(QIcon(":/res/close.svg"));
-    removeBtn->setIconSize(QSize(12, 12));
-    removeBtn->setDefault(false);
-    removeBtn->setAutoDefault(false);
-    connect(removeBtn, &QPushButton::clicked, this, [=](){
-        branchLayout->removeWidget(itemWidget);
-        itemWidget->deleteLater();
+void ConditionStatePropEditDlg::addBranchEditItem(int branchId, const QString& name) {
+    auto branchItemWidget = new ConditionBranchItemWidget(branchId, name, exUi.widget);
+    exUi.layout_branch_list->insertWidget(exUi.layout_branch_list->count() - 1, branchItemWidget);
+    connect(branchItemWidget, &ConditionBranchItemWidget::removeRequest, this, [&] {
+        exUi.layout_branch_list->removeWidget(branchItemWidget);
     });
+}
 
-    itemLayout->addWidget(removeBtn);
-    branchLayout->addWidget(itemWidget);
+ConditionBranchItemWidget::ConditionBranchItemWidget(int id, const QString& name, QWidget* parent)
+    : QWidget(parent)
+{
+    ui.setupUi(this);
+
+    ui.input_id->setText(QString::number(id));
+    ui.input_name->setText(name);
+
+    connect(ui.btn_remove, &QPushButton::clicked, this, &ConditionBranchItemWidget::removeRequest);
+}
+
+int ConditionBranchItemWidget::getId() const {
+    return ui.input_id->text().toInt();
+}
+
+QString ConditionBranchItemWidget::getName() const {
+    return ui.input_name->text();
 }

@@ -89,10 +89,8 @@ void BasePropertyEditDlg::on_btn_confirm_clicked() {
     editData.funcExit() = ui.input_func_exit->text();
     editData.properties().clear();
     for (int i = 0; i < ui.layout_bind_properties->count() - 1; ++i) {
-        auto item = ui.layout_bind_properties->itemAt(i);
-        auto widget = item->widget();
-        auto propertyBindWidget = dynamic_cast<PropertyBindWidget*>(widget);
-        if (propertyBindWidget) {
+        auto widget = ui.layout_bind_properties->itemAt(i)->widget();
+        if (auto propertyBindWidget = dynamic_cast<PropertyBindWidget*>(widget)) {
             editData.properties().append(propertyBindWidget->bindData);
         }
     }

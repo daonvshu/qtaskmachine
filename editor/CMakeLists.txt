@@ -63,9 +63,6 @@ add_executable(${PROJECT_NAME} WIN32
     dialogs/nodeedit/recoverystatepropeditdlg.h
     dialogs/nodeedit/recoverystatepropeditdlg.cpp
 
-    widget/flowlayout.h
-    widget/flowlayout.cpp
-
     graphic/graphicview.h
     graphic/graphicview.cpp
     graphic/graphiccontrol.h

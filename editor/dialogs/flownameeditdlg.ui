@@ -280,6 +280,9 @@ font-size:12px;color:#A0C2D3;
        <property name="text">
         <string>确定</string>
        </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>

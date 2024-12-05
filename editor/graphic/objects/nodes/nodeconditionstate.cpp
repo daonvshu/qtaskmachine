@@ -22,6 +22,7 @@ void NodeConditionState::fromExecutor(const ConfigFlowExecutor &executor) const 
     GraphicNode::fromExecutor(executor);
     conditionStateData->conditionPropData.conditionFunc = executor.condition();
     conditionStateData->conditionPropData.branchIds().clear();
+    conditionStateData->conditionPropData.branchNames().clear();
 }
 
 void NodeConditionState::drawObject() {
@@ -31,12 +32,20 @@ void NodeConditionState::drawObject() {
     QStringList bindStrings;
     minSubItemWidth = qMax(minSubItemWidth, minPropertyWidth(bindStrings));
     QStringList branchIdStrings;
-    for (const auto& branchId : conditionStateData->conditionPropData.branchIds()) {
-        auto branchDisplayName = QString("分支（%1）").arg(branchId);
+    const auto& ids = conditionStateData->conditionPropData.branchIds();
+    const auto& names = conditionStateData->conditionPropData.branchNames();
+    for (int i = 0; i < qMin(ids.size(), names.size()); ++i) {
+        auto branchDisplayName = QString("%1（%2）").arg(names[i].isEmpty() ? "[分支]" : names[i]).arg(ids[i]);
         minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(branchDisplayName, itemFontSize));
         branchIdStrings << branchDisplayName;
     }
-    QString checkFunction = QString("检查函数：") + conditionStateData->conditionPropData.conditionFunc();
+
+    auto checkFunction = conditionStateData->conditionPropData.conditionFunc();
+    if (checkFunction.isEmpty() || checkFunction.endsWith("()")) {
+        checkFunction.prepend("检查函数：");
+    } else {
+        checkFunction.prepend("检查属性值：");
+    }
     minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(checkFunction, itemFontSize));
     minSubItemWidth += itemPadding * 2;
 

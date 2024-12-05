@@ -3,9 +3,9 @@
 #include "../basepropertyeditdlg.h"
 
 #include "ui_conditionstatepropex.h"
+#include "ui_conditionbranchitem.h"
 
 #include "data/conditionstatepropdata.h"
-#include "widget/flowlayout.h"
 
 class ConditionStatePropEditDlg : public BasePropertyEditDlg {
     Q_OBJECT
@@ -23,8 +23,24 @@ protected:
 private:
     Ui::ConditionStatePropEx exUi;
     ConditionStatePropertyData exData;
-    FlowLayout* branchLayout;
 
 private:
-    void addBranchEditItem(int branchId);
+    void addBranchEditItem(int branchId, const QString& name);
+};
+
+class ConditionBranchItemWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    ConditionBranchItemWidget(int id, const QString& name, QWidget* parent = nullptr);
+
+    int getId() const;
+
+    QString getName() const;
+
+signals:
+    void removeRequest();
+
+private:
+    Ui::ConditionBranchItem ui;
 };

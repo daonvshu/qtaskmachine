@@ -6,13 +6,15 @@ using namespace QDataUtil;
 
 struct ConditionStatePropertyData : DataDumpInterface {
     DATA_KEY(QList<int>, branchIds); //分支id列表
+    DATA_KEY(QStringList, branchNames); //分支名称列表
     DATA_KEY(QString, conditionFunc); //分支检查函数
 
     ConditionStatePropertyData() {
-        branchIds() << -1 << -1;
+        branchIds() << 0 << 1;
+        branchNames() << QString() << QString();
     }
 
     QList<DataReadInterface *> prop() override {
-        return { &branchIds, &conditionFunc };
+        return { &branchIds, &branchNames, &conditionFunc };
     }
 };

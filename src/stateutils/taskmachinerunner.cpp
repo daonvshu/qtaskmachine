@@ -222,6 +222,7 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
     }
     int signalIndex = 0;
     QHash<int, int> idToIndexMap;
+    QHash<int, QString> idToNameMap;
     for (const auto connectLine : connectLines) {
         auto nextExecutor = executors[connectLine->connectTo()];
         if (nextExecutor == nullptr) {
@@ -230,15 +231,38 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
         auto nextState = createStateByType(nextExecutor, parent);
         state->next(nextState);
         idToIndexMap[connectLine->branchId()] = signalIndex++;
+        idToNameMap[connectLine->branchId()] = connectLine->branchName();
     }
     state->setCondition([=] {
-        auto checkFunc = findFunction(executor->condition());
         int branchId = 0;
-        auto returnValue = Q_RETURN_ARG(int, branchId);
-        bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection, returnValue);
-        if (!invokeResult) {
-            qCCritical(taskMachine) << "invoke check function fail!";
+        if (executor->condition().isEmpty()) {
+            qCCritical(taskMachine) << "condition check function is empty!";
             return 0;
+        }
+        if (executor->condition().endsWith("()")) {
+            auto checkFunc = findFunction(executor->condition());
+            auto returnValue = Q_RETURN_ARG(int, branchId);
+            bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection, returnValue);
+            if (!invokeResult) {
+                qCCritical(taskMachine) << "invoke check function fail!";
+                return 0;
+            }
+        } else {
+            auto propertyData = currentBindContext->property(executor->condition().toLatin1());
+            if (propertyData.type() == QMetaType::Int) {
+                branchId = propertyData.toInt();
+            } else if (propertyData.type() == QMetaType::Bool) {
+                branchId = propertyData.toBool() ? 1 : 0;
+            } else if (propertyData.type() == QMetaType::QString) {
+                branchId = idToNameMap.key(propertyData.toString());
+            } else {
+                qCCritical(taskMachine) << "condition property type not supported:" << executor->condition();
+                return 0;
+            }
+        }
+        auto selectName = idToNameMap.value(branchId);
+        if (!selectName.isEmpty()) {
+            qCInfo(taskMachine) << "select branch:" << selectName;
         }
         return idToIndexMap[branchId];
     });
