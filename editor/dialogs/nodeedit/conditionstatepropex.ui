@@ -142,9 +142,6 @@ font-size:12px;color:#A0C2D3;
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QWidget" name="branch_list_widget" native="true"/>
-      </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="input_check_func">
         <property name="minimumSize">
@@ -154,6 +151,48 @@ font-size:12px;color:#A0C2D3;
          </size>
         </property>
        </widget>
+      </item>
+      <item row="1" column="1">
+       <layout class="QVBoxLayout" name="layout_branch_list">
+        <item>
+         <widget class="QPushButton" name="btn_branch_add">
+          <property name="minimumSize">
+           <size>
+            <width>32</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>32</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+background: transparent;
+}
+QPushButton:hover{
+background: #4C4E56;
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/res/add.svg</normalon>
+           </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

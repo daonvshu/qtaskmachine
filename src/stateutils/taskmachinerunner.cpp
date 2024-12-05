@@ -222,6 +222,7 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
     }
     int signalIndex = 0;
     QHash<int, int> idToIndexMap;
+    QHash<int, QString> idToNameMap;
     for (const auto connectLine : connectLines) {
         auto nextExecutor = executors[connectLine->connectTo()];
         if (nextExecutor == nullptr) {
@@ -230,6 +231,7 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
         auto nextState = createStateByType(nextExecutor, parent);
         state->next(nextState);
         idToIndexMap[connectLine->branchId()] = signalIndex++;
+        idToNameMap[connectLine->branchId()] = connectLine->branchName();
     }
     state->setCondition([=] {
         auto checkFunc = findFunction(executor->condition());
@@ -239,6 +241,10 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
         if (!invokeResult) {
             qCCritical(taskMachine) << "invoke check function fail!";
             return 0;
+        }
+        auto selectName = idToNameMap.value(branchId);
+        if (!selectName.isEmpty()) {
+            qCInfo(taskMachine) << "select branch:" << selectName;
         }
         return idToIndexMap[branchId];
     });

@@ -86,6 +86,7 @@ namespace TaskMachine {
         T_DATA_KEY(QString, trigger); //信号触发函数
         T_DATA_KEY(QString, checkFunc); //检查函数
         T_DATA_KEY(int, branchId); //分支// id
+        T_DATA_KEY(QString, branchName); //分支名称
         T_DATA_KEY(bool, failBranch); //失败分支
         T_DATA_KEY(bool, subBranch); //子流程分支
 
@@ -100,7 +101,7 @@ namespace TaskMachine {
 
         QList<DataReadInterface *> prop() override {
             return {&connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
-                    &trigger, &checkFunc, &branchId, &failBranch, &subBranch};
+                    &trigger, &checkFunc, &branchId, &branchName, &failBranch, &subBranch};
         }
     };
 

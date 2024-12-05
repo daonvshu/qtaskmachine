@@ -126,6 +126,7 @@ void GraphicView::saveFlow() {
             case GraphicObjectType::Node_Condition_State: {
                 auto conditionNode = dynamic_cast<const NodeConditionState*>(linkLine->linkData->linkFromNode);
                 line.branchId = conditionNode->conditionStateData->conditionPropData.branchIds()[line.connectFromPIndex()];
+                line.branchName = conditionNode->conditionStateData->conditionPropData.branchNames()[line.connectFromPIndex()];
             }
                 break;
             case GraphicObjectType::Node_State_Group: {
@@ -239,14 +240,18 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
             case GraphicObjectType::Node_Condition_State: {
                 auto conditionNode = dynamic_cast<const NodeConditionState*>(lineLine->linkData->linkFromNode);
                 QList<int>& branchIds = conditionNode->conditionStateData->conditionPropData.branchIds();
+                QStringList& branchNames = conditionNode->conditionStateData->conditionPropData.branchNames();
                 if (version == 1) {
                     branchIds.append(line.branchId());
+                    branchNames.append(line.branchName());
                     lineLine->linkData->linkFromPointIndex = branchIds.size() - 1;
                 } else {
                     while (branchIds.size() < line.connectFromPIndex() + 1) {
                         branchIds.append(-1);
+                        branchNames.append(QString());
                     }
                     branchIds[line.connectFromPIndex()] = line.branchId();
+                    branchNames[line.connectFromPIndex()] = line.branchName();
                 }
             }
                 break;
