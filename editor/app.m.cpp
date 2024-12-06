@@ -2,6 +2,8 @@
 
 #include "dialogs/messagedlg.h"
 
+#include "db/viewcentermanager.h"
+
 #include <qfile.h>
 
 void App::refreshConfigPathLabel() {
@@ -24,6 +26,7 @@ void App::reloadFlowList() {
 
 void App::createNewConfig(const QString &filePath) {
     configFilePath = filePath;
+    ViewCenterManager::beginFile(filePath);
     flowGroup.flows().clear();
     auto newFlow = ConfigFlow();
     newFlow.version = 2;
@@ -49,6 +52,7 @@ void App::openExistConfig(const QString &filePath) {
     flowGroup.fromJson(obj);
 
     configFilePath = filePath;
+    ViewCenterManager::beginFile(filePath);
     refreshConfigPathLabel();
     reloadFlowList();
 }

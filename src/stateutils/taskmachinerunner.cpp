@@ -279,7 +279,9 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
         }
         auto selectName = idToNameMap.value(branchId);
         if (!selectName.isEmpty()) {
-            qCInfo(taskMachine) << "select branch:" << selectName;
+            qCInfo(taskMachine) << QString("select branch: %1 (%2)").arg(selectName).arg(branchId);
+        } else {
+            qCInfo(taskMachine) << "select branch:" << branchId;
         }
         return idToIndexMap[branchId];
     });

@@ -19,9 +19,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
 include(CPM.cmake)
 
 CPMAddPackage("gh:daonvshu/qlogcollector@1.0.5")
+CPMAddPackage("gh:daonvshu/QtDao@2.2.3")
 CPMAddPackage("gh:stdware/qwindowkit#1.2")
 
 add_compile_definitions(ROOT_PROJECT_PATH="${CMAKE_SOURCE_DIR}")
+
+include(db/entity.cmake)
 
 add_executable(${PROJECT_NAME} WIN32
     main.cpp
@@ -132,6 +135,11 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/utils/transform.cpp
     graphic/utils/bezierdistancecalculator.h
     graphic/utils/bezierdistancecalculator.cpp
+
+    db/viewcentermanager.h
+    db/viewcentermanager.cpp
+
+    ${ENTITY_FILE_LIST}
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -140,5 +148,6 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Widgets
 
     qlogcollectorserver
+    qtdao
     QWindowKit::Widgets
 )

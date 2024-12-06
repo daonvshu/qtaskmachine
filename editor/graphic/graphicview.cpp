@@ -14,6 +14,8 @@
 
 #include "data/configflows.h"
 
+#include "db/viewcentermanager.h"
+
 #include <qpainter.h>
 #include <qtimer.h>
 
@@ -153,10 +155,7 @@ void GraphicView::saveFlow() {
 void GraphicView::savePosition() {
     auto currentTransform = controls->getTransform();
     auto center = currentTransform.toRealPoint(this->rect().center());
-    currentFlow->viewCenterOffsetX = center.x();
-    currentFlow->viewCenterOffsetY = center.y();
-
-    emit configChanged();
+    ViewCenterManager::setViewCenter(currentFlow->name(), center);
 }
 
 void GraphicView::updateFlow(ConfigFlow *flow) {
@@ -285,10 +284,9 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
 
     ignoreSaveState = false;
 
-    qreal offsetX = flow->viewCenterOffsetX();
-    qreal offsetY = flow->viewCenterOffsetY();
-    QTimer::singleShot(200, this, [&, offsetX, offsetY] {
-        controls->get<TransformControl>()->resetTransform(offsetX, offsetY);
+    auto offset = ViewCenterManager::getViewCenter(currentFlow->name());
+    QTimer::singleShot(200, this, [&, offset] {
+        controls->get<TransformControl>()->resetTransform(offset.x(), offset.y());
         repaint();
     });
 }

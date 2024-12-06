@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dao SYSTEM "sqlite_entity.xsd">
+<dao prefix="tmf_" db="sqlite">
+  <tb name="ViewCenter">
+    <item name="configPath" type="text" constraints="not null"/>
+    <item name="flowName" type="text" constraints="not null"/>
+    <item name="x" type="real" default="0" />
+    <item name="y" type="real" default="0" />
+    <index type="unique index">
+      <field>configPath</field>
+      <field>flowName</field>
+    </index>
+  </tb>
+</dao>
