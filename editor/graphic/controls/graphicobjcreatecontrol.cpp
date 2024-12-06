@@ -268,17 +268,23 @@ void GraphicObjCreateControl::removeLinkLine(const GraphicObject* linkLine) {
 
 void GraphicObjCreateControl::removeLinkLineOutOfIndex(const GraphicObject* node) {
     cancelSelectedLinkLine();
+    bool hasLinkLineRemoved = false;
     auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
     for (const auto& linkLine : linkLines) {
         if (linkLine->linkData->linkFromNode == node) {
             if (auto nodeObj = dynamic_cast<const GraphicNode*>(node)) {
                 if (!nodeObj->testLinkLineIndexValid(linkLine->linkData->linkFromPointIndex, false)) {
                     d->graphicObjects.push(ObjectRemoveAction::create(linkLine));
+                    hasLinkLineRemoved = true;
                 }
             }
         }
     }
+    if (!hasLinkLineRemoved) {
+        return;
+    }
     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link);
+    d->graphicObjects.push(new QUndoCommand("CannotUndoOperate"));
 }
 
 const GraphicLinkLine* GraphicObjCreateControl::getSelectedLinkLine() const {
