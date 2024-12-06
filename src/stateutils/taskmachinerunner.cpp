@@ -249,15 +249,32 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
             }
         } else {
             auto propertyData = currentBindContext->property(executor->condition().toLatin1());
-            if (propertyData.type() == QMetaType::Int) {
-                branchId = propertyData.toInt();
-            } else if (propertyData.type() == QMetaType::Bool) {
-                branchId = propertyData.toBool() ? 1 : 0;
-            } else if (propertyData.type() == QMetaType::QString) {
-                branchId = idToNameMap.key(propertyData.toString());
-            } else {
-                qCCritical(taskMachine) << "condition property type not supported:" << executor->condition();
-                return 0;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            switch (propertyData.typeId()) {
+                case QMetaType::Int:
+                    branchId = propertyData.toInt();
+                    break;
+                case QMetaType::Bool:
+                    branchId = propertyData.toBool() ? 1 : 0;
+                    break;
+                case QMetaType::QString:
+                    branchId = idToNameMap.key(propertyData.toString());
+                    break;
+#else
+            switch (propertyData.type()) {
+                case QVariant::Int:
+                    branchId = propertyData.toInt();
+                    break;
+                case QVariant::Bool:
+                    branchId = propertyData.toBool() ? 1 : 0;
+                    break;
+                case QVariant::String:
+                    branchId = idToNameMap.key(propertyData.toString());
+                    break;
+#endif
+                default:
+                    qCCritical(taskMachine) << "condition property type not supported:" << executor->condition();
+                    return 0;
             }
         }
         auto selectName = idToNameMap.value(branchId);
