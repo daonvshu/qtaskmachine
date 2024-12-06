@@ -198,10 +198,13 @@ void App::on_btn_flow_remove_clicked() {
     if (currentIndex == -1) {
         return;
     }
-    flowGroup.flows().removeAt(currentIndex);
-    ui.flow_list_cb->removeItem(currentIndex);
-    saveConfigToFile();
-    updateFlowListWidth();
+    auto dlg = MessageDlg::showMessage(tr("警告"), tr("确定删除流程‘%1’？").arg(flowGroup.flows()[currentIndex].name()), this, true);
+    connect(dlg, &MessageDlg::accepted, this, [&, currentIndex] {
+        flowGroup.flows().removeAt(currentIndex);
+        ui.flow_list_cb->removeItem(currentIndex);
+        saveConfigToFile();
+        updateFlowListWidth();
+    });
 }
 
 void App::on_graphic_view_configChanged() {

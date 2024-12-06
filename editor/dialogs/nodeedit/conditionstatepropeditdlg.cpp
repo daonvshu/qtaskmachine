@@ -54,6 +54,7 @@ void ConditionStatePropEditDlg::addBranchEditItem(int branchId, const QString& n
     exUi.layout_branch_list->insertWidget(exUi.layout_branch_list->count() - 1, branchItemWidget);
     connect(branchItemWidget, &ConditionBranchItemWidget::removeRequest, this, [&, branchItemWidget] {
         exUi.layout_branch_list->removeWidget(branchItemWidget);
+        branchItemWidget->deleteLater();
     });
 }
 
