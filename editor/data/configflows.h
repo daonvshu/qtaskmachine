@@ -12,6 +12,7 @@ using namespace QDataUtil;
 struct ConfigFlowExecutor : DataDumpInterface {
 
     DATA_KEY(int, id); //节点id
+    DATA_KEY(QString, uuid); //节点id（唯一）
     DATA_KEY(QString, text); //字符
     DATA_KEY(qint64, taskId); //任务id
     DATA_KEY(qreal, x); //scene位置x
@@ -49,7 +50,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
     }
 
     QList<DataReadInterface *> prop() override {
-        return { &id, &text, &taskId, &x, &y, &type,
+        return { &id, &uuid, &text, &taskId, &x, &y, &type,
                  &enter, &exit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition };
     }
 };

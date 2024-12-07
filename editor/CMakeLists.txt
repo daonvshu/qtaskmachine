@@ -20,6 +20,7 @@ include(CPM.cmake)
 
 CPMAddPackage("gh:daonvshu/qlogcollector@1.0.5")
 CPMAddPackage("gh:daonvshu/QtDao@2.2.3")
+CPMAddPackage("gh:daonvshu/ProtocolCodecEngine@0.0.7")
 CPMAddPackage("gh:stdware/qwindowkit#1.2")
 
 add_compile_definitions(ROOT_PROJECT_PATH="${CMAKE_SOURCE_DIR}")
@@ -139,6 +140,9 @@ add_executable(${PROJECT_NAME} WIN32
     db/viewcentermanager.h
     db/viewcentermanager.cpp
 
+    remote/monitordlg.h
+    remote/monitordlg.cpp
+
     ${ENTITY_FILE_LIST}
 )
 
@@ -149,5 +153,6 @@ target_link_libraries(${PROJECT_NAME}
 
     qlogcollectorserver
     qtdao
+    protocol_codec_engine
     QWindowKit::Widgets
 )

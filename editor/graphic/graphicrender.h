@@ -57,6 +57,13 @@ protected:
     void drawNodeBody(const QRectF& rect);
 
     /**
+     * @brief 绘制节点运行状态
+     * @param rect
+     * @param titleHeight
+     */
+    void drawNodeRunningState(const QRectF& rect, int titleHeight);
+
+    /**
      * @brief 绘制节点分割线
      * @param nodeBodyRect
      * @param objectType

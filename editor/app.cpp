@@ -28,6 +28,7 @@ App::App(QWidget *parent)
     agent->setHitTestVisible(ui.flow_list);
     agent->setHitTestVisible(ui.btn_new_config);
     agent->setHitTestVisible(ui.btn_open_config);
+    agent->setHitTestVisible(ui.btn_monitor);
 
     refreshConfigPathLabel();
 
@@ -209,6 +210,10 @@ void App::on_btn_flow_remove_clicked() {
 
 void App::on_graphic_view_configChanged() {
     saveConfigToFile();
+}
+
+void App::on_btn_monitor_clicked() {
+
 }
 
 void App::saveLastOpenFilePathRecord(const QString &filePath) {

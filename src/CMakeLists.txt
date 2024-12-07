@@ -7,9 +7,21 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+find_package(ProtocolCodecEngine QUIET)
 
 if (Qt6_FOUND)
     find_package(Qt6 REQUIRED COMPONENTS StateMachine)
+endif ()
+
+if (ProtocolCodecEngine_FOUND)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
+    add_definitions(-DQTASK_MACHINE_REMOTE_DEBUG_ENABLED)
+    set(REMOTE_DEBUG_SRC
+        remote/remotedebuglistener.h
+        remote/remotedebuglistener.cpp
+    )
+else ()
+    message(STATUS "ProtocolCodecEngine not found! Remote debug disabled!")
 endif ()
 
 if (WIN32)
@@ -42,12 +54,18 @@ add_library(${PROJECT_NAME}
     state/groupstate.cpp
     state/multieventstate.h
     state/multieventstate.cpp
-    )
+
+    ${REMOTE_DEBUG_SRC}
+)
 
 target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::Core)
 
 if (Qt6_FOUND)
     target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::StateMachine)
+endif ()
+
+if (ProtocolCodecEngine_FOUND)
+    target_link_libraries(${PROJECT_NAME} protocol_codec_engine Qt${QT_VERSION_MAJOR}::Network)
 endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC

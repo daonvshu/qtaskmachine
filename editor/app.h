@@ -30,6 +30,7 @@ private slots:
     void on_btn_flow_edit_clicked();
     void on_btn_flow_remove_clicked();
     void on_graphic_view_configChanged();
+    void on_btn_monitor_clicked();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
