@@ -1,10 +1,12 @@
 #pragma once
 
 #include <qwidget.h>
+#include <qpointer.h>
 
 #include "ui_app.h"
 
 #include "data/configflows.h"
+#include "remote/remotecontrol.h"
 
 class App : public QWidget {
     Q_OBJECT
@@ -16,6 +18,8 @@ private:
     Ui::App ui;
     ConfigFlowGroup flowGroup;
     QString configFilePath;
+    RemoteControl remoteControl;
+    QPointer<class MonitorDlg> monitorDlg;
 
 private slots:
     void on_btn_min_clicked();
@@ -45,4 +49,6 @@ private:
     void saveConfigToFile();
     void updateFlowListWidth();
     static void saveLastOpenFilePathRecord(const QString& filePath);
+
+    void bindRemoteState();
 };

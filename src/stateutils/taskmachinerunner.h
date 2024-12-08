@@ -47,42 +47,61 @@ private:
     QAbstractState* createEndState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
 
     QAbstractState* findGroupParent(const TaskMachine::ConfigFlowExecutor* executor);
-    void bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor* executor, bool printLog = false);
+    void bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor* executor);
 
     void invokeFunction(const QString& slotName);
     QMetaMethod findFunction(const QString& signalName);
+
+    void printLog(QtMsgType msgType, const QString& message);
+
+    friend class BindableCheckEventState;
+    friend class BindableMultiCheckEventState;
 };
 
 class BindableCheckEventState : public EventState {
+    Q_OBJECT
+
 public:
     using EventState::EventState;
 
-    void setCheckFunction(QObject* context, const QMetaMethod& function) {
+    void setCheckFunction(QObject* context, const QMetaMethod& function, const QString& funcName) {
         checkFunction = function;
+        functionName = funcName;
         currentContext = context;
     }
+
+signals:
+    void checkFunctionInvokeFailed(const QString& funcName);
 
 protected:
     bool testFinishBySignalData(const QVariantList &data) override;
 
 private:
     QMetaMethod checkFunction;
+    QString functionName;
     QObject* currentContext;
 };
 
 class BindableMultiCheckEventState : public MultiEventState {
+    Q_OBJECT
+
 public:
     using MultiEventState::MultiEventState;
 
-    void setCheckFunction(QObject* context, int signalIndex, int branchId, const QMetaMethod& function) {
+    void setCheckFunction(QObject* context, int signalIndex, int branchId, const QMetaMethod& function, const QString& funcName) {
         checkFunction[signalIndex] = qMakePair(branchId, function);
+        functionNames[signalIndex] = funcName;
         currentContext = context;
     }
+
+signals:
+    void checkFunctionInvokeFailed(const QString& funcName);
 
 protected:
     bool testFinishBySignalData(int signalIndex, const QVariantList &data) override;
 
 private:
     QHash<int, QPair<int, QMetaMethod>> checkFunction;
+    QHash<int, QString> functionNames;
     QObject* currentContext;
 };

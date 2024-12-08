@@ -14,7 +14,7 @@ if (WIN32)
 endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Network REQUIRED)
 
 include(CPM.cmake)
 
@@ -142,6 +142,10 @@ add_executable(${PROJECT_NAME} WIN32
 
     remote/monitordlg.h
     remote/monitordlg.cpp
+    remote/backtrackdlg.h
+    remote/backtrackdlg.cpp
+    remote/remotecontrol.h
+    remote/remotecontrol.cpp
 
     ${ENTITY_FILE_LIST}
 )
@@ -150,6 +154,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
 
     qlogcollectorserver
     qtdao

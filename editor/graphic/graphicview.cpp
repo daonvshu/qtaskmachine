@@ -290,3 +290,40 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
         repaint();
     });
 }
+
+void GraphicView::makeStateRunning(const QString& flowName, const QString& stateUuidId) {
+    if (currentFlow == nullptr || currentFlow->name() != flowName) {
+        return;
+    }
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(controls->getObjects());
+    for (const auto& node : nodes) {
+        if (node->nodeData->propData.nodeId() != stateUuidId) {
+            if (node->nodeData->isRunning) {
+                node->nodeData->isRunning = false;
+                node->nodeData->isChanged = true;
+            }
+        } else {
+            if (!node->nodeData->isRunning) {
+                node->nodeData->isRunning = true;
+                node->nodeData->isChanged = true;
+            }
+        }
+    }
+    controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
+    repaint();
+}
+
+void GraphicView::clearRunningState() {
+    if (currentFlow == nullptr) {
+        return;
+    }
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(controls->getObjects());
+    for (const auto& node : nodes) {
+        if (node->nodeData->isRunning) {
+            node->nodeData->isRunning = false;
+            node->nodeData->isChanged = true;
+        }
+    }
+    controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
+    repaint();
+}

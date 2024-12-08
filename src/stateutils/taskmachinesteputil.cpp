@@ -11,11 +11,7 @@ TaskMachineStepUtil &TaskMachineStepUtil::instance() {
     return instance;
 }
 
-bool TaskMachineStepUtil::stepConfig(const QString &fileName
-#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
-                                     , int remoteDebugHost
-#endif
-) {
+bool TaskMachineStepUtil::stepConfig(const QString &fileName, int remoteDebugHost) {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
@@ -35,7 +31,7 @@ bool TaskMachineStepUtil::stepConfig(const QString &fileName
     }
 
 #ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
-    RemoteDebugListener::startService(remoteDebugHost);
+    TaskMachine::RemoteDebugListener::startService(remoteDebugHost);
 #endif
 
     return true;

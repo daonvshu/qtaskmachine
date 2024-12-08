@@ -82,3 +82,26 @@ void App::updateFlowListWidth() {
     }
     ui.flow_list_cb->setMinimumWidth(maxWidth + 20);
 }
+
+void App::bindRemoteState() {
+    connect(&remoteControl, &RemoteControl::receiveActiveNode, this, [&] (const ReceiveActiveNode &activeNode) {
+        ui.graphic_view->makeStateRunning(activeNode.flowName(), activeNode.nodeId());
+    });
+
+    connect(&remoteControl, &RemoteControl::disconnected, this, [&] {
+        ui.graphic_view->clearRunningState();
+    });
+
+    connect(&remoteControl, &RemoteControl::stateRefreshed, this, [&] {
+        auto currentIndex = ui.flow_list_cb->currentIndex();
+        if (currentIndex == -1) {
+            return;
+        }
+        auto currentFlowName = flowGroup.flows()[currentIndex].name();
+        auto currentFlowState = remoteControl.getFlowState(currentFlowName);
+        if (currentFlowState.flowName().isEmpty()) {
+            return;
+        }
+        ui.graphic_view->makeStateRunning(currentFlowName, currentFlowState.currentRunId());
+    });
+}

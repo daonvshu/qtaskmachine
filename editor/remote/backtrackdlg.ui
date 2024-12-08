@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MonitorDlg</class>
- <widget class="QDialog" name="MonitorDlg">
+ <class>BackTrackDlg</class>
+ <widget class="QDialog" name="BackTrackDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#MonitorDlg{
+   <string notr="true">#BackTrackDlg{
 background:#35363C;
 }
 *{
@@ -29,7 +29,48 @@ border-radius:4px;
 QPushButton:hover{
 background:#4C4E56;
 }
-</string>
+
+QLineEdit{
+border:none;
+border-bottom:1px solid #5A636C;
+padding-left:8px;
+padding-right:8px;
+}
+QLineEdit:hover{
+background:#4C4E56;
+}
+QLineEdit:focus{
+border:1px solid #02BFFF;
+}
+QLabel[mstyle=&quot;hint&quot;]{
+font-size:12px;color:#A0C2D3;
+}
+QCheckBox::indicator:unchecked {
+    image: url(:/res/unchecked.svg);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/res/checked.svg);
+}
+QScrollBar:vertical {
+    border: none;
+    background: transparent;
+    width: 15px;
+    margin: 0px;
+}
+QScrollBar::handle:vertical {
+    border-radius:4px;
+    background: #35363C;
+    min-height: 20px;
+	margin: 0px 1px 0px 1px;
+}
+QScrollBar::add-line,QScrollBar::sub-line {
+    height: 0px;
+}
+
+QScrollBar::add-page,QScrollBar::sub-page {
+    background: transparent;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
    <property name="spacing">
@@ -79,7 +120,7 @@ background:#26282D;
       <item>
        <widget class="QLabel" name="title">
         <property name="text">
-         <string>监控控制台</string>
+         <string>状态回溯</string>
         </property>
        </widget>
       </item>
@@ -147,40 +188,7 @@ background:#26282D;
    <item>
     <widget class="QWidget" name="widget" native="true">
      <property name="styleSheet">
-      <string notr="true">QLineEdit{
-border:none;
-border-bottom:1px solid #5A636C;
-padding-left:8px;
-padding-right:8px;
-}
-QLineEdit:hover{
-background:#4C4E56;
-}
-QLineEdit:focus{
-border:1px solid #02BFFF;
-}
-QLabel[mstyle=&quot;hint&quot;]{
-font-size:12px;color:#A0C2D3;
-}
-QScrollBar:vertical {
-    border: none;
-    background: transparent;
-    width: 15px;
-    margin: 0px;
-}
-QScrollBar::handle:vertical {
-    border-radius:4px;
-    background: #35363C;
-    min-height: 20px;
-	margin: 0px 1px 0px 1px;
-}
-QScrollBar::add-line,QScrollBar::sub-line {
-    height: 0px;
-}
-
-QScrollBar::add-page,QScrollBar::sub-page {
-    background: transparent;
-}</string>
+      <string notr="true"/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <property name="spacing">
@@ -201,50 +209,7 @@ QScrollBar::add-page,QScrollBar::sub-page {
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>远程IP地址：</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="input_ip">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>32</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>端口：</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="input_port">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>60</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>5678</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btn_connect">
+         <widget class="QPushButton" name="btn_begin_pos">
           <property name="minimumSize">
            <size>
             <width>80</width>
@@ -252,7 +217,46 @@ QScrollBar::add-page,QScrollBar::sub-page {
            </size>
           </property>
           <property name="text">
-           <string>连接</string>
+           <string>开始位置</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_next">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>下一个</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_previous">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>上一个</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_click_pos">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>选中位置</string>
           </property>
          </widget>
         </item>
@@ -272,20 +276,55 @@ QScrollBar::add-page,QScrollBar::sub-page {
        </layout>
       </item>
       <item>
-       <widget class="QTextBrowser" name="view_log">
-        <property name="styleSheet">
-         <string notr="true">QTextBrowser{
-    border:none;
-    border-radius:4px;
-    background:#26282D;
-}</string>
+       <widget class="QTableView" name="state_list">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
-        <property name="verticalScrollBarPolicy">
-         <enum>Qt::ScrollBarAsNeeded</enum>
+        <property name="styleSheet">
+         <string notr="true">QTableView {
+background:#26282D;
+border:none;
+color:white;
+gridline-color:#35363C;
+outline:none;
+selection-color:white;
+selection-background-color:#35363C;
+}
+QHeaderView::section {
+padding:0px 4px 0px 4px; 
+border:none;
+border-right:1px solid #35363C;
+border-bottom:1px solid #35363C;
+background:transparent;
+}
+QHeaderView::section:last {
+border-right:none;
+}</string>
         </property>
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="verticalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <attribute name="horizontalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
      </layout>
@@ -293,6 +332,9 @@ QScrollBar::add-page,QScrollBar::sub-page {
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>8</number>
+     </property>
      <property name="leftMargin">
       <number>12</number>
      </property>
@@ -306,7 +348,7 @@ QScrollBar::add-page,QScrollBar::sub-page {
       <number>6</number>
      </property>
      <item>
-      <widget class="QPushButton" name="btn_backtrack">
+      <widget class="QPushButton" name="btn_auto_run">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -314,33 +356,37 @@ QScrollBar::add-page,QScrollBar::sub-page {
         </size>
        </property>
        <property name="text">
-        <string>回溯</string>
+        <string>自动回溯</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_clear_log">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>32</height>
-        </size>
-       </property>
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>清除日志</string>
+        <string>自动间隔（ms）：</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_export_log">
+      <widget class="QLineEdit" name="input_auto_interval">
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>0</width>
          <height>32</height>
         </size>
        </property>
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cb_use_real_interval">
        <property name="text">
-        <string>导出日志</string>
+        <string>追加实际间隔</string>
        </property>
       </widget>
      </item>
