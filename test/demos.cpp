@@ -7,6 +7,8 @@
 #include <qdatetime.h>
 #include <qmath.h>
 
+#include <stateutils/taskmachinesteputil.h>
+
 QPointer<Demos> appPtr;
 
 void customMessageHandle(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
@@ -91,8 +93,14 @@ Demos::Demos(QWidget *parent)
         sceneStateGroup->appendRow(item);
     }
 
+    auto flowTest = new QStandardItem(u8"流程图测试");
+    flowTest->setData("FlowTest", Qt::UserRole + 1);
+    treeModel->appendRow(flowTest);
+
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);
     ui.treeView->expandAll();
+
+    TaskMachineStepUtil::stepConfig(":/taskconfig.json");
 }
 
 void Demos::loadPage(const QModelIndex &index) {
@@ -126,9 +134,13 @@ void Demos::rendPage() {
     fitHeight(ui.description);
 
     QFile file(innerPage->getCodeFile());
-    file.open(QIODevice::ReadOnly);
-    ui.code->setText(file.readAll());
-    file.close();
+    if (file.open(QIODevice::ReadOnly)) {
+        ui.code->setText(file.readAll());
+        ui.code->setVisible(true);
+        file.close();
+    } else {
+        ui.code->setVisible(false);
+    }
 
     ui.log->clear();
 }

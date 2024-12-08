@@ -1,0 +1,130 @@
+{
+    "flows": [
+        {
+            "executors": [
+                {
+                    "condition": "",
+                    "delay": 0,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 1,
+                    "nested": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": "开始",
+                    "timeout": 0,
+                    "type": 0,
+                    "uuid": "{df7ac883-80cf-4d73-b54a-ecb2ec6bde61}",
+                    "x": -465,
+                    "y": -195
+                },
+                {
+                    "condition": "",
+                    "delay": 0,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 2,
+                    "nested": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": "结束",
+                    "timeout": 0,
+                    "type": 1,
+                    "uuid": "{a05cc37f-f4d7-4b08-b0cd-59bba5fb7ebd}",
+                    "x": 341,
+                    "y": 89
+                },
+                {
+                    "condition": "",
+                    "delay": 0,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 3,
+                    "nested": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": "普通状态",
+                    "timeout": 0,
+                    "type": 2,
+                    "uuid": "{6e6b5853-6f74-48fb-b7f2-b4e041ca338d}",
+                    "x": -207,
+                    "y": -99
+                },
+                {
+                    "condition": "",
+                    "delay": 0,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 4,
+                    "nested": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": "事件触发状态",
+                    "timeout": 0,
+                    "type": 4,
+                    "uuid": "{9c442050-47ae-4a30-ae95-252f2aafadae}",
+                    "x": 89,
+                    "y": -181
+                }
+            ],
+            "lines": [
+                {
+                    "branchId": 0,
+                    "branchName": "",
+                    "checkFunc": "",
+                    "connectFrom": 1,
+                    "connectFromPIndex": 0,
+                    "connectTo": 3,
+                    "connectToPIndex": 0,
+                    "ctlPx": 0,
+                    "ctlPy": 0,
+                    "failBranch": false,
+                    "subBranch": false,
+                    "trigger": ""
+                },
+                {
+                    "branchId": 0,
+                    "branchName": "",
+                    "checkFunc": "",
+                    "connectFrom": 3,
+                    "connectFromPIndex": 0,
+                    "connectTo": 4,
+                    "connectToPIndex": 0,
+                    "ctlPx": 0,
+                    "ctlPy": 0,
+                    "failBranch": false,
+                    "subBranch": false,
+                    "trigger": ""
+                },
+                {
+                    "branchId": -1,
+                    "branchName": "",
+                    "checkFunc": "",
+                    "connectFrom": 4,
+                    "connectFromPIndex": 0,
+                    "connectTo": 2,
+                    "connectToPIndex": 0,
+                    "ctlPx": 0,
+                    "ctlPy": 0,
+                    "failBranch": false,
+                    "subBranch": false,
+                    "trigger": "testEvent1()"
+                }
+            ],
+            "name": "test_flow1",
+            "version": 2
+        }
+    ]
+}
