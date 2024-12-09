@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qdialog.h>
+#include <qpointer.h>
 
 #include "ui_monitordlg.h"
 
@@ -22,6 +23,7 @@ private:
     Ui::MonitorDlg ui;
     RemoteControl* remoteControl;
     ConfigFlow* currentFlow;
+    QPointer<class BackTrackDlg> backTrackDlg;
 
 private slots:
     void on_btn_close_clicked();

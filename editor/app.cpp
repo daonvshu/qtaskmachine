@@ -226,11 +226,7 @@ void App::on_btn_monitor_clicked() {
         monitorDlg->show();
         return;
     }
-    QString currentFlowName;
     auto currentIndex = ui.flow_list_cb->currentIndex();
-    if (currentIndex != -1) {
-        currentFlowName = flowGroup.flows()[currentIndex].name();
-    }
     monitorDlg = new MonitorDlg(&remoteControl, currentIndex == -1 ? nullptr : &flowGroup.flows()[currentIndex], this);
     monitorDlg->show();
     connect(monitorDlg, &MonitorDlg::requestSelectNode, this, [&] (const QString& flowName, const QString& uuid) {

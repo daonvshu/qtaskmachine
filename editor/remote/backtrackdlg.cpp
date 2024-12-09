@@ -8,6 +8,7 @@ BackTrackDlg::BackTrackDlg(const QList<ReceiveActiveNode>& activeNodes, ConfigFl
     , currentFlow(currentFlow)
 {
     setWindowFlag(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     ui.setupUi(this);
 
@@ -20,6 +21,11 @@ BackTrackDlg::BackTrackDlg(const QList<ReceiveActiveNode>& activeNodes, ConfigFl
 
     autoRunTimer = new QTimer(this);
     connect(autoRunTimer, &QTimer::timeout, this, &BackTrackDlg::autoRunMove);
+}
+
+void BackTrackDlg::closeEvent(QCloseEvent* event) {
+    QDialog::closeEvent(event);
+    emit closed();
 }
 
 void BackTrackDlg::on_btn_close_clicked() {

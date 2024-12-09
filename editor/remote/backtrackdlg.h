@@ -17,6 +17,10 @@ public:
 
 signals:
     void activeNodeSelected(const QString& uuid);
+    void closed();
+
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     Ui::BackTrackDlg ui;

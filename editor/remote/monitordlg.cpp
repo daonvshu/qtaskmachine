@@ -25,17 +25,21 @@ MonitorDlg::MonitorDlg(RemoteControl* remoteControl, ConfigFlow* flow, QWidget *
         ui.input_ip->setText(remoteControl->getConnectIp());
         ui.input_port->setText(QString::number(remoteControl->getConnectPort()));
         ui.btn_connect->setText("已连接");
-        ui.btn_connect->setEnabled(false);
+    } else {
+        ui.input_ip->setText(AppSettings::lastConnectTarget());
+        int lastPort = AppSettings::lastConnectPort();
+        if (lastPort > 0) {
+            ui.input_port->setText(QString::number(lastPort));
+        }
     }
 
     connect(remoteControl, &RemoteControl::connected, this, [&] {
         ui.btn_connect->setText("已连接");
-        ui.btn_connect->setEnabled(false);
     });
 
     connect(remoteControl, &RemoteControl::disconnected, this, [&] {
         ui.btn_connect->setText("连接");
-        ui.btn_connect->setEnabled(true);
+        appendLog(QtMsgType::QtCriticalMsg, "连接已断开");
     });
 
     connect(remoteControl, &RemoteControl::socketError, this, [&] (const QString& errorMsg) {
@@ -82,29 +86,40 @@ void MonitorDlg::on_btn_confirm_clicked() {
 }
 
 void MonitorDlg::on_btn_connect_clicked() {
+    if (remoteControl->isConnected()) {
+        remoteControl->closeConnection();
+        return;
+    }
     auto ip = ui.input_ip->text();
     auto port = ui.input_port->text().toInt();
     if (ip.isEmpty() || port <= 0) {
         return;
     }
     remoteControl->connectToDevice(ip, port);
+    AppSettings::lastConnectTarget = ip;
+    AppSettings::lastConnectPort = port;
 }
 
 void MonitorDlg::on_btn_backtrack_clicked() {
+    if (backTrackDlg) {
+        backTrackDlg->show();
+        return;
+    }
     QList<ReceiveActiveNode> stack;
     QString currentFlowName;
     if (currentFlow != nullptr) {
         currentFlowName = currentFlow->name();
         stack = remoteControl->getActiveNodes(currentFlowName);
     }
-    BackTrackDlg dlg(stack, currentFlow);
-    connect(&dlg, &BackTrackDlg::activeNodeSelected, this, [&] (const QString& uuid) {
+    backTrackDlg = new BackTrackDlg(stack, currentFlow);
+    connect(backTrackDlg, &BackTrackDlg::activeNodeSelected, this, [&, currentFlowName] (const QString& uuid) {
         emit requestSelectNode(currentFlowName, uuid);
     });
-    dlg.exec(); //block
-
-    auto currentState = remoteControl->getFlowState(currentFlowName);
-    emit requestSelectNode(currentFlowName, currentState.currentRunId());
+    connect(backTrackDlg, &BackTrackDlg::closed, this, [&, currentFlowName] {
+        auto currentState = remoteControl->getFlowState(currentFlowName);
+        emit requestSelectNode(currentFlowName, currentState.currentRunId());
+    });
+    backTrackDlg->show();
 }
 
 void MonitorDlg::on_btn_clear_log_clicked() {
@@ -146,7 +161,7 @@ void MonitorDlg::appendLog(QtMsgType type, const QString &log, qint64 timestamp)
             break;
     }
     auto dateTime = timestamp == -1 ? QDateTime::currentDateTime() : QDateTime::fromMSecsSinceEpoch(timestamp);
-    ui.view_log->append(QString("[%1] %2").arg(dateTime.toString("HH:mm:dd.zzz"), log));
+    ui.view_log->append(QString("[%1] %2").arg(dateTime.toString("HH:mm:ss.zzz"), log));
 }
 
 void MonitorDlg::reloadDeviceLogs() {

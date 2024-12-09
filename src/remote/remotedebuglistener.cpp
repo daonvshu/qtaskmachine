@@ -39,7 +39,7 @@ namespace TaskMachine {
         if (tcpServer->isListening()) {
             return;
         }
-        if (!tcpServer->listen(QHostAddress::LocalHost, port)) {
+        if (!tcpServer->listen(QHostAddress::AnyIPv4, port)) {
             qCritical() << "QTaskMachine remote debug listener create failed:" << tcpServer->errorString();
         } else {
             qInfo() << "QTaskMachine remote debug listen on port:" << port;
@@ -57,7 +57,7 @@ namespace TaskMachine {
         });
     }
 
-    void RemoteDebugListener::onSendLog(const QString &flowName, qint64 timestamp, const QString &log, QtMsgType msgType) {
+    void RemoteDebugListener::onSendLog(const QString &flowName, qint64 timestamp, const QString &log, int msgType) {
         FlowRunLogInfo logInfo;
         logInfo.log = log;
         logInfo.msgType = msgType;

@@ -1,12 +1,15 @@
 #include "remotecontrol.h"
 
 #include <qdebug.h>
+#include <qnetworkproxy.h>
 
 PROTOCOL_CODEC_USING_NAMESPACE
+
 RemoteControl::RemoteControl(QObject* parent)
     : QObject(parent)
 {
     tcpSocket = new QTcpSocket(this);
+    tcpSocket->setProxy(QNetworkProxy::NoProxy);
     connect(tcpSocket, &QTcpSocket::connected, this, [&] {
         emit connected();
         currentFlowState.clear();
@@ -44,6 +47,10 @@ void RemoteControl::connectToDevice(const QString &host, quint16 port) {
     tcpSocket->connectToHost(host, port);
     oldConnectIp = host;
     oldConnectPort = port;
+}
+
+void RemoteControl::closeConnection() {
+    tcpSocket->close();
 }
 
 FlowStateInfo RemoteControl::getFlowState(const QString &flowName) {

@@ -12,6 +12,7 @@ class RemoteControl : public QObject {
 public:
     explicit RemoteControl(QObject* parent = nullptr);
     void connectToDevice(const QString& host, quint16 port);
+    void closeConnection();
 
     FlowStateInfo getFlowState(const QString& flowName);
     QList<ReceiveActiveNode> getActiveNodes(const QString& flowName);

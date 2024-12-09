@@ -17,7 +17,7 @@ namespace TaskMachine {
         static void startService(int port);
 
     signals:
-        void sendLog(const QString &flowName, qint64 timestamp, const QString &log, QtMsgType msgType);
+        void sendLog(const QString &flowName, qint64 timestamp, const QString &log, int msgType);
         void activeNode(const QString &flowName, qint64 timestamp, const QString &nodeId);
         void flowBegin(const QString &flowName);
         void flowFinished(const QString &flowName);
@@ -32,7 +32,7 @@ namespace TaskMachine {
         void onNewConnection();
 
     private slots:
-        void onSendLog(const QString &flowName, qint64 timestamp, const QString &log, QtMsgType msgType);
+        void onSendLog(const QString &flowName, qint64 timestamp, const QString &log, int msgType);
         void onActiveNode(const QString &flowName, qint64 timestamp, const QString &nodeId);
         void onFlowBegin(const QString &flowName);
         void onFlowFinished(const QString &flowName);
