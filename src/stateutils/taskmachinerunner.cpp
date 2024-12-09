@@ -15,6 +15,7 @@
 
 #include <qloggingcategory.h>
 #include <qdebug.h>
+#include <qdatetime.h>
 
 Q_LOGGING_CATEGORY(taskMachine, "task_machine")
 
@@ -23,6 +24,14 @@ TaskMachineRunner::TaskMachineRunner(const QString& flowName, QObject *parent)
     : QObject(parent)
 {
     configFlow = TaskMachineStepUtil::getConfigFlow(flowName);
+}
+
+TaskMachineRunner::~TaskMachineRunner() {
+    if (currentStateMachine && currentStateMachine->isRunning()) {
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+        RemoteDebugListener::instance().flowFinished(configFlow.name());
+#endif
+    }
 }
 
 TaskMachine::ConfigFlow &TaskMachineRunner::getCurrentFlow() {

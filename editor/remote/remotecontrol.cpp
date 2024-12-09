@@ -21,6 +21,7 @@ RemoteControl::RemoteControl(QObject* parent)
         QString errorString;
         QDebug(&errorString) << error;
         emit socketError(errorString);
+        tcpSocket->close();
     });
 
     connect(tcpSocket, &QTcpSocket::readyRead, this, [&] {

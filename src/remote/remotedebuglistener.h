@@ -8,6 +8,7 @@
 
 #include <protocolcodecengine.h>
 
+class TaskMachineRunner;
 namespace TaskMachine {
     class RemoteDebugListener : public QObject {
         Q_OBJECT
@@ -43,6 +44,6 @@ namespace TaskMachine {
         protocol_codec::ProtocolCodecEngine protocolEngine;
         QHash<QString, FlowStateInfo> flowStates;
 
-        friend class TaskMachineRunner;
+        friend class ::TaskMachineRunner;
     };
 }

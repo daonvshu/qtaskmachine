@@ -39,7 +39,7 @@ MonitorDlg::MonitorDlg(RemoteControl* remoteControl, ConfigFlow* flow, QWidget *
     });
 
     connect(remoteControl, &RemoteControl::socketError, this, [&] (const QString& errorMsg) {
-        appendLog(QtMsgType::QtCriticalMsg, "连接失败：" + errorMsg);
+        appendLog(QtMsgType::QtCriticalMsg, "连接出现错误：" + errorMsg);
     });
 
     connect(remoteControl, &RemoteControl::stateRefreshed, this, &MonitorDlg::reloadDeviceLogs);
@@ -52,6 +52,15 @@ MonitorDlg::MonitorDlg(RemoteControl* remoteControl, ConfigFlow* flow, QWidget *
             return;
         }
         appendLog(newLog.log());
+    });
+
+    connect(remoteControl, &RemoteControl::receiveFlowFinished, this, [&] (const QString& flowName) {
+        if (currentFlow == nullptr) {
+            return;
+        }
+        if (flowName == currentFlow->name()) {
+            appendLog(QtMsgType::QtWarningMsg, "状态机运行结束！");
+        }
     });
 
     if (currentFlow != nullptr) {

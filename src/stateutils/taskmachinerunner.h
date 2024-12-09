@@ -13,6 +13,7 @@ class TaskMachineRunner : public QObject {
 
 public:
     explicit TaskMachineRunner(const QString& flowName, QObject *parent = nullptr);
+    ~TaskMachineRunner();
 
     TaskMachine::ConfigFlow& getCurrentFlow();
 
