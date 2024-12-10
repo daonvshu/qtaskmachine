@@ -6,11 +6,16 @@
 #include "state/delaystate.h"
 #include "state/eventstate.h"
 
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+#include "remote/remotedebuglistener.h"
+#endif
+
 #include <qfinalstate.h>
 #include <qhistorystate.h>
 
 #include <qloggingcategory.h>
 #include <qdebug.h>
+#include <qdatetime.h>
 
 Q_LOGGING_CATEGORY(taskMachine, "task_machine")
 
@@ -19,6 +24,14 @@ TaskMachineRunner::TaskMachineRunner(const QString& flowName, QObject *parent)
     : QObject(parent)
 {
     configFlow = TaskMachineStepUtil::getConfigFlow(flowName);
+}
+
+TaskMachineRunner::~TaskMachineRunner() {
+    if (currentStateMachine && currentStateMachine->isRunning()) {
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+        RemoteDebugListener::instance().flowFinished(configFlow.name());
+#endif
+    }
 }
 
 TaskMachine::ConfigFlow &TaskMachineRunner::getCurrentFlow() {
@@ -31,6 +44,9 @@ bool TaskMachineRunner::run(QObject *context) {
 
     if (currentStateMachine) {
         currentStateMachine->start();
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+        RemoteDebugListener::instance().flowBegin(configFlow.name());
+#endif
     }
 
     return currentStateMachine != nullptr;
@@ -68,7 +84,12 @@ void TaskMachineRunner::stepStateMachine() {
     }
 
     currentStateMachine = new QStateMachine(this);
-    connect(currentStateMachine, &QStateMachine::finished, this, &TaskMachineRunner::finished);
+    connect(currentStateMachine, &QStateMachine::finished, this, [&] {
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+        RemoteDebugListener::instance().flowFinished(configFlow.name());
+#endif
+        finished();
+    });
     auto beginState = createStateByType(beginExecutor, currentStateMachine);
     currentStateMachine->setInitialState(beginState);
 }
@@ -101,7 +122,6 @@ QAbstractState* TaskMachineRunner::createStateByType(const TaskMachine::ConfigFl
 
 QAbstractState* TaskMachineRunner::createDirectState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent) {
     auto state = new DirectState(parent);
-    state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -121,7 +141,6 @@ QAbstractState* TaskMachineRunner::createDirectState(const TaskMachine::ConfigFl
 
 QAbstractState* TaskMachineRunner::createDelayState(const TaskMachine::ConfigFlowExecutor *executor, QState* parent) {
     auto state = new DelayState(executor->delay(), parent);
-    state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -141,7 +160,10 @@ QAbstractState* TaskMachineRunner::createDelayState(const TaskMachine::ConfigFlo
 
 QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new BindableCheckEventState(parent);
-    state->setStateName(executor->text(), taskMachine);
+    connect(state, &BindableCheckEventState::checkFunctionInvokeFailed, [&] (const QString& funcName) {
+        printLog(QtMsgType::QtCriticalMsg, "invoke check function fail:" + funcName);
+    });
+
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -170,7 +192,7 @@ QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlo
             if (triggerFunc.isValid()) {
                 state->setSignal(currentBindContext, triggerFunc.methodSignature().constData());
             }
-            state->setCheckFunction(currentBindContext, findFunction(connectLine->checkFunc()));
+            state->setCheckFunction(currentBindContext, findFunction(connectLine->checkFunc()), connectLine->checkFunc());
             state->next(nextState);
         } else {
             if (triggerFunc.isValid()) {
@@ -184,7 +206,10 @@ QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlo
 
 QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new BindableMultiCheckEventState(parent);
-    state->setStateName(executor->text(), taskMachine);
+    connect(state, &BindableMultiCheckEventState::checkFunctionInvokeFailed, [&] (const QString& funcName) {
+        printLog(QtMsgType::QtCriticalMsg, "invoke check function fail:" + funcName);
+    });
+
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -204,7 +229,7 @@ QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::Conf
         if (triggerFunc.isValid()) {
             state->addSignal(currentBindContext, triggerFunc.methodSignature().constData());
             state->next(nextState);
-            state->setCheckFunction(currentBindContext, signalIndex++, connectLine->branchId(), findFunction(connectLine->checkFunc()));
+            state->setCheckFunction(currentBindContext, signalIndex++, connectLine->branchId(), findFunction(connectLine->checkFunc()), connectLine->checkFunc());
         }
     }
     return state;
@@ -212,7 +237,6 @@ QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::Conf
 
 QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new DirectState(parent);
-    state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -236,7 +260,7 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
     state->setCondition([=] {
         int branchId = 0;
         if (executor->condition().isEmpty()) {
-            qCCritical(taskMachine) << "condition check function is empty!";
+            printLog(QtMsgType::QtCriticalMsg, "condition check function is empty!");
             return 0;
         }
         if (executor->condition().endsWith("()")) {
@@ -244,25 +268,44 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
             auto returnValue = Q_RETURN_ARG(int, branchId);
             bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection, returnValue);
             if (!invokeResult) {
-                qCCritical(taskMachine) << "invoke check function fail!";
+                printLog(QtMsgType::QtCriticalMsg, "invoke check function fail:" + executor->condition());
                 return 0;
             }
         } else {
             auto propertyData = currentBindContext->property(executor->condition().toLatin1());
-            if (propertyData.type() == QMetaType::Int) {
-                branchId = propertyData.toInt();
-            } else if (propertyData.type() == QMetaType::Bool) {
-                branchId = propertyData.toBool() ? 1 : 0;
-            } else if (propertyData.type() == QMetaType::QString) {
-                branchId = idToNameMap.key(propertyData.toString());
-            } else {
-                qCCritical(taskMachine) << "condition property type not supported:" << executor->condition();
-                return 0;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            switch (propertyData.typeId()) {
+                case QMetaType::Int:
+                    branchId = propertyData.toInt();
+                    break;
+                case QMetaType::Bool:
+                    branchId = propertyData.toBool() ? 1 : 0;
+                    break;
+                case QMetaType::QString:
+                    branchId = idToNameMap.key(propertyData.toString());
+                    break;
+#else
+            switch (propertyData.type()) {
+                case QVariant::Int:
+                    branchId = propertyData.toInt();
+                    break;
+                case QVariant::Bool:
+                    branchId = propertyData.toBool() ? 1 : 0;
+                    break;
+                case QVariant::String:
+                    branchId = idToNameMap.key(propertyData.toString());
+                    break;
+#endif
+                default:
+                    printLog(QtMsgType::QtCriticalMsg, "condition property type not supported:" + executor->condition());
+                    return 0;
             }
         }
         auto selectName = idToNameMap.value(branchId);
         if (!selectName.isEmpty()) {
-            qCInfo(taskMachine) << "select branch:" << selectName;
+            printLog(QtMsgType::QtInfoMsg, QString("select branch: %1 (%2)").arg(selectName).arg(branchId));
+        } else {
+            printLog(QtMsgType::QtInfoMsg, QString("select branch: %1").arg(branchId));
         }
         return idToIndexMap[branchId];
     });
@@ -272,7 +315,6 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
 
 QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new EventState(parent);
-    state->setStateName(executor->text(), taskMachine);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -317,7 +359,7 @@ QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigF
     auto groupParent = findGroupParent(executor);
     auto state = new QHistoryState(dynamic_cast<QState*>(groupParent));
     createdState[executor->id()] = state;
-    bindExecutorBaseInfo(state, executor, true);
+    bindExecutorBaseInfo(state, executor);
 
     //bind default state
     auto parentId = createdState.key(groupParent);
@@ -344,7 +386,7 @@ QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigF
 QAbstractState *TaskMachineRunner::createEndState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
     auto state = new QFinalState(parent);
     createdState[executor->id()] = state;
-    bindExecutorBaseInfo(state, executor, true);
+    bindExecutorBaseInfo(state, executor);
 
     return state;
 }
@@ -367,7 +409,7 @@ QAbstractState *TaskMachineRunner::findGroupParent(const TaskMachine::ConfigFlow
     return nullptr;
 }
 
-void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor *executor, bool printLog) {
+void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor *executor) {
 
     const auto callProperties = [this, executor] (bool entered) {
         for (const auto& prop : executor->properties()) {
@@ -388,7 +430,7 @@ void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMa
             } else if (prop.valueType() == "hex") {
                 data = QByteArray::fromHex(prop.value().toLatin1());
             } else {
-                qCCritical(taskMachine) << "unknown property type:" << prop.valueType();
+                printLog(QtMsgType::QtCriticalMsg, "unknown property type:" + prop.valueType());
             }
             if (data.isValid()) {
                 currentBindContext->setProperty(prop.key().toLatin1(), data);
@@ -396,29 +438,29 @@ void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMa
         }
     };
 
-    if (!executor->enter().isEmpty() || !executor->properties().isEmpty()) {
-        connect(state, &QAbstractState::entered, [=] {
-            if (printLog) {
-                qCInfo(taskMachine) << "state '" << executor->text() << "' enter!";
-            }
+    connect(state, &QAbstractState::entered, [=] {
+        printLog(QtMsgType::QtInfoMsg, "state '" + executor->text() + "' enter!");
+        if (!executor->enter().isEmpty() || !executor->properties().isEmpty()) {
             callProperties(true);
             if (!executor->enter().isEmpty()) {
                 invokeFunction(executor->enter());
             }
-        });
-    }
+        }
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+        RemoteDebugListener::instance().activeNode(configFlow.name(), QDateTime::currentMSecsSinceEpoch(), executor->uuid());
+#endif
+    });
 
-    if (!executor->exit().isEmpty() || !executor->properties().isEmpty()) {
-        connect(state, &QAbstractState::exited, [=] {
-            if (printLog) {
-                qCInfo(taskMachine) << "state '" << executor->text() << "' exit!";
-            }
+
+    connect(state, &QAbstractState::exited, [=] {
+        printLog(QtMsgType::QtInfoMsg, "state '" + executor->text() + "' exit!");
+        if (!executor->exit().isEmpty() || !executor->properties().isEmpty()) {
             callProperties(false);
             if (!executor->exit().isEmpty()) {
                 invokeFunction(executor->exit());
             }
-        });
-    }
+        }
+    });
 }
 
 void TaskMachineRunner::invokeFunction(const QString &slotName) {
@@ -428,7 +470,7 @@ void TaskMachineRunner::invokeFunction(const QString &slotName) {
     auto checkFunc = findFunction(slotName);
     bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection);
     if (!invokeResult) {
-        qCCritical(taskMachine) << "cannot find slot function:" << slotName << "in context:" << currentBindContext->metaObject()->className();
+        printLog(QtMsgType::QtCriticalMsg, "cannot find slot function:" + slotName + " in context:" + currentBindContext->metaObject()->className());
         return;
     }
 }
@@ -440,10 +482,32 @@ QMetaMethod TaskMachineRunner::findFunction(const QString &signalName) {
     auto functionName = signalName.toLatin1();
     int methodIndex = currentBindContext->metaObject()->indexOfMethod(QMetaObject::normalizedSignature(functionName));
     if (methodIndex == -1) {
-        qCCritical(taskMachine) << "cannot find function:" << signalName << "in context:" << currentBindContext->metaObject()->className();
+        printLog(QtMsgType::QtCriticalMsg, "cannot find function:" + signalName + " in context:" + currentBindContext->metaObject()->className());
         return {};
     }
     return currentBindContext->metaObject()->method(methodIndex);
+}
+
+void TaskMachineRunner::printLog(QtMsgType msgType, const QString &message) {
+    switch (msgType) {
+        case QtCriticalMsg:
+            qCCritical(taskMachine) << message;
+            break;
+        case QtDebugMsg:
+            qCDebug(taskMachine) << message;
+            break;
+        case QtInfoMsg:
+            qCInfo(taskMachine) << message;
+            break;
+        case QtWarningMsg:
+            qCWarning(taskMachine) << message;
+            break;
+        default:
+            break;
+    }
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+    RemoteDebugListener::instance().sendLog(configFlow.name(), QDateTime::currentMSecsSinceEpoch(), message, msgType);
+#endif
 }
 
 
@@ -453,7 +517,7 @@ bool BindableCheckEventState::testFinishBySignalData(const QVariantList &data)  
         auto returnValue = Q_RETURN_ARG(bool, boolData);
         bool invokeResult = checkFunction.invoke(currentContext, Qt::DirectConnection, returnValue, Q_ARG(QVariantList, data));
         if (!invokeResult) {
-            qCCritical(taskMachine) << "invoke check function fail!";
+            emit checkFunctionInvokeFailed(functionName);
             return true;
         }
         return boolData;
@@ -468,7 +532,7 @@ bool BindableMultiCheckEventState::testFinishBySignalData(int signalIndex, const
         auto returnValue = Q_RETURN_ARG(bool, boolData);
         bool invokeResult = checkFunc.second.invoke(currentContext, Qt::DirectConnection, returnValue, Q_ARG(int, checkFunc.first), Q_ARG(QVariantList, data));
         if (!invokeResult) {
-            qCCritical(taskMachine) << "invoke check function fail!";
+            emit checkFunctionInvokeFailed(functionNames[signalIndex]);
             return true;
         }
         return boolData;

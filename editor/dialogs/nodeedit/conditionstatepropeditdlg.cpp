@@ -52,8 +52,9 @@ void ConditionStatePropEditDlg::on_btn_confirm_clicked() {
 void ConditionStatePropEditDlg::addBranchEditItem(int branchId, const QString& name) {
     auto branchItemWidget = new ConditionBranchItemWidget(branchId, name, exUi.widget);
     exUi.layout_branch_list->insertWidget(exUi.layout_branch_list->count() - 1, branchItemWidget);
-    connect(branchItemWidget, &ConditionBranchItemWidget::removeRequest, this, [&] {
+    connect(branchItemWidget, &ConditionBranchItemWidget::removeRequest, this, [&, branchItemWidget] {
         exUi.layout_branch_list->removeWidget(branchItemWidget);
+        branchItemWidget->deleteLater();
     });
 }
 

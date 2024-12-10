@@ -12,6 +12,10 @@ public:
 
     void updateFlow(ConfigFlow* flow);
 
+    void makeStateRunning(const QString& flowName, const QString& stateUuidId);
+
+    void clearRunningState();
+
 signals:
     void configChanged();
 

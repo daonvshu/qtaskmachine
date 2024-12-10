@@ -200,6 +200,19 @@ background:#26282D;
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="btn_cancel">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btn_confirm">
        <property name="minimumSize">
         <size>

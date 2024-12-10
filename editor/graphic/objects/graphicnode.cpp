@@ -6,7 +6,7 @@ GraphicNode::GraphicNode(const QSharedPointer<GraphicNodeData> &data)
     : GraphicObject(data)
     , nodeData(data)
 {
-
+    nodeData->propData.nodeId = QUuid::createUuid().toString();
 }
 
 bool GraphicNode::selectTest(const QPointF &point) const {
@@ -49,6 +49,10 @@ QColor GraphicNode::getLinkPointColor(int linkIndex, bool isInputPoint) const {
     }
 }
 
+bool GraphicNode::testLinkLineIndexValid(int linkIndex, bool isInputPoint) const {
+    return true;
+}
+
 ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
     ConfigFlowExecutor executor;
     executor.fromType(objectType());
@@ -58,6 +62,7 @@ ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
     executor.enter = nodeData->propData.funcEnter();
     executor.exit = nodeData->propData.funcExit();
     executor.properties = nodeData->propData.properties();
+    executor.uuid = nodeData->propData.nodeId();
 
     return executor;
 }
@@ -68,6 +73,9 @@ void GraphicNode::fromExecutor(const ConfigFlowExecutor &executor) const {
     nodeData->propData.funcEnter = executor.enter();
     nodeData->propData.funcExit = executor.exit();
     nodeData->propData.properties = executor.properties();
+    if (!executor.uuid().isEmpty()) {
+        nodeData->propData.nodeId = executor.uuid();
+    }
 }
 
 int GraphicNode::nodeNameWidth() const {
@@ -107,6 +115,10 @@ QRectF GraphicNode::renderNodeBody(int itemRequiredWidth, int itemRequiredHeight
     cachePainter->translate(shadowRadius, shadowRadius);
 
     drawNodeBody(guiBodyRect);
+    if (nodeData->isRunning) {
+        drawNodeRunningState(guiBodyRect, titleHeight);
+    }
+
     bodyRect.moveTopLeft(QPointF(0, 0));
     return bodyRect;
 }

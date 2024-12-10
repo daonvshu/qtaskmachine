@@ -12,6 +12,7 @@
 #include "dialogs/nodeedit/multieventstatepropeditdlg.h"
 #include "dialogs/nodeedit/groupstatepropeditdlg.h"
 #include "dialogs/nodeedit/recoverystatepropeditdlg.h"
+#include "dialogs/messagedlg.h"
 
 #include "../objects/nodes/nodedelaystate.d.h"
 #include "../objects/nodes/nodeconditionstate.d.h"
@@ -258,6 +259,10 @@ void MouseActionControl::installShortcut() {
         if (d->graphicObjects.command(d->graphicObjects.index() - 1)->text() == "DocumentLoad") {
             return;
         }
+        if (d->graphicObjects.command(d->graphicObjects.index() - 1)->text() == "CannotUndoOperate") {
+            MessageDlg::showMessage(tr("无法撤销的操作"), tr("这是一个未解决的问题，编辑属性造成的连接线删除无法撤销。"));
+            return;
+        }
         d->graphicObjects.undo();
         d->getControl<GraphicLayerControl>()->graphLayerReload();
         d->getControl<GraphicObjCreateControl>()->graphicObjectChanged();
@@ -348,6 +353,7 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
                 exDataWrite(objData);
             }
             objData->isChanged = true;
+            d->getControl<GraphicObjCreateControl>()->removeLinkLineOutOfIndex(obj);
             d->getControl<GraphicObjCreateControl>()->graphicObjectChanged();
             d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
             d->view->repaint();

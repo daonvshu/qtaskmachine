@@ -15,6 +15,9 @@ endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    find_package(ProtocolCodecEngine)
+endif ()
 
 add_compile_definitions(STATE_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/states")
 add_compile_definitions(FEATURES_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/features")
@@ -25,6 +28,7 @@ add_executable(${PROJECT_NAME} WIN32
 
     demos.h
     demos.cpp
+    demos.qrc
 
     highlighter.h
     highlighter.cpp
@@ -60,6 +64,9 @@ add_executable(${PROJECT_NAME} WIN32
     scene/signalpsceventtrigger.h
     scene/signalparamschecktest.h
     scene/signalparamschecktest.cpp
+
+    flow/flowtest.h
+    flow/flowtest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

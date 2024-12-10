@@ -10,6 +10,8 @@
 
 #include <qlogcollector.h>
 #include <qloggingcategory.h>
+#include <dao.h>
+#include <qmessagebox.h>
 
 int main(int argc, char* argv[]) {
     QGuiApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
@@ -39,6 +41,17 @@ int main(int argc, char* argv[]) {
             .projectSourceCodeRootPath(ROOT_PROJECT_PATH)
             ;
     logcollector::QLogCollector::instance().registerLog();
+
+    try {
+        dao::_config<dao::ConfigSqliteBuilder>()
+                .version(1)
+                .databaseName("task_machine_flow_editor")
+                .initializeDatabase();
+    } catch (dao::DaoException& e) {
+        Q_UNUSED(e)
+        QMessageBox::critical(nullptr, "warning", "setup database fail:" + e.reason);
+        return 0;
+    }
 
     QLoggingCategory::setFilterRules(QStringLiteral("qeventbus.*.info=false"));
 

@@ -7,7 +7,8 @@
 
 class TaskMachineStepUtil {
 public:
-    static bool stepConfig(const QString& fileName);
+    static bool stepConfig(const QString& fileName, int remoteDebugHost = 5678);
+
     static TaskMachine::ConfigFlow getConfigFlow(const QString& flowName);
 
 private:

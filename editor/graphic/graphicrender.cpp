@@ -6,6 +6,7 @@
 #include <qicon.h>
 #include <qelapsedtimer.h>
 #include <qapplication.h>
+#include <qpainterpath.h>
 
 // Qt internal function (qtbase/src/widgets/effects/qpixmapfilter.cpp)
 extern void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed);
@@ -64,6 +65,21 @@ void GraphicRenderInterface::drawNodeBody(const QRectF& rect) {
     cachePainter->drawImage(QPointF(-shadowRadius, -shadowRadius), shadowImage);
     // draw source image
     cachePainter->drawPixmap(QPointF(0, 0), bodyImage);
+}
+
+void GraphicRenderInterface::drawNodeRunningState(const QRectF& rect, int titleHeight) {
+    auto radius = graphicTransform.toGuiDx(9);
+    cachePainter->save();
+    cachePainter->setPen(0x0E9E45);
+    cachePainter->drawRoundedRect(QRectF(0, 0, rect.width(), rect.height()), radius, radius);
+    cachePainter->setBrush(QColor(0x0E9E45));
+    QRectF titleRect(0, 0, rect.width(), graphicTransform.toGuiDx(titleHeight));
+    QPainterPath path;
+    path.setFillRule(Qt::WindingFill);
+    path.addRoundedRect(titleRect, radius, radius);
+    path.addRect(0, titleRect.height() / 2, titleRect.width(), titleRect.height() / 2);
+    cachePainter->drawPath(path);
+    cachePainter->restore();
 }
 
 // qtbase/src/widgets/effects/qpixmapfilter.cpp: line 1317

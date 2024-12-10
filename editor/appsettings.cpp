@@ -7,6 +7,9 @@
 
 SettingOperator<QStringList> AppSettings::recentFiles("recent_files");
 SettingOperator<QString> AppSettings::lastOpenFilePath("last_open_file_path");
+SettingOperator<QString> AppSettings::lastExportLogPath("last_export_log_path");
+SettingOperator<QString> AppSettings::lastConnectTarget("last_connect_target");
+SettingOperator<int> AppSettings::lastConnectPort("last_connect_port");
 
 static QSettings& getSetting() {
     static QSettings setting([] () -> QString {
@@ -30,6 +33,9 @@ QVariant AppSettings::loadValue(const QString &key, const QVariant &defaultValue
 }
 
 void AppSettings::init() {
-    AppSettings::recentFiles.load();
-    AppSettings::lastOpenFilePath.load();
+    recentFiles.load();
+    lastOpenFilePath.load();
+    lastExportLogPath.load();
+    lastConnectTarget.load();
+    lastConnectPort.load();
 }

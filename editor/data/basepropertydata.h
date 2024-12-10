@@ -23,6 +23,7 @@ struct PropertyBindData : DataDumpInterface {
 
 struct BasePropertyData : DataDumpInterface {
     DATA_KEY(QString, nodeName);   //节点名称
+    DATA_KEY(QString, nodeId);     //节点ID (UUID)
 
     DATA_KEY(QString, funcEnter);  //进入状态回调函数
     DATA_KEY(QString, funcExit);   //退出状态回调函数
@@ -30,7 +31,7 @@ struct BasePropertyData : DataDumpInterface {
     DATA_KEY(QList<PropertyBindData>, properties); //属性绑定
 
     QList<DataReadInterface *> prop() override {
-        return { &nodeName, &funcEnter, &funcExit, &properties };
+        return { &nodeName, &nodeId, &funcEnter, &funcExit, &properties };
     }
 
     QStringList propertyBindDisplayStrings() const {

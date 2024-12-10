@@ -14,14 +14,18 @@ if (WIN32)
 endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Network REQUIRED)
 
 include(CPM.cmake)
 
 CPMAddPackage("gh:daonvshu/qlogcollector@1.0.5")
+CPMAddPackage("gh:daonvshu/QtDao@2.2.3")
+CPMAddPackage("gh:daonvshu/ProtocolCodecEngine@0.0.7")
 CPMAddPackage("gh:stdware/qwindowkit#1.2")
 
 add_compile_definitions(ROOT_PROJECT_PATH="${CMAKE_SOURCE_DIR}")
+
+include(db/entity.cmake)
 
 add_executable(${PROJECT_NAME} WIN32
     main.cpp
@@ -132,13 +136,28 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/utils/transform.cpp
     graphic/utils/bezierdistancecalculator.h
     graphic/utils/bezierdistancecalculator.cpp
+
+    db/viewcentermanager.h
+    db/viewcentermanager.cpp
+
+    remote/monitordlg.h
+    remote/monitordlg.cpp
+    remote/backtrackdlg.h
+    remote/backtrackdlg.cpp
+    remote/remotecontrol.h
+    remote/remotecontrol.cpp
+
+    ${ENTITY_FILE_LIST}
 )
 
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
 
     qlogcollectorserver
+    qtdao
+    protocol_codec_engine
     QWindowKit::Widgets
 )

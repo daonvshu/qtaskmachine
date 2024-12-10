@@ -29,6 +29,10 @@ class AppSettings {
 public:
     static SettingOperator<QStringList> recentFiles;
     static SettingOperator<QString> lastOpenFilePath;
+    static SettingOperator<QString> lastExportLogPath;
+    static SettingOperator<QString> lastConnectTarget;
+    static SettingOperator<int> lastConnectPort;
+
 
     static void init();
 

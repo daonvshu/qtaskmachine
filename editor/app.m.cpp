@@ -2,6 +2,8 @@
 
 #include "dialogs/messagedlg.h"
 
+#include "db/viewcentermanager.h"
+
 #include <qfile.h>
 
 void App::refreshConfigPathLabel() {
@@ -24,6 +26,7 @@ void App::reloadFlowList() {
 
 void App::createNewConfig(const QString &filePath) {
     configFilePath = filePath;
+    ViewCenterManager::beginFile(filePath);
     flowGroup.flows().clear();
     auto newFlow = ConfigFlow();
     newFlow.version = 2;
@@ -49,6 +52,7 @@ void App::openExistConfig(const QString &filePath) {
     flowGroup.fromJson(obj);
 
     configFilePath = filePath;
+    ViewCenterManager::beginFile(filePath);
     refreshConfigPathLabel();
     reloadFlowList();
 }
@@ -77,4 +81,27 @@ void App::updateFlowListWidth() {
         maxWidth = qMax(maxWidth, fm.horizontalAdvance(itemText));
     }
     ui.flow_list_cb->setMinimumWidth(maxWidth + 20);
+}
+
+void App::bindRemoteState() {
+    connect(&remoteControl, &RemoteControl::receiveActiveNode, this, [&] (const ReceiveActiveNode &activeNode) {
+        ui.graphic_view->makeStateRunning(activeNode.flowName(), activeNode.nodeId());
+    });
+
+    connect(&remoteControl, &RemoteControl::disconnected, this, [&] {
+        ui.graphic_view->clearRunningState();
+    });
+
+    connect(&remoteControl, &RemoteControl::stateRefreshed, this, [&] {
+        auto currentIndex = ui.flow_list_cb->currentIndex();
+        if (currentIndex == -1) {
+            return;
+        }
+        auto currentFlowName = flowGroup.flows()[currentIndex].name();
+        auto currentFlowState = remoteControl.getFlowState(currentFlowName);
+        if (currentFlowState.flowName().isEmpty()) {
+            return;
+        }
+        ui.graphic_view->makeStateRunning(currentFlowName, currentFlowState.currentRunId());
+    });
 }

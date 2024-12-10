@@ -2,12 +2,16 @@
 
 #include <qfile.h>
 
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+#include "../remote/remotedebuglistener.h"
+#endif
+
 TaskMachineStepUtil &TaskMachineStepUtil::instance() {
     static TaskMachineStepUtil instance;
     return instance;
 }
 
-bool TaskMachineStepUtil::stepConfig(const QString &fileName) {
+bool TaskMachineStepUtil::stepConfig(const QString &fileName, int remoteDebugHost) {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
@@ -25,6 +29,10 @@ bool TaskMachineStepUtil::stepConfig(const QString &fileName) {
     for (const auto& flow : flowGroup.flows()) {
         instance().stateFlows.insert(flow.name(), flow);
     }
+
+#ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
+    TaskMachine::RemoteDebugListener::startService(remoteDebugHost);
+#endif
 
     return true;
 }
