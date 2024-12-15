@@ -76,12 +76,6 @@ const config: Config = {
           label: 'API',
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'config',
-          position: 'left',
-          label: '配置文件',
-        },
-        {
           href: 'https://github.com/daonvshu/qtaskmachine',
           label: 'GitHub',
           position: 'right',
