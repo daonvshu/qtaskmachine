@@ -70,12 +70,6 @@ const config: Config = {
           label: '编辑器',
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'api',
-          position: 'left',
-          label: 'API',
-        },
-        {
           href: 'https://github.com/daonvshu/qtaskmachine',
           label: 'GitHub',
           position: 'right',
