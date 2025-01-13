@@ -22,6 +22,9 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(QString, enter); //进入函数
     DATA_KEY(QString, exit); //退出函数
 
+    DATA_KEY(bool, printOnEnter); //进入时打印信息
+    DATA_KEY(bool, printOnExit); //退出时打印信息
+
     DATA_KEY(QList<PropertyBindData>, properties); //属性绑定
 
     DATA_KEY(int, delay); //延时
@@ -31,6 +34,11 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(bool, nested); //是否嵌套
 
     DATA_KEY(QString, condition); //条件检查函数
+
+    ConfigFlowExecutor() {
+        printOnEnter = true;
+        printOnExit = false;
+    }
 
     GraphicObjectType itemType() const {
         return GraphicObjectType(type());
@@ -51,7 +59,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &id, &uuid, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition };
+                 &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition };
     }
 };
 

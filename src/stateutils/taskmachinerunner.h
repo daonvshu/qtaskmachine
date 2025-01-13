@@ -19,6 +19,8 @@ public:
 
     bool run(QObject* context);
 
+    void setLogging(LoggingCategoryPtr categoryPtr);
+
     void cancel();
 
 signals:
@@ -28,6 +30,7 @@ private:
     TaskMachine::ConfigFlow configFlow;
     QObject* currentBindContext = nullptr;
     QStateMachine* currentStateMachine = nullptr;
+    LoggingCategoryPtr debugPtr = nullptr;
 
     //tmp data
     QHash<int, const TaskMachine::ConfigFlowExecutor*> executors;

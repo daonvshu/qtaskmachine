@@ -42,6 +42,9 @@ namespace TaskMachine {
         T_DATA_KEY(QString, enter); //进入函数
         T_DATA_KEY(QString, exit); //退出函数
 
+        T_DATA_KEY(bool, printOnEnter); //进入时打印信息
+        T_DATA_KEY(bool, printOnExit); //退出时打印信息
+
         T_DATA_KEY(QList<ConfigFlowPropertyBind>, properties); //属性绑定
 
         T_DATA_KEY(int, delay); //延时
@@ -51,6 +54,11 @@ namespace TaskMachine {
         T_DATA_KEY(bool, nested); //是否嵌套
 
         T_DATA_KEY(QString, condition); //条件检查函数
+
+        ConfigFlowExecutor() {
+            printOnEnter = true;
+            printOnExit = false;
+        }
 
         FlowChartNodeType itemType() const {
             return FlowChartNodeType(type());
@@ -71,7 +79,7 @@ namespace TaskMachine {
 
         QList<DataReadInterface *> prop() override {
             return {&id, &uuid, &text, &taskId, &x, &y, &type,
-                    &enter, &exit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition};
+                    &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition};
         }
     };
 

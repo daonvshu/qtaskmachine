@@ -61,6 +61,8 @@ ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
     executor.y = nodeData->renderPosition.y();
     executor.enter = nodeData->propData.funcEnter();
     executor.exit = nodeData->propData.funcExit();
+    executor.printOnEnter = nodeData->propData.printOnEnter();
+    executor.printOnExit = nodeData->propData.printOnExit();
     executor.properties = nodeData->propData.properties();
     executor.uuid = nodeData->propData.nodeId();
 
@@ -72,6 +74,8 @@ void GraphicNode::fromExecutor(const ConfigFlowExecutor &executor) const {
     nodeData->renderPosition = executor.scenePos();
     nodeData->propData.funcEnter = executor.enter();
     nodeData->propData.funcExit = executor.exit();
+    nodeData->propData.printOnEnter = executor.printOnEnter();
+    nodeData->propData.printOnExit = executor.printOnExit();
     nodeData->propData.properties = executor.properties();
     if (!executor.uuid().isEmpty()) {
         nodeData->propData.nodeId = executor.uuid();

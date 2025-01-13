@@ -17,8 +17,6 @@
 #include <qdebug.h>
 #include <qdatetime.h>
 
-Q_LOGGING_CATEGORY(taskMachine, "task_machine")
-
 using namespace TaskMachine;
 TaskMachineRunner::TaskMachineRunner(const QString& flowName, QObject *parent)
     : QObject(parent)
@@ -50,6 +48,10 @@ bool TaskMachineRunner::run(QObject *context) {
     }
 
     return currentStateMachine != nullptr;
+}
+
+void TaskMachineRunner::setLogging(LoggingCategoryPtr categoryPtr) {
+    debugPtr = categoryPtr;
 }
 
 void TaskMachineRunner::cancel() {
@@ -439,7 +441,9 @@ void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMa
     };
 
     connect(state, &QAbstractState::entered, [=] {
-        printLog(QtMsgType::QtInfoMsg, "state '" + executor->text() + "' enter!");
+        if (executor->printOnEnter()) {
+            printLog(QtMsgType::QtInfoMsg, "state '" + executor->text() + "' enter!");
+        }
         if (!executor->enter().isEmpty() || !executor->properties().isEmpty()) {
             callProperties(true);
             if (!executor->enter().isEmpty()) {
@@ -451,9 +455,10 @@ void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMa
 #endif
     });
 
-
     connect(state, &QAbstractState::exited, [=] {
-        printLog(QtMsgType::QtInfoMsg, "state '" + executor->text() + "' exit!");
+        if (executor->printOnExit()) {
+            printLog(QtMsgType::QtInfoMsg, "state '" + executor->text() + "' exit!");
+        }
         if (!executor->exit().isEmpty() || !executor->properties().isEmpty()) {
             callProperties(false);
             if (!executor->exit().isEmpty()) {
@@ -489,21 +494,23 @@ QMetaMethod TaskMachineRunner::findFunction(const QString &signalName) {
 }
 
 void TaskMachineRunner::printLog(QtMsgType msgType, const QString &message) {
-    switch (msgType) {
-        case QtCriticalMsg:
-            qCCritical(taskMachine) << message;
-            break;
-        case QtDebugMsg:
-            qCDebug(taskMachine) << message;
-            break;
-        case QtInfoMsg:
-            qCInfo(taskMachine) << message;
-            break;
-        case QtWarningMsg:
-            qCWarning(taskMachine) << message;
-            break;
-        default:
-            break;
+    if (debugPtr) {
+        switch (msgType) {
+            case QtCriticalMsg:
+                qCCritical(debugPtr) << message;
+                break;
+            case QtDebugMsg:
+                qCDebug(debugPtr) << message;
+                break;
+            case QtInfoMsg:
+                qCInfo(debugPtr) << message;
+                break;
+            case QtWarningMsg:
+                qCWarning(debugPtr) << message;
+                break;
+            default:
+                break;
+        }
     }
 #ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
     RemoteDebugListener::instance().sendLog(configFlow.name(), QDateTime::currentMSecsSinceEpoch(), message, msgType);
