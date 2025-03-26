@@ -69,21 +69,30 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPointF& r
 void GraphicObjCreateControl::copyNodeToMousePoint(const QList<QSharedPointer<GraphicObject>>& nodeObjects, const QPoint &mousePoint) {
     d->graphicObjects.beginMacro("MultiObjectCopy");
     QList<const GraphicObject*> newObjs;
+    QHash<const GraphicObject*, const GraphicNode*> srcNodeToCpNode;
     for (const auto& nodeObject : nodeObjects) {
         auto newObj = nodeObject->clone();
-        auto offset = nodeObject->data->renderPosition - nodeObjects.first()->data->renderPosition;
-        newObj->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint) + offset;
-        newObj->data->isChanged = true;
-        if (newObj->data->selected) {
-            newObj->data->selected = false;
+        if (newObj->objectType() == GraphicObjectType::Link_Line) {
+            auto linkLine = dynamic_cast<const GraphicLinkLine*>(newObj);
+            linkLine->linkData->linkFromNode = srcNodeToCpNode[linkLine->linkData->linkFromNode];
+            linkLine->linkData->linkToNode = srcNodeToCpNode[linkLine->linkData->linkToNode];
+        } else {
+            auto offset = nodeObject->data->renderPosition - nodeObjects.first()->data->renderPosition;
+            newObj->data->renderPosition = d->getGraphicTransform().toRealPoint(mousePoint) + offset;
+            newObj->data->isChanged = true;
+            if (newObj->data->selected) {
+                newObj->data->selected = false;
+            }
+            srcNodeToCpNode[nodeObject.data()] = dynamic_cast<const GraphicNode*>(newObj);
         }
         d->graphicObjects.push(newObj);
         newObjs << newObj;
     }
+
     d->graphicObjects.push(ObjectCopyAction::create(newObjs));
     d->graphicObjects.endMacro();
 
-    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
+    d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node | GraphicLayerType::Layer_Static_Link);
     emit graphicObjectChanged();
 }
 

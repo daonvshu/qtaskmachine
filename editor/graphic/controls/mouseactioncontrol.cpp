@@ -437,11 +437,25 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
 
 void MouseActionControl::copyNodeObject(const QList<const GraphicNode*>& objs) {
     preCopyObjects.clear();
+    QHash<const GraphicObject*, const GraphicNode*> srcToCloneObjs;
     for (auto node : objs) {
         if (node == nullptr) {
             continue;
         }
         preCopyObjects.append(QSharedPointer<GraphicObject>(node->clone()));
+        srcToCloneObjs[node] = dynamic_cast<GraphicNode*>(preCopyObjects.last().data());
+    }
+    //copy link line
+    auto linkLines = GraphicObject::getVisibleObjects<GraphicLinkLine>(&d->graphicObjects);
+    for (const auto& linkLine : linkLines) {
+        if (srcToCloneObjs.contains(linkLine->linkData->linkFromNode) &&
+            srcToCloneObjs.contains(linkLine->linkData->linkToNode))
+        {
+            auto newLinkLine = dynamic_cast<GraphicLinkLine*>(linkLine->clone());
+            newLinkLine->linkData->linkFromNode = srcToCloneObjs[linkLine->linkData->linkFromNode];
+            newLinkLine->linkData->linkToNode = srcToCloneObjs[linkLine->linkData->linkToNode];
+            preCopyObjects.append(QSharedPointer<GraphicObject>(newLinkLine));
+        }
     }
 }
 
