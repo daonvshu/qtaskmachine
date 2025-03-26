@@ -16,6 +16,7 @@
 int main(int argc, char* argv[]) {
     QGuiApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 	MyApplication a(argc, argv);
+    a.setWindowIcon(QIcon(":/res/logo.ico"));
 
 #ifdef Q_OS_WIN
     //设置系统默认字体
