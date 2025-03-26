@@ -153,6 +153,9 @@ void GraphicView::saveFlow() {
 }
 
 void GraphicView::savePosition() {
+    if (currentFlow == nullptr) {
+        return;
+    }
     auto currentTransform = controls->getTransform();
     auto center = currentTransform.toRealPoint(this->rect().center());
     ViewCenterManager::setViewCenter(currentFlow->name(), center);

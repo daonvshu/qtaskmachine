@@ -39,10 +39,20 @@ add_executable(${PROJECT_NAME} WIN32
     myapplication.h
     myapplication.cpp
 
+    treeview/treeviewitemmodel.h
+    treeview/treeviewitemmodel.cpp
+    treeview/treeviewitemnode.h
+    treeview/treeviewitemnode.cpp
+    treeview/configflowtreeview.h
+    treeview/configflowtreeview.cpp
+    treeview/configflowtreeview.m.cpp
+    treeview/styledmenu.h
+    treeview/styledmenu.cpp
+
     dialogs/basepropertyeditdlg.h
     dialogs/basepropertyeditdlg.cpp
-    dialogs/flownameeditdlg.h
-    dialogs/flownameeditdlg.cpp
+    dialogs/nameeditdlg.h
+    dialogs/nameeditdlg.cpp
     dialogs/messagedlg.h
     dialogs/messagedlg.cpp
 

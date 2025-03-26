@@ -40,6 +40,24 @@ QComboBox QAbstractItemView::item {
 }
 QComboBox QAbstractItemView::item:selected {
     background: #35363C;
+}
+QScrollBar:vertical{
+	border:none;
+	background:transparent;
+	width: 8px;
+	margin: 8px 0px 0px 0px;
+}
+QScrollBar::handle:vertical{
+	background:#26282D;
+	min-height: 20px;
+	border-radius:4px;
+}
+QScrollBar::add-page,QScrollBar::sub-page,QScrollBar::add-line,QScrollBar::sub-line{
+	background: none;
+}
+QScrollBar::up-arrow,QScrollBar::down-arrow{
+	width: 0px;
+	height: 0px;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
@@ -72,7 +90,7 @@ QPushButton:hover{
 background:#4C4E56;
 }</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,1,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1,0">
       <property name="spacing">
        <number>8</number>
       </property>
@@ -111,175 +129,6 @@ background:#4C4E56;
         </property>
         <property name="text">
          <string>打开</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="flow_list" native="true">
-        <property name="styleSheet">
-         <string notr="true">#flow_list {
-	border: 1px solid #4C4E56;
-	border-radius:4px;
-}
-QComboBox {
-    border: none;
-    border-radius: 3px;
-    padding: 2px 3px 2px 3px;
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 12px;
-
-    border-top-right-radius: 3px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 3px;
-}
-
-QComboBox::down-arrow {
-    image: url(:/res/down.svg);
-}</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>4</number>
-         </property>
-         <property name="leftMargin">
-          <number>8</number>
-         </property>
-         <property name="topMargin">
-          <number>4</number>
-         </property>
-         <property name="rightMargin">
-          <number>8</number>
-         </property>
-         <property name="bottomMargin">
-          <number>4</number>
-         </property>
-         <item>
-          <widget class="QComboBox" name="flow_list_cb">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_flow_add">
-           <property name="minimumSize">
-            <size>
-             <width>18</width>
-             <height>18</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normalon>:/res/add.svg</normalon>
-            </iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_flow_copy">
-           <property name="minimumSize">
-            <size>
-             <width>18</width>
-             <height>18</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normalon>:/res/copy.svg</normalon>
-            </iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_flow_edit">
-           <property name="minimumSize">
-            <size>
-             <width>18</width>
-             <height>18</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normalon>:/res/edit.svg</normalon>
-            </iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_flow_remove">
-           <property name="minimumSize">
-            <size>
-             <width>18</width>
-             <height>18</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normalon>:/res/delete.svg</normalon>
-            </iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_monitor">
-        <property name="minimumSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normalon>:/res/monitor.svg</normalon>
-         </iconset>
         </property>
        </widget>
       </item>
@@ -393,7 +242,177 @@ QComboBox::down-arrow {
     </widget>
    </item>
    <item>
-    <widget class="GraphicView" name="graphic_view" native="true"/>
+    <widget class="QWidget" name="horizontalWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QSplitter" name="splitter">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="childrenCollapsible">
+         <bool>false</bool>
+        </property>
+        <widget class="QWidget" name="graphic_list_body" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>180</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">#graphic_list_body{
+	border-right:1px solid #26282D;
+}
+QPushButton{
+border:none;
+border-radius:4px;
+}
+QPushButton:hover{
+background:#4C4E56;
+}</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>12</number>
+          </property>
+          <property name="topMargin">
+           <number>8</number>
+          </property>
+          <property name="rightMargin">
+           <number>12</number>
+          </property>
+          <property name="bottomMargin">
+           <number>8</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="spacing">
+             <number>8</number>
+            </property>
+            <property name="leftMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>4</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>状态图列表</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_monitor">
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normalon>:/res/monitor.svg</normalon>
+               </iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_menu_hide">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normalon>:/res/menu_hide.svg</normalon>
+               </iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="ConfigFlowTreeView" name="graphic_list">
+            <property name="styleSheet">
+             <string notr="true">QTreeView{
+    outline: none;
+	border:none;
+	border-top:1px solid #26282D;
+	show-decoration-selected: 1;
+}
+
+QTreeView::item {
+    height: 32px;
+    border: none;
+    color: #FFFFFF;
+    background: transparent;
+    outline: none;
+    border-radius: 2px 2px 2px 2px;
+    font-size: 12px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+QTreeView::item:selected {
+    background: #4A4B53;
+    border-radius: 2px;
+}</string>
+            </property>
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOff</enum>
+            </property>
+            <property name="verticalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
+            </property>
+            <property name="rootIsDecorated">
+             <bool>false</bool>
+            </property>
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="GraphicView" name="graphic_view" native="true"/>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -403,6 +422,11 @@ QComboBox::down-arrow {
    <extends>QWidget</extends>
    <header>graphic/graphicview.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConfigFlowTreeView</class>
+   <extends>QTreeView</extends>
+   <header>treeview/configflowtreeview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

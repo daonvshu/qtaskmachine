@@ -97,6 +97,7 @@ struct ConfigFlowConnectLine : DataDumpInterface {
 struct ConfigFlow : DataDumpInterface {
 
     DATA_KEY(QString, name); //流程名
+    DATA_KEY(QString, group); //分组
     DATA_KEY(QList<ConfigFlowExecutor>, executors); //节点
     DATA_KEY(QList<ConfigFlowConnectLine>, lines); //连接线
 
@@ -107,7 +108,7 @@ struct ConfigFlow : DataDumpInterface {
     }
 
     QList<DataReadInterface *> prop() override {
-        return { &name, &executors, &lines,
+        return { &name, &group, &executors, &lines,
             &version };
     }
 };
@@ -115,8 +116,11 @@ struct ConfigFlow : DataDumpInterface {
 struct ConfigFlowGroup : DataDumpInterface {
 
     DATA_KEY(QList<ConfigFlow>, flows);
+    DATA_KEY(QStringList, groups);
+
+    QString configFilePath;
 
     QList<DataReadInterface *> prop() override {
-        return { &flows };
+        return { &flows, &groups };
     }
 };

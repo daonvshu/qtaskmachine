@@ -17,9 +17,9 @@ public:
 private:
     Ui::App ui;
     ConfigFlowGroup flowGroup;
-    QString configFilePath;
     RemoteControl remoteControl;
     QPointer<class MonitorDlg> monitorDlg;
+    QPushButton* menuExpandBtn;
 
 private slots:
     void on_btn_min_clicked();
@@ -28,13 +28,12 @@ private slots:
 
     void on_btn_new_config_clicked();
     void on_btn_open_config_clicked();
-    void on_flow_list_cb_currentIndexChanged(int index);
-    void on_btn_flow_add_clicked();
-    void on_btn_flow_copy_clicked();
-    void on_btn_flow_edit_clicked();
-    void on_btn_flow_remove_clicked();
+
+    void on_graphic_list_flowClicked(ConfigFlow* flow);
+
     void on_graphic_view_configChanged();
     void on_btn_monitor_clicked();
+    void on_btn_menu_hide_clicked();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -43,11 +42,8 @@ protected:
 
 private:
     void refreshConfigPathLabel();
-    void reloadFlowList();
     void createNewConfig(const QString& filePath);
     void openExistConfig(const QString& filePath);
-    void saveConfigToFile();
-    void updateFlowListWidth();
     static void saveLastOpenFilePathRecord(const QString& filePath);
 
     void bindRemoteState();

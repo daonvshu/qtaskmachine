@@ -1,18 +1,16 @@
 #include "app.h"
 
 #include <QWKWidgets/widgetwindowagent.h>
-#include <qdebug.h>
 #include <qtimer.h>
 #include <qfiledialog.h>
 #include <qstandardpaths.h>
 #include <qmimedata.h>
-#include <qlistview.h>
 #include <qaction.h>
 #include <qmenu.h>
 
 #include "appsettings.h"
 
-#include "dialogs/flownameeditdlg.h"
+#include "dialogs/nameeditdlg.h"
 #include "dialogs/messagedlg.h"
 #include "remote/monitordlg.h"
 
@@ -20,13 +18,27 @@ App::App(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
-    ui.flow_list_cb->setView(new QListView);
+    ui.splitter->setStretchFactor(1, QSizePolicy::Expanding);
+    ui.splitter->setSizes({240, 1});
+
+    menuExpandBtn = new QPushButton(this);
+    menuExpandBtn->resize(24, 48);
+    menuExpandBtn->setStyleSheet("QPushButton{border:none;background:url(:/res/menu_expand.svg);}"
+        "QPushButton:hover{background:url(:/res/menu_expand_hover.svg);}");
+    menuExpandBtn->raise();
+    menuExpandBtn->setVisible(false);
+    connect(menuExpandBtn, &QPushButton::clicked, this, [&] {
+        ui.graphic_list_body->setVisible(true);
+        menuExpandBtn->setVisible(false);
+    });
+
+    ui.graphic_list->setData(&flowGroup);
 
     auto agent = new QWK::WidgetWindowAgent(this);
     agent->setup(this);
     agent->setTitleBar(ui.app_title);
     agent->setHitTestVisible(ui.system_buttons);
-    agent->setHitTestVisible(ui.flow_list);
+    agent->setHitTestVisible(ui.graphic_list);
     agent->setHitTestVisible(ui.btn_new_config);
     agent->setHitTestVisible(ui.btn_open_config);
     agent->setHitTestVisible(ui.btn_monitor);
@@ -49,6 +61,7 @@ App::App(QWidget *parent)
 
 void App::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
+    menuExpandBtn->move(0, ui.graphic_list_body->mapTo(this, QPoint(0, 0)).y() + 1);
 
     QTimer::singleShot(0, this, [=]() {
         ui.btn_max->setIcon(isMaximized() ? QIcon(":/res/maxsize2.svg") : QIcon(":/res/maxsize1.svg"));
@@ -98,7 +111,7 @@ void App::on_btn_close_clicked() {
 }
 
 void App::on_btn_new_config_clicked() {
-    auto openFilePath = configFilePath;
+    auto openFilePath = flowGroup.configFilePath;
     if (openFilePath.isEmpty()) {
         openFilePath = AppSettings::lastOpenFilePath();
     }
@@ -130,7 +143,7 @@ void App::on_btn_open_config_clicked() {
     }
     menu.addSeparator();
     menu.addAction(tr("打开新配置"), [&] {
-        auto openFilePath = configFilePath;
+        auto openFilePath = flowGroup.configFilePath;
         if (openFilePath.isEmpty()) {
             openFilePath = AppSettings::lastOpenFilePath();
         }
@@ -144,81 +157,15 @@ void App::on_btn_open_config_clicked() {
     menu.exec(ui.btn_open_config->mapToGlobal(QPoint(0, ui.btn_open_config->height())));
 }
 
-void App::on_flow_list_cb_currentIndexChanged(int index) {
-    if (index == -1) {
-        ui.graphic_view->updateFlow(nullptr);
-        if (monitorDlg) {
-            monitorDlg->flowChanged(nullptr);
-        }
-    } else {
-        ui.graphic_view->updateFlow(&flowGroup.flows()[index]);
-        if (monitorDlg) {
-            monitorDlg->flowChanged(&flowGroup.flows()[index]);
-        }
+void App::on_graphic_list_flowClicked(ConfigFlow* flow) {
+    ui.graphic_view->updateFlow(flow);
+    if (monitorDlg) {
+        monitorDlg->flowChanged(flow);
     }
-}
-
-void App::on_btn_flow_add_clicked() {
-    auto newFlowName = FlowNameEditDlg::showDialog(QString(), tr("新建流程"), this);
-    if (!newFlowName.isEmpty()) {
-        ConfigFlow configFlow;
-        configFlow.name = newFlowName;
-        flowGroup.flows().append(configFlow);
-        ui.flow_list_cb->addItem(newFlowName);
-        ui.flow_list_cb->setCurrentIndex(ui.flow_list_cb->count() - 1);
-        saveConfigToFile();
-        updateFlowListWidth();
-    }
-}
-
-void App::on_btn_flow_copy_clicked() {
-    auto currentIndex = ui.flow_list_cb->currentIndex();
-    if (currentIndex == -1) {
-        return;
-    }
-    auto& currentFlow = flowGroup.flows()[currentIndex];
-    auto newFlowName = FlowNameEditDlg::showDialog(currentFlow.name(), tr("复制流程"), this);
-    if (!newFlowName.isEmpty()) {
-        ConfigFlow configFlow = currentFlow;
-        configFlow.name = newFlowName;
-        flowGroup.flows().append(configFlow);
-        ui.flow_list_cb->addItem(newFlowName);
-        ui.flow_list_cb->setCurrentIndex(ui.flow_list_cb->count() - 1);
-        saveConfigToFile();
-        updateFlowListWidth();
-    }
-}
-
-void App::on_btn_flow_edit_clicked() {
-    auto currentIndex = ui.flow_list_cb->currentIndex();
-    if (currentIndex == -1) {
-        return;
-    }
-    auto newFlowName = FlowNameEditDlg::showDialog(flowGroup.flows()[currentIndex].name(), tr("重命名流程"), this);
-    if (!newFlowName.isEmpty()) {
-        flowGroup.flows()[currentIndex].name = newFlowName;
-        saveConfigToFile();
-        ui.flow_list_cb->setItemText(currentIndex, newFlowName);
-        updateFlowListWidth();
-    }
-}
-
-void App::on_btn_flow_remove_clicked() {
-    auto currentIndex = ui.flow_list_cb->currentIndex();
-    if (currentIndex == -1) {
-        return;
-    }
-    auto dlg = MessageDlg::showMessage(tr("警告"), tr("确定删除流程‘%1’？").arg(flowGroup.flows()[currentIndex].name()), this, true);
-    connect(dlg, &MessageDlg::accepted, this, [&, currentIndex] {
-        flowGroup.flows().removeAt(currentIndex);
-        ui.flow_list_cb->removeItem(currentIndex);
-        saveConfigToFile();
-        updateFlowListWidth();
-    });
 }
 
 void App::on_graphic_view_configChanged() {
-    saveConfigToFile();
+    ui.graphic_list->saveConfig();
 }
 
 void App::on_btn_monitor_clicked() {
@@ -226,12 +173,17 @@ void App::on_btn_monitor_clicked() {
         monitorDlg->show();
         return;
     }
-    auto currentIndex = ui.flow_list_cb->currentIndex();
-    monitorDlg = new MonitorDlg(&remoteControl, currentIndex == -1 ? nullptr : &flowGroup.flows()[currentIndex], this);
+    auto currentFlow = ui.graphic_list->getCurrentSelectedFlow();
+    monitorDlg = new MonitorDlg(&remoteControl, currentFlow, this);
     monitorDlg->show();
     connect(monitorDlg, &MonitorDlg::requestSelectNode, this, [&] (const QString& flowName, const QString& uuid) {
         ui.graphic_view->makeStateRunning(flowName, uuid);
     });
+}
+
+void App::on_btn_menu_hide_clicked() {
+    ui.graphic_list_body->setVisible(false);
+    menuExpandBtn->setVisible(true);
 }
 
 void App::saveLastOpenFilePathRecord(const QString &filePath) {
