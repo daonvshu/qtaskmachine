@@ -334,6 +334,24 @@ background:#4C4E56;
              </spacer>
             </item>
             <item>
+             <widget class="QPushButton" name="btn_add_group">
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normalon>:/res/add.svg</normalon>
+               </iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="btn_monitor">
               <property name="minimumSize">
                <size>

@@ -157,6 +157,10 @@ void App::on_btn_open_config_clicked() {
     menu.exec(ui.btn_open_config->mapToGlobal(QPoint(0, ui.btn_open_config->height())));
 }
 
+void App::on_btn_add_group_clicked() {
+    ui.graphic_list->createNewGroup();
+}
+
 void App::on_graphic_list_flowClicked(ConfigFlow* flow) {
     ui.graphic_view->updateFlow(flow);
     if (monitorDlg) {

@@ -19,6 +19,8 @@ public:
 
     void saveConfig();
 
+    void createNewGroup();
+
 signals:
     void flowClicked(ConfigFlow* flow);
 
@@ -35,7 +37,6 @@ private:
 
     void onChildItemClicked(const QModelIndex& current);
 
-    void createNewGroup();
     void modifyGroupName(TreeViewItemNode* node);
     void deleteGroup(TreeViewItemNode* node);
     void addFlowItem(TreeViewItemNode* node);
