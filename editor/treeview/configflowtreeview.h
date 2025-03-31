@@ -23,11 +23,13 @@ public:
 
 signals:
     void flowClicked(ConfigFlow* flow);
+    void requestClearView();
 
 private:
     ConfigFlowGroup* flowGroupDataPtr = nullptr;
     TreeViewItemNode* rootNode;
     int lastClickedFlowIndex = -1;
+    QList<int> removedFlowIndex, removedGroupIndex;
 
 private:
     void onContextMenuRequest(const QPoint& pos);
@@ -47,6 +49,7 @@ private:
 
 private:
     bool isFlowExist(const QString& name) const;
+    bool isGroupExist(const QString& name) const;
 
 protected:
     void startDrag(Qt::DropActions supportedActions) override;

@@ -31,6 +31,7 @@ private slots:
     void on_btn_add_group_clicked();
 
     void on_graphic_list_flowClicked(ConfigFlow* flow);
+    void on_graphic_list_requestClearView();
 
     void on_graphic_view_configChanged();
     void on_btn_monitor_clicked();

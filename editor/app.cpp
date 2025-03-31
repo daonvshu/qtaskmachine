@@ -168,6 +168,10 @@ void App::on_graphic_list_flowClicked(ConfigFlow* flow) {
     }
 }
 
+void App::on_graphic_list_requestClearView() {
+    ui.graphic_view->updateFlow(nullptr);
+}
+
 void App::on_graphic_view_configChanged() {
     ui.graphic_list->saveConfig();
 }

@@ -9,7 +9,7 @@ void ConfigFlowTreeView::createNewGroup() {
     if (newName.isEmpty()) {
         return;
     }
-    if (flowGroupDataPtr->groups().contains(newName)) {
+    if (isGroupExist(newName)) {
         MessageDlg::showMessage(tr("错误"), tr("组名已存在"), this);
         return;
     }
@@ -23,14 +23,13 @@ void ConfigFlowTreeView::modifyGroupName(TreeViewItemNode* node) {
     auto& groupName = flowGroupDataPtr->groups()[groupIndex];
     auto newName = NameEditDlg::showDialog(groupName, tr("修改组名"), tr("组名称"), this);
     if (!newName.isEmpty()) {
-        if (flowGroupDataPtr->groups().contains(newName)) {
+        if (isGroupExist(newName)) {
             MessageDlg::showMessage(tr("错误"), tr("组名已存在"), this);
             return;
         }
-        for (auto& flow : flowGroupDataPtr->flows()) {
-            if (flow.group() == groupName) {
-                flow.group = newName;
-            }
+        for (auto& child : node->childItems()) {
+            auto flowIndex = child->itemData<int>();
+            flowGroupDataPtr->flows()[flowIndex].group = newName;
         }
         groupName = newName;
         node->resetDisplayText(newName);
@@ -42,8 +41,17 @@ void ConfigFlowTreeView::deleteGroup(TreeViewItemNode* node) {
     int groupIndex = node->itemData<int>();
     auto groupName = flowGroupDataPtr->groups()[groupIndex];
     auto dlg = MessageDlg::showMessage(tr("警告"), tr("确定删除组‘%1’和该组下所有流程？").arg(groupName), this, true);
-    connect(dlg, &MessageDlg::accepted, this, [&, node] {
+    connect(dlg, &MessageDlg::accepted, this, [&, node, groupName, groupIndex] {
         //不能立即删除，否则会造成其他项index映射错误
+        removedGroupIndex << groupIndex;
+        for (auto& child : node->childItems()) {
+            auto flowIndex = child->itemData<int>();
+            removedFlowIndex << flowIndex; //可能重复，但不影响其他操作
+            if (flowIndex == lastClickedFlowIndex) {
+                lastClickedFlowIndex = -1;
+                emit requestClearView();
+            }
+        }
         node->remove();
         saveConfig();
     });
@@ -88,10 +96,12 @@ void ConfigFlowTreeView::deleteFlow(TreeViewItemNode* node) {
     int flowIndex = node->itemData<int>();
     const auto& flow = flowGroupDataPtr->flows()[flowIndex];
     auto dlg = MessageDlg::showMessage(tr("警告"), tr("确定删除流程‘%1’？").arg(flow.name()), this, true);
-    connect(dlg, &MessageDlg::accepted, this, [&, node] {
+    connect(dlg, &MessageDlg::accepted, this, [&, node, flowIndex] {
         //不能立即删除，否则会造成其他项index映射错误
-        node->remove();
+        removedFlowIndex << flowIndex;
         saveConfig();
+        emit requestClearView();
+        node->remove();
     });
 }
 
@@ -119,8 +129,25 @@ void ConfigFlowTreeView::copyFlow(TreeViewItemNode* node) {
 }
 
 bool ConfigFlowTreeView::isFlowExist(const QString& name) const {
-    for (auto& flow : flowGroupDataPtr->flows()) {
+    for (int i = 0; i < flowGroupDataPtr->flows().size(); ++i) {
+        if (removedFlowIndex.contains(i)) {
+            continue;
+        }
+        const auto& flow = flowGroupDataPtr->flows()[i];
         if (flow.name() == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ConfigFlowTreeView::isGroupExist(const QString& name) const {
+    for (int i = 0; i < flowGroupDataPtr->groups().size(); ++i) {
+        if (removedGroupIndex.contains(i)) {
+            continue;
+        }
+        const auto& group = flowGroupDataPtr->groups()[i];
+        if (group == name) {
             return true;
         }
     }

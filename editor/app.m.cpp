@@ -13,7 +13,7 @@ void App::refreshConfigPathLabel() {
 void App::createNewConfig(const QString &filePath) {
     flowGroup.configFilePath = filePath;
     ViewCenterManager::beginFile(filePath);
-    flowGroup.flows().clear();
+    flowGroup.clear();
     auto newFlow = ConfigFlow();
     newFlow.version = 2;
     newFlow.name = QStringLiteral("新流程");
@@ -35,11 +35,13 @@ void App::openExistConfig(const QString &filePath) {
         return;
     }
     auto obj = doc.object();
+    flowGroup.clear();
     flowGroup.fromJson(obj);
 
     flowGroup.configFilePath = filePath;
     ViewCenterManager::beginFile(filePath);
     refreshConfigPathLabel();
+    ui.graphic_view->updateFlow(nullptr);
     ui.graphic_list->reloadTree();
 }
 

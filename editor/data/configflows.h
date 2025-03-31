@@ -123,4 +123,9 @@ struct ConfigFlowGroup : DataDumpInterface {
     QList<DataReadInterface *> prop() override {
         return { &flows, &groups };
     }
+
+    void clear() {
+        flows().clear();
+        groups().clear();
+    }
 };

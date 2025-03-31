@@ -30,6 +30,9 @@ void ConfigFlowTreeView::setData(ConfigFlowGroup* flowGroup) {
 
 void ConfigFlowTreeView::reloadTree() {
     rootNode->clearChild();
+    lastClickedFlowIndex = -1;
+    removedFlowIndex.clear();
+    removedGroupIndex.clear();
 
     QHash<QString, TreeViewItemNode*> groupNameToNode;
     for (int i = 0; i < flowGroupDataPtr->groups().size(); ++i) {
