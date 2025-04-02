@@ -10,4 +10,8 @@ struct StateGroupPropertyData : DataDumpInterface {
     QList<DataReadInterface *> prop() override {
         return { &errorTriggerFunc };
     }
+
+    QString searchContent() const {
+        return errorTriggerFunc().trimmed().toLower();
+    }
 };

@@ -25,6 +25,15 @@ void TransformControl::dragMoving(const QPoint &mousePoint) {
     lastMoveBeginPos = mousePoint;
 }
 
+void TransformControl::moveToCenter(const QPointF& targetRealPoint) const {
+    auto viewCenter = d->view->rect().center();
+    auto target = d->getGraphicTransform().toGuiPoint(targetRealPoint);
+
+    QTransform translation;
+    translation.translate(viewCenter.x() - target.x(), viewCenter.y() - target.y());
+    d->graphicTransform *= translation;
+}
+
 //consider use snapped mouse point!
 bool TransformControl::scale(bool zoomIn, const QPointF& mousePoint) {
     const qreal zoomFactor = 0.137;

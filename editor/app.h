@@ -20,6 +20,7 @@ private:
     RemoteControl remoteControl;
     QPointer<class MonitorDlg> monitorDlg;
     QPushButton* menuExpandBtn;
+    QLabel* searchNextPopLabel;
 
 private slots:
     void on_btn_min_clicked();
@@ -36,11 +37,15 @@ private slots:
     void on_graphic_view_configChanged();
     void on_btn_monitor_clicked();
     void on_btn_menu_hide_clicked();
+    void on_input_search_text_textEdited(const QString& text);
+    void on_input_search_text_editingFinished();
+    void on_btn_next_search_result_clicked();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
     void refreshConfigPathLabel();

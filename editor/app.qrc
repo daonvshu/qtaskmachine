@@ -19,6 +19,8 @@
         <file>res/menu_expand.svg</file>
         <file>res/menu_expand_hover.svg</file>
         <file>res/menu_hide.svg</file>
+        <file>res/arrow-right.svg</file>
+        <file>res/search.svg</file>
         <file>res/logo.ico</file>
     </qresource>
 </RCC>

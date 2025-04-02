@@ -106,3 +106,10 @@ void NodeConditionState::drawObject() {
 
     GraphicRenderInterface::drawObject();
 }
+
+bool NodeConditionState::containKeywords(const QString& keywords) const {
+    if (conditionStateData->conditionPropData.searchContent().contains(keywords)) {
+        return true;
+    }
+    return GraphicNode::containKeywords(keywords);
+}

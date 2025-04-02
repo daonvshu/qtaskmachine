@@ -27,6 +27,12 @@ public:
     void dragMoving(const QPoint& mousePoint);
 
     /**
+     * @brief 将指定点移动到视图中心
+     * @param targetRealPoint
+     */
+    void moveToCenter(const QPointF& targetRealPoint) const;
+
+    /**
      * @brief 缩放变换
      * @param zoomIn
      * @param mousePoint

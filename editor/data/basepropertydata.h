@@ -55,4 +55,12 @@ struct BasePropertyData : DataDumpInterface {
         }
         return displayStrings;
     }
+
+    QString searchContent() const {
+        auto content = QString("%1 %2 %3").arg(nodeName(), funcEnter(), funcExit());
+        for (auto& prop : properties()) {
+            content += QString(" %1").arg(prop.key());
+        }
+        return content.trimmed().toLower();
+    }
 };

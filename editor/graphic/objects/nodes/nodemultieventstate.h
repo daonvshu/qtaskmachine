@@ -27,6 +27,8 @@ public:
 
     void drawObject() override;
 
+    bool containKeywords(const QString& keywords) const override;
+
 public:
     QSharedPointer<NodeMultiEventStateData> eventStateData;
 };

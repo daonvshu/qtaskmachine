@@ -53,6 +53,10 @@ bool GraphicNode::testLinkLineIndexValid(int linkIndex, bool isInputPoint) const
     return true;
 }
 
+bool GraphicNode::containKeywords(const QString& keywords) const {
+    return nodeData->propData.searchContent().contains(keywords);
+}
+
 ConfigFlowExecutor GraphicNode::toFlowExecutor() const {
     ConfigFlowExecutor executor;
     executor.fromType(objectType());

@@ -83,3 +83,10 @@ void NodeMultiEventState::drawObject() {
 
     GraphicRenderInterface::drawObject();
 }
+
+bool NodeMultiEventState::containKeywords(const QString& keywords) const {
+    if (eventStateData->eventPropData.searchContent().contains(keywords)) {
+        return true;
+    }
+    return GraphicNode::containKeywords(keywords);
+}

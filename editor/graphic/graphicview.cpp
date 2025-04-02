@@ -330,3 +330,49 @@ void GraphicView::clearRunningState() {
     controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
     repaint();
 }
+
+void GraphicView::searchText(const QString& text) {
+    searchResultNodeIds.clear();
+    searchIndex = -1;
+
+    QString keywords = text.trimmed().toLower();
+    if (keywords.isEmpty()) {
+        return;
+    }
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(controls->getObjects());
+    for (const auto& node : nodes) {
+        if (node->containKeywords(keywords)) {
+            searchResultNodeIds << node->nodeData->propData.nodeId();
+        }
+    }
+    //qDebug() << "search text:" << keywords << "result size:" << searchResultNodeIds.size();
+    if (!searchResultNodeIds.isEmpty()) {
+        findNext();
+    }
+}
+
+void GraphicView::findNext() {
+    if (searchResultNodeIds.isEmpty()) {
+        return;
+    }
+    searchIndex = (searchIndex + 1) % searchResultNodeIds.size();
+    auto targetId = searchResultNodeIds[searchIndex];
+
+    auto nodes = GraphicObject::getVisibleObjects<GraphicNode>(controls->getObjects());
+    for (const auto& node : nodes) {
+        if (node->nodeData->propData.nodeId() == targetId) {
+            auto targetNodeCenter = node->nodeData->boundingRect.center();
+            controls->get<TransformControl>()->moveToCenter(targetNodeCenter);
+            repaint();
+            break;
+        }
+    }
+    savePosition();
+}
+
+QString GraphicView::getSearchCountHint() const {
+    if (searchResultNodeIds.isEmpty()) {
+        return tr("下一个");
+    }
+    return QString("%1/%2").arg(searchIndex + 1).arg(searchResultNodeIds.size());
+}

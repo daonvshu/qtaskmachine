@@ -16,6 +16,12 @@ public:
 
     void clearRunningState();
 
+    void searchText(const QString& text);
+
+    void findNext();
+
+    QString getSearchCountHint() const;
+
 signals:
     void configChanged();
 
@@ -34,6 +40,9 @@ private:
 
     ConfigFlow* currentFlow = nullptr;
     bool ignoreSaveState = false;
+
+    QStringList searchResultNodeIds;
+    int searchIndex = -1;
 
 private slots:
     void saveFlow();

@@ -32,6 +32,13 @@ App::App(QWidget *parent)
         menuExpandBtn->setVisible(false);
     });
 
+    ui.btn_next_search_result->installEventFilter(this);
+    searchNextPopLabel = new QLabel(this);
+    searchNextPopLabel->setFixedSize(60, 24);
+    searchNextPopLabel->setAlignment(Qt::AlignCenter);
+    searchNextPopLabel->setStyleSheet("background:#4A4B53;border:1px solid #35363C;border-radius:4px;");
+    searchNextPopLabel->setVisible(false);
+
     ui.graphic_list->setData(&flowGroup);
 
     auto agent = new QWK::WidgetWindowAgent(this);
@@ -92,6 +99,21 @@ void App::dropEvent(QDropEvent *event) {
             openExistConfig(filePath);
         }
     }
+}
+
+bool App::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == ui.btn_next_search_result) {
+        if (event->type() == QEvent::HoverEnter) {
+            searchNextPopLabel->setText(ui.graphic_view->getSearchCountHint());
+            auto popGeo = searchNextPopLabel->geometry();
+            auto bottomCenter = ui.btn_next_search_result->mapTo(this, QPoint(ui.btn_next_search_result->width() / 2, 0));
+            searchNextPopLabel->move(bottomCenter - QPoint(popGeo.width() / 2, popGeo.height()));
+            searchNextPopLabel->setVisible(true);
+        } else if (event->type() == QEvent::HoverLeave) {
+            searchNextPopLabel->setVisible(false);
+        }
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 void App::on_btn_min_clicked() {
@@ -192,6 +214,19 @@ void App::on_btn_monitor_clicked() {
 void App::on_btn_menu_hide_clicked() {
     ui.graphic_list_body->setVisible(false);
     menuExpandBtn->setVisible(true);
+}
+
+void App::on_input_search_text_textEdited(const QString& text) {
+    ui.graphic_view->searchText(text);
+}
+
+void App::on_input_search_text_editingFinished() {
+    //ui.graphic_view->searchText(ui.input_search_text->text());
+}
+
+void App::on_btn_next_search_result_clicked() {
+    ui.graphic_view->findNext();
+    searchNextPopLabel->setText(ui.graphic_view->getSearchCountHint());
 }
 
 void App::saveLastOpenFilePathRecord(const QString &filePath) {

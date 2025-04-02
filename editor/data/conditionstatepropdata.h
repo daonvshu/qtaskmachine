@@ -17,4 +17,8 @@ struct ConditionStatePropertyData : DataDumpInterface {
     QList<DataReadInterface *> prop() override {
         return { &branchIds, &branchNames, &conditionFunc };
     }
+
+    QString searchContent() const {
+        return (branchNames().join(" ") + " " + conditionFunc()).trimmed().toLower();
+    }
 };

@@ -71,3 +71,10 @@ void NodeStateGroup::drawObject() {
 
     GraphicRenderInterface::drawObject();
 }
+
+bool NodeStateGroup::containKeywords(const QString& keywords) const {
+    if (groupData->groupPropData.searchContent().contains(keywords)) {
+        return true;
+    }
+    return GraphicNode::containKeywords(keywords);
+}

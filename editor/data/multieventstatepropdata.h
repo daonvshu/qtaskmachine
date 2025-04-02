@@ -18,4 +18,12 @@ struct MultiEventStatePropertyData : DataDumpInterface {
             &events
         };
     }
+
+    QString searchContent() const {
+        QStringList functions;
+        for (auto& event : events()) {
+            functions << event.triggerFunc() << event.checkFunc();
+        }
+        return functions.join(" ").trimmed().toLower();
+    }
 };

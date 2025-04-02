@@ -45,6 +45,13 @@ public:
      */
     virtual bool testLinkLineIndexValid(int linkIndex, bool isInputPoint) const;
 
+    /**
+     * @brief 判断字符串中是否包含关键字
+     * @param keywords
+     * @return
+     */
+    virtual bool containKeywords(const QString& keywords) const;
+
     virtual ConfigFlowExecutor toFlowExecutor() const;
 
     virtual void fromExecutor(const ConfigFlowExecutor& executor) const;

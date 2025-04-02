@@ -38,4 +38,12 @@ struct EventStatePropertyData : DataDumpInterface {
             &errorEvent
         };
     }
+
+    QString searchContent() const {
+        return QString("%1 %2 %3 %4 %5")
+            .arg(timeoutRetryCallback(),
+                normalEvent().triggerFunc(), normalEvent().checkFunc(),
+                errorEvent().triggerFunc(), errorEvent().checkFunc()
+            ).trimmed().toLower();
+    }
 };
