@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(qtask_machines VERSION 1.0.4)
+project(qtask_machines VERSION 1.0.5)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
