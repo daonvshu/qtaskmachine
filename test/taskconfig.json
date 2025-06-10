@@ -10,12 +10,15 @@
                     "funcRetry": "",
                     "id": 1,
                     "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
                     "properties": [
                     ],
                     "retry": 0,
                     "taskId": 0,
                     "text": "开始",
                     "timeout": 0,
+                    "total": "",
                     "type": 0,
                     "uuid": "{df7ac883-80cf-4d73-b54a-ecb2ec6bde61}",
                     "x": -465,
@@ -24,21 +27,24 @@
                 {
                     "condition": "",
                     "delay": 0,
-                    "enter": "",
+                    "enter": "onFinishedCall()",
                     "exit": "",
                     "funcRetry": "",
                     "id": 2,
                     "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
                     "properties": [
                     ],
                     "retry": 0,
                     "taskId": 0,
                     "text": "结束",
                     "timeout": 0,
+                    "total": "",
                     "type": 1,
                     "uuid": "{a05cc37f-f4d7-4b08-b0cd-59bba5fb7ebd}",
-                    "x": 341,
-                    "y": 89
+                    "x": 646.8732025200635,
+                    "y": 107.73189087175479
                 },
                 {
                     "condition": "",
@@ -48,12 +54,15 @@
                     "funcRetry": "",
                     "id": 3,
                     "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
                     "properties": [
                     ],
                     "retry": 0,
                     "taskId": 0,
                     "text": "普通状态",
                     "timeout": 0,
+                    "total": "",
                     "type": 2,
                     "uuid": "{6e6b5853-6f74-48fb-b7f2-b4e041ca338d}",
                     "x": -207,
@@ -67,18 +76,88 @@
                     "funcRetry": "",
                     "id": 4,
                     "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
                     "properties": [
                     ],
                     "retry": 0,
                     "taskId": 0,
                     "text": "事件触发状态",
                     "timeout": 0,
+                    "total": "",
                     "type": 4,
                     "uuid": "{9c442050-47ae-4a30-ae95-252f2aafadae}",
                     "x": 89,
                     "y": -181
+                },
+                {
+                    "condition": "checkExitFunction(int)",
+                    "delay": 0,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 5,
+                    "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": "循环执行状态",
+                    "timeout": 0,
+                    "total": "testIntValue",
+                    "type": 9,
+                    "uuid": "{4a506ee5-00bf-4621-a445-7db157aa1151}",
+                    "x": 362.7935089228964,
+                    "y": -173.40372837675613
+                },
+                {
+                    "condition": "",
+                    "delay": 1000,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 6,
+                    "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": ">>>>>>执行子循环：延时状态",
+                    "timeout": 0,
+                    "total": "",
+                    "type": 3,
+                    "uuid": "{5caef709-bb5a-424a-a263-0d75c85c1aa6}",
+                    "x": 693.7723040080944,
+                    "y": -195.98292280060696
+                },
+                {
+                    "condition": "",
+                    "delay": 0,
+                    "enter": "",
+                    "exit": "",
+                    "funcRetry": "",
+                    "id": 7,
+                    "nested": false,
+                    "printOnEnter": true,
+                    "printOnExit": false,
+                    "properties": [
+                    ],
+                    "retry": 0,
+                    "taskId": 0,
+                    "text": "结束",
+                    "timeout": 0,
+                    "total": "",
+                    "type": 1,
+                    "uuid": "{7d70bf2a-20f3-41b4-94d8-d5b9d7ba874a}",
+                    "x": 966.9964386223471,
+                    "y": -153.11697736472968
                 }
             ],
+            "group": "",
             "lines": [
                 {
                     "branchId": 0,
@@ -114,17 +193,71 @@
                     "checkFunc": "",
                     "connectFrom": 4,
                     "connectFromPIndex": 0,
-                    "connectTo": 2,
+                    "connectTo": 5,
                     "connectToPIndex": 0,
                     "ctlPx": 0,
                     "ctlPy": 0,
                     "failBranch": false,
                     "subBranch": false,
                     "trigger": "testEvent1()"
+                },
+                {
+                    "branchId": 0,
+                    "branchName": "",
+                    "checkFunc": "",
+                    "connectFrom": 5,
+                    "connectFromPIndex": 1,
+                    "connectTo": 2,
+                    "connectToPIndex": 0,
+                    "ctlPx": 0,
+                    "ctlPy": 0,
+                    "failBranch": false,
+                    "subBranch": false,
+                    "trigger": ""
+                },
+                {
+                    "branchId": 0,
+                    "branchName": "",
+                    "checkFunc": "",
+                    "connectFrom": 6,
+                    "connectFromPIndex": 0,
+                    "connectTo": 7,
+                    "connectToPIndex": 0,
+                    "ctlPx": 0,
+                    "ctlPy": 0,
+                    "failBranch": false,
+                    "subBranch": false,
+                    "trigger": ""
+                },
+                {
+                    "branchId": 0,
+                    "branchName": "",
+                    "checkFunc": "",
+                    "connectFrom": 5,
+                    "connectFromPIndex": 0,
+                    "connectTo": 6,
+                    "connectToPIndex": 0,
+                    "ctlPx": 0,
+                    "ctlPy": 0,
+                    "failBranch": false,
+                    "subBranch": true,
+                    "trigger": ""
                 }
             ],
             "name": "test_flow1",
             "version": 2
+        },
+        {
+            "executors": [
+            ],
+            "group": "",
+            "lines": [
+            ],
+            "name": "test2",
+            "version": 1
         }
+    ],
+    "groups": [
+        ""
     ]
 }

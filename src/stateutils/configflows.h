@@ -15,6 +15,7 @@ namespace TaskMachine {
         Node_Condition,         //条件分支状态
         Node_Group,             //分组
         Node_History,           //恢复点
+        Node_Loop,              //循环执行状态
     };
 
     struct ConfigFlowPropertyBind : DataDumpInterface {
@@ -52,6 +53,7 @@ namespace TaskMachine {
         T_DATA_KEY(int, retry); //重试
         T_DATA_KEY(QString, funcRetry); //重试槽函数
         T_DATA_KEY(bool, nested); //是否嵌套
+        T_DATA_KEY(QString, total); //总次数(属性)
 
         T_DATA_KEY(QString, condition); //条件检查函数
 
@@ -79,7 +81,7 @@ namespace TaskMachine {
 
         QList<DataReadInterface *> prop() override {
             return {&id, &uuid, &text, &taskId, &x, &y, &type,
-                    &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition};
+                    &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &total, &condition};
         }
     };
 

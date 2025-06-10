@@ -9,6 +9,7 @@
 #include "../objects/nodes/nodemultieventstate.h"
 #include "../objects/nodes/nodestategroup.h"
 #include "../objects/nodes/noderecoverystate.h"
+#include "../objects/nodes/nodeloopstate.h"
 
 #include "../objects/actions/nodemoveaction.h"
 #include "../objects/actions/objectremoveaction.h"
@@ -51,6 +52,9 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPointF& r
             break;
         case GraphicObjectType::Node_Recovery_State:
             newObject = NodeRecoveryState::create();
+            break;
+        case GraphicObjectType::Node_Loop_State:
+            newObject = NodeLoopState::create();
             break;
         default:
             break;

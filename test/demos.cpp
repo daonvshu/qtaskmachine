@@ -7,8 +7,6 @@
 #include <qdatetime.h>
 #include <qmath.h>
 
-#include <stateutils/taskmachinesteputil.h>
-
 QPointer<Demos> appPtr;
 
 void customMessageHandle(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
@@ -99,8 +97,6 @@ Demos::Demos(QWidget *parent)
 
     connect(ui.treeView, &QTreeView::clicked, this, &Demos::loadPage);
     ui.treeView->expandAll();
-
-    TaskMachineStepUtil::stepConfig(":/taskconfig.json");
 }
 
 void Demos::loadPage(const QModelIndex &index) {

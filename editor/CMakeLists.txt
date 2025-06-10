@@ -76,6 +76,8 @@ add_executable(${PROJECT_NAME} WIN32
     dialogs/nodeedit/groupstatepropeditdlg.cpp
     dialogs/nodeedit/recoverystatepropeditdlg.h
     dialogs/nodeedit/recoverystatepropeditdlg.cpp
+    dialogs/nodeedit/loopstatepropeditdlg.h
+    dialogs/nodeedit/loopstatepropeditdlg.cpp
 
     graphic/graphicview.h
     graphic/graphicview.cpp
@@ -141,6 +143,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/objects/nodes/nodestategroup.cpp
     graphic/objects/nodes/noderecoverystate.h
     graphic/objects/nodes/noderecoverystate.cpp
+    graphic/objects/nodes/nodeloopstate.h
+    graphic/objects/nodes/nodeloopstate.cpp
 
     graphic/utils/transform.h
     graphic/utils/transform.cpp

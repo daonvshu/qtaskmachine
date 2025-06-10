@@ -12,6 +12,7 @@
 #include "dialogs/nodeedit/multieventstatepropeditdlg.h"
 #include "dialogs/nodeedit/groupstatepropeditdlg.h"
 #include "dialogs/nodeedit/recoverystatepropeditdlg.h"
+#include "dialogs/nodeedit/loopstatepropeditdlg.h"
 #include "dialogs/messagedlg.h"
 
 #include "../objects/nodes/nodedelaystate.d.h"
@@ -20,6 +21,7 @@
 #include "../objects/nodes/nodemultieventstate.d.h"
 #include "../objects/nodes/nodestategroup.d.h"
 #include "../objects/nodes/noderecoverystate.d.h"
+#include "../objects/nodes/nodeloopstate.d.h"
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -79,7 +81,7 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
             }
         }
         if (selectedObj) {
-            if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+            if (selectedObj->objectType() < GraphicObjectType::Link_Line) { //选中节点
                 lastHoverActiveNode = dynamic_cast<const GraphicNode *>(selectedObj);
                 //测试是否在输出连接点上
                 auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
@@ -132,7 +134,7 @@ void MouseActionControl::selectObjPress(const QPoint &mousePos) {
         selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
     }
     if (selectedObj) {
-        if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+        if (selectedObj->objectType() < GraphicObjectType::Link_Line) { //选中节点
             //测试是否在输出连接点上
             auto node = dynamic_cast<const GraphicNode*>(selectedObj);
             auto linkIndex = node->testOnLinkPoint(lastMousePoint, false);
@@ -179,7 +181,7 @@ void MouseActionControl::linkLineMove(const QPoint &mousePos) const {
     //测试是否在对象的输入连接点上
     auto selectedObj = d->getControl<GraphicObjCreateControl>()->selectTest(mousePos);
     if (selectedObj) {
-        if (selectedObj->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+        if (selectedObj->objectType() < GraphicObjectType::Link_Line) { //选中节点
             auto linkIndex = dynamic_cast<const GraphicNode*>(selectedObj)->testOnLinkPoint(currentMousePoint, true);
             if (linkIndex != -1) {
                 linkToObject = selectedObj;
@@ -201,7 +203,7 @@ void MouseActionControl::showContextMenu(QContextMenuEvent *event) {
     }
     auto selectedObject = d->getControl<GraphicObjCreateControl>()->selectTest(event->pos());
     if (selectedObject != nullptr) {
-        if (selectedObject->objectType() <= GraphicObjectType::Node_Recovery_State) { //选中节点
+        if (selectedObject->objectType() < GraphicObjectType::Link_Line) { //选中节点
             d->getControl<GraphicObjCreateControl>()->setObjectSelected(selectedObject);
             d->view->update();
             showSelectedObjectMenu(selectedObject, event);
@@ -324,6 +326,7 @@ void MouseActionControl::showBlackboardMenu(QContextMenuEvent *event) const {
     actions << menu.addAction(tr("条件分支状态"));
     actions << menu.addAction(tr("子状态组"));
     actions << menu.addAction(tr("恢复点"));
+    actions << menu.addAction(tr("循环执行状态"));
 
     auto selectedAction = menu.exec(event->globalPos());
     int actionIndex = actions.indexOf(selectedAction);
@@ -430,6 +433,15 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
             });
         }
             break;
+        case GraphicObjectType::Node_Loop_State: {
+            LoopStatePropEditDlg dlg;
+            showPropertyDlg(dlg, [&] (const QSharedPointer<GraphicNodeData>& objData) {
+                dlg.setExData(qSharedPointerCast<NodeLoopStateData>(objData)->loopStatePropData);
+            }, [&] (QSharedPointer<GraphicNodeData>& objData) {
+                qSharedPointerCast<NodeLoopStateData>(objData)->loopStatePropData = dlg.getExEditData();
+            });
+            break;
+        }
         default:
             break;
     }

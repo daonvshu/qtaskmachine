@@ -134,6 +134,10 @@ void GraphicRenderInterface::drawNodeSplitLine(const QRectF &nodeBodyRect, Graph
                 return 0xD165A2;
             case GraphicObjectType::Node_Recovery_State:
                 return Qt::red;
+            case GraphicObjectType::Node_Loop_State:
+                return 0xD1AB00;
+            default:
+                break;
         }
         return Qt::black;
     };

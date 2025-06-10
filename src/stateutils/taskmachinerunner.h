@@ -49,6 +49,7 @@ private:
     QAbstractState* createGroupState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
     QAbstractState* createHistoryState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
     QAbstractState* createEndState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
+    QAbstractState* createLoopState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
 
     QAbstractState* findGroupParent(const TaskMachine::ConfigFlowExecutor* executor);
     void bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor* executor);

@@ -32,6 +32,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(int, retry); //重试
     DATA_KEY(QString, funcRetry); //重试槽函数
     DATA_KEY(bool, nested); //是否嵌套
+    DATA_KEY(QString, total); //总次数(属性)
 
     DATA_KEY(QString, condition); //条件检查函数
 
@@ -59,7 +60,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &id, &uuid, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &condition };
+                 &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &total, &condition };
     }
 };
 

@@ -11,6 +11,7 @@
 #include "objects/nodes/nodemultieventstate.h"
 #include "objects/nodes/nodeconditionstate.h"
 #include "objects/nodes/nodestategroup.h"
+#include "objects/nodes/nodeloopstate.h"
 
 #include "data/configflows.h"
 
@@ -141,6 +142,14 @@ void GraphicView::saveFlow() {
                 }
             }
                 break;
+            case GraphicObjectType::Node_Loop_State: {
+                if (line.connectFromPIndex() == 0) {
+                    line.subBranch = true;
+                } else {
+                    line.subBranch = false;
+                }
+                break;
+            }
             default:
                 break;
             }
@@ -273,6 +282,14 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
                 }
             }
                 break;
+            case GraphicObjectType::Node_Loop_State: {
+                if (line.subBranch()) {
+                    lineLine->linkData->linkFromPointIndex = 0;
+                } else {
+                    lineLine->linkData->linkFromPointIndex = 1;
+                }
+                break;
+            }
             default:
                 break;
         }

@@ -5,6 +5,7 @@
 #include "state/directstate.h"
 #include "state/delaystate.h"
 #include "state/eventstate.h"
+#include "state/groupstate.h"
 
 #ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
 #include "remote/remotedebuglistener.h"
@@ -118,6 +119,8 @@ QAbstractState* TaskMachineRunner::createStateByType(const TaskMachine::ConfigFl
             return createHistoryState(executor, parent);
         case FlowChartNodeType::Node_End:
             return createEndState(executor, parent);
+        case FlowChartNodeType::Node_Loop:
+            return createLoopState(executor, parent);
     }
     return nullptr;
 }
@@ -391,6 +394,91 @@ QAbstractState *TaskMachineRunner::createEndState(const TaskMachine::ConfigFlowE
     bindExecutorBaseInfo(state, executor);
 
     return state;
+}
+
+QAbstractState* TaskMachineRunner::createLoopState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent) {
+    auto conditionState = new DirectState(parent);
+    createdState[executor->id()] = conditionState;
+    bindExecutorBaseInfo(conditionState, executor);
+
+    auto connectLines = fromLines.values(executor->id());
+    if (connectLines.isEmpty()) {
+        return conditionState;
+    }
+
+    conditionState->setCondition([=] {
+        auto loopCountStr = executor->total();
+        int loopCount = -1;
+        if (!loopCountStr.isEmpty()) {
+            bool ok;
+            loopCount = loopCountStr.toInt(&ok);
+            if (!ok) {
+                //read property
+                loopCount = currentBindContext->property(loopCountStr.toLatin1()).toInt();
+            }
+        }
+        auto currentIndex = conditionState->property("index").toInt();
+
+        bool exit = false;
+        auto checkFunction = executor->condition();
+        if (!checkFunction.isEmpty()) {
+            auto checkFunc = findFunction(checkFunction);
+            auto returnValue = Q_RETURN_ARG(bool, exit);
+            bool invokeResult = checkFunc.invoke(currentBindContext, Qt::DirectConnection, returnValue, Q_ARG(int, currentIndex));
+            if (!invokeResult) {
+                printLog(QtMsgType::QtCriticalMsg, "invoke exit check function fail:" + executor->condition());
+                exit = false;
+            }
+        }
+
+        if (!exit) {
+            if (loopCount >= 0) {
+                if (currentIndex >= loopCount) {
+                    exit = true;
+                }
+            }
+        }
+
+        if (exit) {
+            currentIndex = 0;
+        } else {
+            currentIndex++;
+        }
+        conditionState->setProperty("index", currentIndex);
+
+        return exit ? 0 : 1;
+    });
+
+    auto groupState = new GroupState(parent);
+    std::sort(connectLines.begin(), connectLines.end(), [](const TaskMachine::ConfigFlowConnectLine* a, const TaskMachine::ConfigFlowConnectLine* b) {
+        int flagA =  (((int)a->subBranch()) << 1) | (((int)a->failBranch()));
+        int flagB = (((int)b->subBranch()) << 1) | (((int)b->failBranch()));
+        return flagA > flagB;
+    });
+
+    for (const auto connectLine : connectLines) {
+        auto nextExecutor = executors[connectLine->connectTo()];
+        if (nextExecutor == nullptr) {
+            continue;
+        }
+
+        if (connectLine->subBranch()) {
+            auto nextState = createStateByType(nextExecutor, groupState);
+            groupState->setInitialState(nextState);
+        } else {
+            auto nextState = createStateByType(nextExecutor, parent);
+            *conditionState << nextState;
+        }
+    }
+
+    /*
+     * condition state -> (0) exit state -> ...
+     *                 -> (1) group state -> condition state
+     */
+    *conditionState << groupState;
+    *groupState >> conditionState;
+
+    return conditionState;
 }
 
 QAbstractState *TaskMachineRunner::findGroupParent(const TaskMachine::ConfigFlowExecutor *executor) {

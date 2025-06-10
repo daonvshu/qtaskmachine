@@ -12,6 +12,8 @@
 class FlowTest : public PageLoadInterface {
     Q_OBJECT
 
+    Q_PROPERTY(int testIntValue MEMBER testIntValue)
+
 public:
     Q_INVOKABLE explicit FlowTest(QObject *parent = nullptr);
 
@@ -29,8 +31,17 @@ signals:
 private:
     static int id;
 
+    int testIntValue = -1;
+
     Ui::FlowTest ui;
     QPointer<TaskMachineRunner> runner;
+
+private slots:
+    void onFinishedCall();
+    void showDialog();
+
+private:
+    Q_INVOKABLE bool checkExitFunction(int index);
 };
 
 Q_DECLARE_METATYPE(FlowTest*)
