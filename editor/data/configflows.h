@@ -28,6 +28,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(QList<PropertyBindData>, properties); //属性绑定
 
     DATA_KEY(int, delay); //延时
+    DATA_KEY(QString, delayProperty); //延时值属性
     DATA_KEY(int, timeout); //超时
     DATA_KEY(int, retry); //重试
     DATA_KEY(QString, funcRetry); //重试槽函数
@@ -60,7 +61,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
 
     QList<DataReadInterface *> prop() override {
         return { &id, &uuid, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &timeout, &retry, &funcRetry, &nested, &total, &condition };
+                 &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &delayProperty, &timeout, &retry, &funcRetry, &nested, &total, &condition };
     }
 };
 

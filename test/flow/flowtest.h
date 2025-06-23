@@ -13,6 +13,7 @@ class FlowTest : public PageLoadInterface {
     Q_OBJECT
 
     Q_PROPERTY(int testIntValue MEMBER testIntValue)
+    Q_PROPERTY(int curDelay MEMBER curDelay)
 
 public:
     Q_INVOKABLE explicit FlowTest(QObject *parent = nullptr);
@@ -32,6 +33,7 @@ private:
     static int id;
 
     int testIntValue = -1;
+    int curDelay = 2000;
 
     Ui::FlowTest ui;
     QPointer<TaskMachineRunner> runner;

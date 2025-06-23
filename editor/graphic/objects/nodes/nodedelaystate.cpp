@@ -14,6 +14,7 @@ NodeDelayState::NodeDelayState(const QSharedPointer<NodeDelayStateData> &data, b
 ConfigFlowExecutor NodeDelayState::toFlowExecutor() const {
     auto executor = GraphicNode::toFlowExecutor();
     executor.delay = delayStateData->delayPropData.delayMs();
+    executor.delayProperty = delayStateData->delayPropData.delayProperty();
 
     return executor;
 }
@@ -21,6 +22,7 @@ ConfigFlowExecutor NodeDelayState::toFlowExecutor() const {
 void NodeDelayState::fromExecutor(const ConfigFlowExecutor &executor) const {
     GraphicNode::fromExecutor(executor);
     delayStateData->delayPropData.delayMs = executor.delay();
+    delayStateData->delayPropData.delayProperty = executor.delayProperty();
 }
 
 void NodeDelayState::drawObject() {
@@ -30,6 +32,11 @@ void NodeDelayState::drawObject() {
     QStringList bindStrings;
     minSubItemWidth = qMax(minSubItemWidth, minPropertyWidth(bindStrings));
     minSubItemWidth += itemPadding * 2;
+
+    QString delayProp = delayStateData->delayPropData.delayProperty();
+    if (!delayProp.isEmpty()) {
+        minSubItemWidth = qMax(minSubItemWidth, getTextWidthByFont(delayProp, itemFontSize));
+    }
 
     // calc min item height
     int minItemHeight = itemHeight * 2 + propertyItemHeight;
@@ -64,7 +71,8 @@ void NodeDelayState::drawObject() {
 
     // draw delay data row
     QRectF itemDelayDataRow(bodyRect.left(), itemExitRow.bottom(), bodyRect.width(), propertyItemHeight);
-    drawIconRow(itemDelayDataRow, ":/res/time.svg", 12, QString("%1 ms").arg(delayStateData->delayPropData.delayMs()), itemFontSize, true);
+    drawIconRow(itemDelayDataRow, ":/res/time.svg", 12,
+        !delayProp.isEmpty() ? delayProp : QString("%1 ms").arg(delayStateData->delayPropData.delayMs()), itemFontSize, true);
 
     // draw property rows
     renderPropertyItems(bodyRect, itemDelayDataRow.bottom(), bindStrings);

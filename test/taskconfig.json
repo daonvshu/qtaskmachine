@@ -5,6 +5,7 @@
                 {
                     "condition": "",
                     "delay": 0,
+                    "delayProperty": "",
                     "enter": "",
                     "exit": "",
                     "funcRetry": "",
@@ -27,6 +28,7 @@
                 {
                     "condition": "",
                     "delay": 0,
+                    "delayProperty": "",
                     "enter": "onFinishedCall()",
                     "exit": "",
                     "funcRetry": "",
@@ -49,6 +51,7 @@
                 {
                     "condition": "",
                     "delay": 0,
+                    "delayProperty": "",
                     "enter": "",
                     "exit": "",
                     "funcRetry": "",
@@ -71,6 +74,7 @@
                 {
                     "condition": "",
                     "delay": 0,
+                    "delayProperty": "",
                     "enter": "",
                     "exit": "",
                     "funcRetry": "",
@@ -93,6 +97,7 @@
                 {
                     "condition": "checkExitFunction(int)",
                     "delay": 0,
+                    "delayProperty": "",
                     "enter": "",
                     "exit": "",
                     "funcRetry": "",
@@ -115,6 +120,7 @@
                 {
                     "condition": "",
                     "delay": 1000,
+                    "delayProperty": "curDelay",
                     "enter": "",
                     "exit": "",
                     "funcRetry": "",
@@ -131,12 +137,13 @@
                     "total": "",
                     "type": 3,
                     "uuid": "{5caef709-bb5a-424a-a263-0d75c85c1aa6}",
-                    "x": 693.7723040080944,
+                    "x": 698.7723040080944,
                     "y": -195.98292280060696
                 },
                 {
                     "condition": "",
                     "delay": 0,
+                    "delayProperty": "",
                     "enter": "",
                     "exit": "",
                     "funcRetry": "",
