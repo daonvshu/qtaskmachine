@@ -19,6 +19,7 @@ void App::createNewConfig(const QString &filePath) {
     newFlow.name = QStringLiteral("新流程");
     flowGroup.flows() << newFlow;
     refreshConfigPathLabel();
+    ui.graphic_view->updateFlow(nullptr);
     ui.graphic_list->reloadTree();
 }
 
