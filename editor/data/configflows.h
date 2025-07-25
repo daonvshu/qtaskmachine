@@ -10,7 +10,6 @@
 using namespace QDataUtil;
 
 struct ConfigFlowExecutor : DataDumpInterface {
-
     DATA_KEY(int, id); //节点id
     DATA_KEY(QString, uuid); //节点id（唯一）
     DATA_KEY(QString, text); //字符
@@ -36,10 +35,13 @@ struct ConfigFlowExecutor : DataDumpInterface {
     DATA_KEY(QString, total); //总次数(属性)
 
     DATA_KEY(QString, condition); //条件检查函数
+    DATA_KEY(bool, nonBlock); //非阻塞
 
     ConfigFlowExecutor() {
         printOnEnter = true;
         printOnExit = false;
+
+        nonBlock = true;
     }
 
     GraphicObjectType itemType() const {
@@ -51,7 +53,7 @@ struct ConfigFlowExecutor : DataDumpInterface {
     }
 
     QPointF scenePos() const {
-        return { x(), y() };
+        return {x(), y()};
     }
 
     void fromScenePos(const QPointF& p) {
@@ -59,14 +61,17 @@ struct ConfigFlowExecutor : DataDumpInterface {
         y = p.y();
     }
 
-    QList<DataReadInterface *> prop() override {
-        return { &id, &uuid, &text, &taskId, &x, &y, &type,
-                 &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &delayProperty, &timeout, &retry, &funcRetry, &nested, &total, &condition };
+    QList<DataReadInterface*> prop() override {
+        return {
+            &id, &uuid, &text, &taskId, &x, &y, &type,
+            &enter, &exit, &printOnEnter, &printOnExit, &properties,
+            &delay, &delayProperty, &timeout, &retry, &funcRetry, &nested, &total,
+            &condition, &nonBlock
+        };
     }
 };
 
 struct ConfigFlowConnectLine : DataDumpInterface {
-
     DATA_KEY(int, connectFrom); //连接开始节点id
     DATA_KEY(int, connectFromPIndex); //连接开始节点端点index
     DATA_KEY(int, connectTo); //连接结束节点id
@@ -82,7 +87,7 @@ struct ConfigFlowConnectLine : DataDumpInterface {
     DATA_KEY(bool, subBranch); //子流程分支
 
     QPointF controlPos() const {
-        return { ctlPx(), ctlPy() };
+        return {ctlPx(), ctlPy()};
     }
 
     void fromControlPos(const QPointF& p) {
@@ -90,14 +95,15 @@ struct ConfigFlowConnectLine : DataDumpInterface {
         ctlPy = p.y();
     }
 
-    QList<DataReadInterface *> prop() override {
-        return { &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
-                 &trigger, &checkFunc, &branchId, &branchName, &failBranch, &subBranch };
+    QList<DataReadInterface*> prop() override {
+        return {
+            &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
+            &trigger, &checkFunc, &branchId, &branchName, &failBranch, &subBranch
+        };
     }
 };
 
 struct ConfigFlow : DataDumpInterface {
-
     DATA_KEY(QString, name); //流程名
     DATA_KEY(QString, group); //分组
     DATA_KEY(QList<ConfigFlowExecutor>, executors); //节点
@@ -109,21 +115,22 @@ struct ConfigFlow : DataDumpInterface {
         version = 1;
     }
 
-    QList<DataReadInterface *> prop() override {
-        return { &name, &group, &executors, &lines,
-            &version };
+    QList<DataReadInterface*> prop() override {
+        return {
+            &name, &group, &executors, &lines,
+            &version
+        };
     }
 };
 
 struct ConfigFlowGroup : DataDumpInterface {
-
     DATA_KEY(QList<ConfigFlow>, flows);
     DATA_KEY(QStringList, groups);
 
     QString configFilePath;
 
-    QList<DataReadInterface *> prop() override {
-        return { &flows, &groups };
+    QList<DataReadInterface*> prop() override {
+        return {&flows, &groups};
     }
 
     void clear() {

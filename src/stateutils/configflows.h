@@ -6,32 +6,30 @@
 
 namespace TaskMachine {
     enum class FlowChartNodeType {
-        Node_Begin = 0,         //开始状态
-        Node_End,               //结束状态
-        Node_Normal,            //普通状态
-        Node_Delay,             //延时状态
-        Node_Event,             //事件触发状态
-        Node_MultiEvent,        //复合事件状态
-        Node_Condition,         //条件分支状态
-        Node_Group,             //分组
-        Node_History,           //恢复点
-        Node_Loop,              //循环执行状态
+        Node_Begin = 0, //开始状态
+        Node_End, //结束状态
+        Node_Normal, //普通状态
+        Node_Delay, //延时状态
+        Node_Event, //事件触发状态
+        Node_MultiEvent, //复合事件状态
+        Node_Condition, //条件分支状态
+        Node_Group, //分组
+        Node_History, //恢复点
+        Node_Loop, //循环执行状态
     };
 
     struct ConfigFlowPropertyBind : DataDumpInterface {
-
         T_DATA_KEY(bool, callOnEntered); //进入还是退出时调用
         T_DATA_KEY(QString, key); //属性key
         T_DATA_KEY(QString, value); //属性值
         T_DATA_KEY(QString, valueType); //属性值类型
 
-        QList<DataReadInterface *> prop() override {
-            return { &callOnEntered, &key, &value, &valueType };
+        QList<DataReadInterface*> prop() override {
+            return {&callOnEntered, &key, &value, &valueType};
         }
     };
 
     struct ConfigFlowExecutor : DataDumpInterface {
-
         T_DATA_KEY(int, id); //节点id
         T_DATA_KEY(QString, uuid); //节点id（唯一）
         T_DATA_KEY(QString, text); //字符
@@ -57,10 +55,13 @@ namespace TaskMachine {
         T_DATA_KEY(QString, total); //总次数(属性)
 
         T_DATA_KEY(QString, condition); //条件检查函数
+        T_DATA_KEY(bool, nonBlock); //非阻塞
 
         ConfigFlowExecutor() {
             printOnEnter = true;
             printOnExit = false;
+
+            nonBlock = true;
         }
 
         FlowChartNodeType itemType() const {
@@ -68,26 +69,29 @@ namespace TaskMachine {
         }
 
         void fromType(FlowChartNodeType t) {
-            type = (int) t;
+            type = (int)t;
         }
 
         QPointF scenePos() const {
             return {x(), y()};
         }
 
-        void fromScenePos(const QPointF &p) {
+        void fromScenePos(const QPointF& p) {
             x = p.x();
             y = p.y();
         }
 
-        QList<DataReadInterface *> prop() override {
-            return {&id, &uuid, &text, &taskId, &x, &y, &type,
-                    &enter, &exit, &printOnEnter, &printOnExit, &properties, &delay, &delayProperty, &timeout, &retry, &funcRetry, &nested, &total, &condition};
+        QList<DataReadInterface*> prop() override {
+            return {
+                &id, &uuid, &text, &taskId, &x, &y, &type,
+                &enter, &exit, &printOnEnter, &printOnExit, &properties,
+                &delay, &delayProperty, &timeout, &retry, &funcRetry, &nested, &total,
+                &condition, &nonBlock
+            };
         }
     };
 
     struct ConfigFlowConnectLine : DataDumpInterface {
-
         T_DATA_KEY(int, connectFrom); //连接开始节点id
         T_DATA_KEY(int, connectFromPIndex); //连接开始节点端点index
         T_DATA_KEY(int, connectTo); //连接结束节点id
@@ -106,35 +110,35 @@ namespace TaskMachine {
             return {ctlPx(), ctlPy()};
         }
 
-        void fromControlPos(const QPointF &p) {
+        void fromControlPos(const QPointF& p) {
             ctlPx = p.x();
             ctlPy = p.y();
         }
 
-        QList<DataReadInterface *> prop() override {
-            return {&connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
-                    &trigger, &checkFunc, &branchId, &branchName, &failBranch, &subBranch};
+        QList<DataReadInterface*> prop() override {
+            return {
+                &connectFrom, &connectFromPIndex, &connectTo, &connectToPIndex, &ctlPx, &ctlPy,
+                &trigger, &checkFunc, &branchId, &branchName, &failBranch, &subBranch
+            };
         }
     };
 
     struct ConfigFlow : DataDumpInterface {
-
         T_DATA_KEY(QString, name); //流程名
         T_DATA_KEY(QList<ConfigFlowExecutor>, executors); //节点
         T_DATA_KEY(QList<ConfigFlowConnectLine>, lines); //连接线
 
         qint64 flowId = -1;
 
-        QList<DataReadInterface *> prop() override {
+        QList<DataReadInterface*> prop() override {
             return {&name, &executors, &lines};
         }
     };
 
     struct ConfigFlowGroup : DataDumpInterface {
-
         T_DATA_KEY(QList<ConfigFlow>, flows);
 
-        QList<DataReadInterface *> prop() override {
+        QList<DataReadInterface*> prop() override {
             return {&flows};
         }
     };

@@ -4,6 +4,7 @@ LoopStatePropEditDlg::LoopStatePropEditDlg(QWidget* parent)
     : BasePropertyEditDlg(parent)
 {
     ui.title->setText(tr("循环执行状态属性编辑"));
+    ui.call_on_non_block->setEnabled(true);
 
     auto exWidget = new QWidget(this);
     exUi.setupUi(exWidget);

@@ -7,6 +7,7 @@ ConditionStatePropEditDlg::ConditionStatePropEditDlg(QWidget *parent)
     : BasePropertyEditDlg(parent)
 {
     ui.title->setText(tr("条件分支状态属性设置"));
+    ui.call_on_non_block->setEnabled(true);
 
     auto exWidget = new QWidget(this);
     exUi.setupUi(exWidget);

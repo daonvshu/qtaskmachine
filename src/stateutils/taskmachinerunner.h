@@ -51,6 +51,8 @@ private:
     QAbstractState* createEndState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
     QAbstractState* createLoopState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
 
+    static LinearState* createNonBlockDirectState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent);
+
     QAbstractState* findGroupParent(const TaskMachine::ConfigFlowExecutor* executor);
     void bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor* executor);
 
@@ -109,4 +111,14 @@ private:
     QHash<int, QPair<int, QMetaMethod>> checkFunction;
     QHash<int, QString> functionNames;
     QObject* currentContext;
+};
+
+class NonBlockDirectState : public EventState {
+    Q_OBJECT
+
+public:
+    using EventState::EventState;
+
+signals:
+    void callFinished();
 };

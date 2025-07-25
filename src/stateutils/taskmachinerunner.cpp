@@ -19,9 +19,9 @@
 #include <qdatetime.h>
 
 using namespace TaskMachine;
-TaskMachineRunner::TaskMachineRunner(const QString& flowName, QObject *parent)
-    : QObject(parent)
-{
+
+TaskMachineRunner::TaskMachineRunner(const QString& flowName, QObject* parent)
+    : QObject(parent) {
     configFlow = TaskMachineStepUtil::getConfigFlow(flowName);
 }
 
@@ -33,11 +33,11 @@ TaskMachineRunner::~TaskMachineRunner() {
     }
 }
 
-TaskMachine::ConfigFlow &TaskMachineRunner::getCurrentFlow() {
+ConfigFlow& TaskMachineRunner::getCurrentFlow() {
     return configFlow;
 }
 
-bool TaskMachineRunner::run(QObject *context) {
+bool TaskMachineRunner::run(QObject* context) {
     currentBindContext = context;
     stepStateMachine();
 
@@ -69,7 +69,7 @@ void TaskMachineRunner::stepStateMachine() {
     toLines.clear();
     createdState.clear();
 
-    const TaskMachine::ConfigFlowExecutor* beginExecutor = nullptr;
+    const ConfigFlowExecutor* beginExecutor = nullptr;
     for (const ConfigFlowExecutor& executor : configFlow.executors()) {
         executors[executor.id()] = &executor;
         if (FlowChartNodeType(executor.type()) == FlowChartNodeType::Node_Begin) {
@@ -97,7 +97,7 @@ void TaskMachineRunner::stepStateMachine() {
     currentStateMachine->setInitialState(beginState);
 }
 
-QAbstractState* TaskMachineRunner::createStateByType(const TaskMachine::ConfigFlowExecutor *executor, QState* parent) {
+QAbstractState* TaskMachineRunner::createStateByType(const ConfigFlowExecutor* executor, QState* parent) {
     if (createdState.contains(executor->id())) {
         return createdState[executor->id()];
     }
@@ -125,8 +125,8 @@ QAbstractState* TaskMachineRunner::createStateByType(const TaskMachine::ConfigFl
     return nullptr;
 }
 
-QAbstractState* TaskMachineRunner::createDirectState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent) {
-    auto state = new DirectState(parent);
+QAbstractState* TaskMachineRunner::createDirectState(const ConfigFlowExecutor* executor, QState* parent) {
+    auto state = createNonBlockDirectState(executor, parent);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -144,7 +144,7 @@ QAbstractState* TaskMachineRunner::createDirectState(const TaskMachine::ConfigFl
     return state;
 }
 
-QAbstractState* TaskMachineRunner::createDelayState(const TaskMachine::ConfigFlowExecutor *executor, QState* parent) {
+QAbstractState* TaskMachineRunner::createDelayState(const ConfigFlowExecutor* executor, QState* parent) {
     int delayMs = executor->delay();
     auto delayProp = executor->delayProperty();
     if (!delayProp.isEmpty()) {
@@ -169,9 +169,9 @@ QAbstractState* TaskMachineRunner::createDelayState(const TaskMachine::ConfigFlo
     return state;
 }
 
-QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
+QAbstractState* TaskMachineRunner::createEventState(const ConfigFlowExecutor* executor, QState* parent) {
     auto state = new BindableCheckEventState(parent);
-    connect(state, &BindableCheckEventState::checkFunctionInvokeFailed, [&] (const QString& funcName) {
+    connect(state, &BindableCheckEventState::checkFunctionInvokeFailed, [&](const QString& funcName) {
         printLog(QtMsgType::QtCriticalMsg, "invoke check function fail:" + funcName);
     });
 
@@ -215,9 +215,9 @@ QAbstractState* TaskMachineRunner::createEventState(const TaskMachine::ConfigFlo
     return state;
 }
 
-QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
+QAbstractState* TaskMachineRunner::createMultiEventState(const ConfigFlowExecutor* executor, QState* parent) {
     auto state = new BindableMultiCheckEventState(parent);
-    connect(state, &BindableMultiCheckEventState::checkFunctionInvokeFailed, [&] (const QString& funcName) {
+    connect(state, &BindableMultiCheckEventState::checkFunctionInvokeFailed, [&](const QString& funcName) {
         printLog(QtMsgType::QtCriticalMsg, "invoke check function fail:" + funcName);
     });
 
@@ -240,14 +240,15 @@ QAbstractState *TaskMachineRunner::createMultiEventState(const TaskMachine::Conf
         if (triggerFunc.isValid()) {
             state->addSignal(currentBindContext, triggerFunc.methodSignature().constData());
             state->next(nextState);
-            state->setCheckFunction(currentBindContext, signalIndex++, connectLine->branchId(), findFunction(connectLine->checkFunc()), connectLine->checkFunc());
+            state->setCheckFunction(currentBindContext, signalIndex++, connectLine->branchId(), findFunction(connectLine->checkFunc()),
+                                    connectLine->checkFunc());
         }
     }
     return state;
 }
 
-QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
-    auto state = new DirectState(parent);
+QAbstractState* TaskMachineRunner::createConditionState(const ConfigFlowExecutor* executor, QState* parent) {
+    auto state = createNonBlockDirectState(executor, parent);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
@@ -324,7 +325,7 @@ QAbstractState *TaskMachineRunner::createConditionState(const TaskMachine::Confi
     return state;
 }
 
-QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
+QAbstractState* TaskMachineRunner::createGroupState(const ConfigFlowExecutor* executor, QState* parent) {
     auto state = new EventState(parent);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
@@ -334,8 +335,8 @@ QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlo
         return state;
     }
 
-    std::sort(connectLines.begin(), connectLines.end(), [](const TaskMachine::ConfigFlowConnectLine* a, const TaskMachine::ConfigFlowConnectLine* b) {
-        int flagA =  (((int)a->subBranch()) << 1) | (((int)a->failBranch()));
+    std::sort(connectLines.begin(), connectLines.end(), [](const ConfigFlowConnectLine* a, const ConfigFlowConnectLine* b) {
+        int flagA = (((int)a->subBranch()) << 1) | (((int)a->failBranch()));
         int flagB = (((int)b->subBranch()) << 1) | (((int)b->failBranch()));
         return flagA > flagB;
     });
@@ -364,8 +365,7 @@ QAbstractState *TaskMachineRunner::createGroupState(const TaskMachine::ConfigFlo
     return state;
 }
 
-QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
-
+QAbstractState* TaskMachineRunner::createHistoryState(const ConfigFlowExecutor* executor, QState* parent) {
     //find parent group state
     auto groupParent = findGroupParent(executor);
     auto state = new QHistoryState(dynamic_cast<QState*>(groupParent));
@@ -394,7 +394,7 @@ QAbstractState *TaskMachineRunner::createHistoryState(const TaskMachine::ConfigF
     return state;
 }
 
-QAbstractState *TaskMachineRunner::createEndState(const TaskMachine::ConfigFlowExecutor *executor, QState *parent) {
+QAbstractState* TaskMachineRunner::createEndState(const ConfigFlowExecutor* executor, QState* parent) {
     auto state = new QFinalState(parent);
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
@@ -402,8 +402,8 @@ QAbstractState *TaskMachineRunner::createEndState(const TaskMachine::ConfigFlowE
     return state;
 }
 
-QAbstractState* TaskMachineRunner::createLoopState(const TaskMachine::ConfigFlowExecutor* executor, QState* parent) {
-    auto conditionState = new DirectState(parent);
+QAbstractState* TaskMachineRunner::createLoopState(const ConfigFlowExecutor* executor, QState* parent) {
+    auto conditionState = createNonBlockDirectState(executor, parent);
     createdState[executor->id()] = conditionState;
     bindExecutorBaseInfo(conditionState, executor);
 
@@ -456,8 +456,8 @@ QAbstractState* TaskMachineRunner::createLoopState(const TaskMachine::ConfigFlow
     });
 
     auto groupState = new GroupState(parent);
-    std::sort(connectLines.begin(), connectLines.end(), [](const TaskMachine::ConfigFlowConnectLine* a, const TaskMachine::ConfigFlowConnectLine* b) {
-        int flagA =  (((int)a->subBranch()) << 1) | (((int)a->failBranch()));
+    std::sort(connectLines.begin(), connectLines.end(), [](const ConfigFlowConnectLine* a, const ConfigFlowConnectLine* b) {
+        int flagA = (((int)a->subBranch()) << 1) | (((int)a->failBranch()));
         int flagB = (((int)b->subBranch()) << 1) | (((int)b->failBranch()));
         return flagA > flagB;
     });
@@ -487,13 +487,25 @@ QAbstractState* TaskMachineRunner::createLoopState(const TaskMachine::ConfigFlow
     return conditionState;
 }
 
-QAbstractState *TaskMachineRunner::findGroupParent(const TaskMachine::ConfigFlowExecutor *executor) {
+LinearState* TaskMachineRunner::createNonBlockDirectState(const ConfigFlowExecutor* executor, QState* parent) {
+    LinearState* state;
+    if (executor->nonBlock() && !executor->enter().isEmpty()) {
+        auto nonBlockState = new NonBlockDirectState(parent);
+        nonBlockState->setSignal(nonBlockState, &NonBlockDirectState::callFinished);
+        state = nonBlockState;
+    } else {
+        state = new DirectState(parent);
+    }
+    return state;
+}
+
+QAbstractState* TaskMachineRunner::findGroupParent(const ConfigFlowExecutor* executor) {
     auto connectToLines = toLines.values(executor->id());
     for (const auto connectLine : connectToLines) {
         auto connectFromId = connectLine->connectFrom();
         if (createdState.contains(connectFromId)) {
             auto stateExecutor = executors[connectFromId];
-            if (stateExecutor->itemType() == TaskMachine::FlowChartNodeType::Node_Group) {
+            if (stateExecutor->itemType() == FlowChartNodeType::Node_Group) {
                 return createdState.value(connectFromId);
             }
             auto parent = findGroupParent(stateExecutor);
@@ -505,9 +517,8 @@ QAbstractState *TaskMachineRunner::findGroupParent(const TaskMachine::ConfigFlow
     return nullptr;
 }
 
-void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMachine::ConfigFlowExecutor *executor) {
-
-    const auto callProperties = [this, executor] (bool entered) {
+void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const ConfigFlowExecutor* executor) {
+    const auto callProperties = [this, executor](bool entered) {
         for (const auto& prop : executor->properties()) {
             if (entered != prop.callOnEntered()) {
                 continue;
@@ -542,6 +553,9 @@ void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMa
             callProperties(true);
             if (!executor->enter().isEmpty()) {
                 invokeFunction(executor->enter());
+                if (auto nonBlockState = dynamic_cast<NonBlockDirectState*>(state)) {
+                    QMetaObject::invokeMethod(nonBlockState, &NonBlockDirectState::callFinished, Qt::QueuedConnection);
+                }
             }
         }
 #ifdef QTASK_MACHINE_REMOTE_DEBUG_ENABLED
@@ -562,7 +576,7 @@ void TaskMachineRunner::bindExecutorBaseInfo(QAbstractState* state, const TaskMa
     });
 }
 
-void TaskMachineRunner::invokeFunction(const QString &slotName) {
+void TaskMachineRunner::invokeFunction(const QString& slotName) {
     if (slotName.isEmpty()) {
         return;
     }
@@ -574,7 +588,7 @@ void TaskMachineRunner::invokeFunction(const QString &slotName) {
     }
 }
 
-QMetaMethod TaskMachineRunner::findFunction(const QString &signalName) {
+QMetaMethod TaskMachineRunner::findFunction(const QString& signalName) {
     if (signalName.isEmpty()) {
         return {};
     }
@@ -587,7 +601,7 @@ QMetaMethod TaskMachineRunner::findFunction(const QString &signalName) {
     return currentBindContext->metaObject()->method(methodIndex);
 }
 
-void TaskMachineRunner::printLog(QtMsgType msgType, const QString &message) {
+void TaskMachineRunner::printLog(QtMsgType msgType, const QString& message) {
     if (debugPtr) {
         switch (msgType) {
             case QtCriticalMsg:
@@ -612,7 +626,7 @@ void TaskMachineRunner::printLog(QtMsgType msgType, const QString &message) {
 }
 
 
-bool BindableCheckEventState::testFinishBySignalData(const QVariantList &data)  {
+bool BindableCheckEventState::testFinishBySignalData(const QVariantList& data) {
     if (checkFunction.isValid()) {
         bool boolData = true;
         auto returnValue = Q_RETURN_ARG(bool, boolData);
@@ -626,7 +640,7 @@ bool BindableCheckEventState::testFinishBySignalData(const QVariantList &data)  
     return true;
 }
 
-bool BindableMultiCheckEventState::testFinishBySignalData(int signalIndex, const QVariantList &data) {
+bool BindableMultiCheckEventState::testFinishBySignalData(int signalIndex, const QVariantList& data) {
     auto checkFunc = checkFunction[signalIndex];
     if (checkFunc.second.isValid()) {
         bool boolData = true;

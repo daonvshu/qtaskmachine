@@ -28,6 +28,7 @@ void BasePropertyEditDlg::setData(const BasePropertyData &data) {
     ui.input_func_exit->setText(data.funcExit());
     ui.print_on_enter->setChecked(data.printOnEnter());
     ui.print_on_exit->setChecked(data.printOnExit());
+    ui.call_on_non_block->setChecked(data.callNonBlock());
     if (!data.properties().isEmpty()) {
         for (auto& property : editData.properties()) {
             addPropertyEditItem(property);
@@ -91,6 +92,7 @@ void BasePropertyEditDlg::on_btn_confirm_clicked() {
     editData.funcExit() = ui.input_func_exit->text();
     editData.printOnEnter() = ui.print_on_enter->isChecked();
     editData.printOnExit() = ui.print_on_exit->isChecked();
+    editData.callNonBlock() = ui.call_on_non_block->isChecked();
     editData.properties().clear();
     for (int i = 0; i < ui.layout_bind_properties->count() - 1; ++i) {
         auto widget = ui.layout_bind_properties->itemAt(i)->widget();

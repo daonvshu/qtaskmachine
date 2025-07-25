@@ -11,6 +11,7 @@
         <file>res/arrow_down.svg</file>
         <file>res/delete.svg</file>
         <file>res/checked.svg</file>
+        <file>res/checked_disable.svg</file>
         <file>res/unchecked.svg</file>
         <file>res/edit.svg</file>
         <file>res/copy.svg</file>
