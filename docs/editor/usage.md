@@ -19,6 +19,27 @@ auto runner = new TaskMachineRunner("test_flow1", parent);
 runner->run(context);
 ```
 
+## 启用日志
+
+默认情况下，TaskMachineRunner只会打印 `Warning` 和 `Critical` 等级的日志，使用 `setLogLevels` 函数调整日志等级：
+
+```cpp
+auto runner = new TaskMachineRunner("test_flow1", parent);
+runner->setLogLevels(TaskMachineRunner::Debug | TaskMachineRunner::Info);
+runner->run(context);
+```
+
+也可以使用日志筛选器进行控制：
+
+```cpp
+Q_LOGGING_CATEGORY(my_state, "test.my_state")
+
+auto runner = new TaskMachineRunner("test_flow1", parent);
+runner->setLogging(my_state, TaskMachineRunner::All);
+runner->run(context);
+
+```
+
 ## 流程图的绘制
 
 在空白处点击右键，选择并添加不同类型的状态，不同的状态有不同数量的输入和输出端口，连接状态的输出到下一个状态的输入则表示一个状态切换关系。通常情况下，输入端口可以被多个状态连接，而输出端口只能连接到一个输入端口。
