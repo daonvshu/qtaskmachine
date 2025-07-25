@@ -15,11 +15,23 @@ public:
     explicit TaskMachineRunner(const QString& flowName, QObject *parent = nullptr);
     ~TaskMachineRunner();
 
+    enum LogLevel {
+        None     = 0x0,
+        Critical = 0x1,
+        Warning  = 0x2,
+        Info     = 0x4,
+        Debug    = 0x8,
+        All      = Critical | Warning | Info | Debug
+    };
+    Q_DECLARE_FLAGS(LogLevels, LogLevel)
+
+    void setLogLevels(const LogLevels &levels);
+
     TaskMachine::ConfigFlow& getCurrentFlow();
 
     bool run(QObject* context);
 
-    void setLogging(LoggingCategoryPtr categoryPtr);
+    void setLogging(LoggingCategoryPtr categoryPtr, const LogLevels &levels = All);
 
     void cancel();
 
@@ -31,6 +43,7 @@ private:
     QObject* currentBindContext = nullptr;
     QStateMachine* currentStateMachine = nullptr;
     LoggingCategoryPtr debugPtr = nullptr;
+    LogLevels logLevels;
 
     //tmp data
     QHash<int, const TaskMachine::ConfigFlowExecutor*> executors;
@@ -64,6 +77,8 @@ private:
     friend class BindableCheckEventState;
     friend class BindableMultiCheckEventState;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(TaskMachineRunner::LogLevels)
 
 class BindableCheckEventState : public EventState {
     Q_OBJECT

@@ -21,7 +21,9 @@
 using namespace TaskMachine;
 
 TaskMachineRunner::TaskMachineRunner(const QString& flowName, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent)
+    , logLevels(Warning | Critical)
+{
     configFlow = TaskMachineStepUtil::getConfigFlow(flowName);
 }
 
@@ -31,6 +33,10 @@ TaskMachineRunner::~TaskMachineRunner() {
         RemoteDebugListener::instance().flowFinished(configFlow.name());
 #endif
     }
+}
+
+void TaskMachineRunner::setLogLevels(const LogLevels& levels) {
+    logLevels = levels;
 }
 
 ConfigFlow& TaskMachineRunner::getCurrentFlow() {
@@ -51,8 +57,9 @@ bool TaskMachineRunner::run(QObject* context) {
     return currentStateMachine != nullptr;
 }
 
-void TaskMachineRunner::setLogging(LoggingCategoryPtr categoryPtr) {
+void TaskMachineRunner::setLogging(LoggingCategoryPtr categoryPtr, const LogLevels &levels) {
     debugPtr = categoryPtr;
+    setLogLevels(levels);
 }
 
 void TaskMachineRunner::cancel() {
@@ -602,6 +609,21 @@ QMetaMethod TaskMachineRunner::findFunction(const QString& signalName) {
 }
 
 void TaskMachineRunner::printLog(QtMsgType msgType, const QString& message) {
+    LogLevel level = None;
+    switch (msgType) {
+        case QtDebugMsg: level = Debug; break;
+        case QtWarningMsg: level = Warning; break;
+        case QtCriticalMsg: level = Critical; break;
+        case QtInfoMsg: level = Info; break;
+        default: break;
+    }
+    if (level == None) {
+        return;
+    }
+    if (!logLevels.testFlag(level)) {
+        return;
+    }
+
     if (debugPtr) {
         switch (msgType) {
             case QtCriticalMsg:
@@ -615,6 +637,23 @@ void TaskMachineRunner::printLog(QtMsgType msgType, const QString& message) {
                 break;
             case QtWarningMsg:
                 qCWarning(debugPtr) << message;
+                break;
+            default:
+                break;
+        }
+    } else {
+        switch (msgType) {
+            case QtCriticalMsg:
+                qCritical() << message;
+                break;
+            case QtDebugMsg:
+                qDebug() << message;
+                break;
+            case QtInfoMsg:
+                qInfo() << message;
+                break;
+            case QtWarningMsg:
+                qWarning() << message;
                 break;
             default:
                 break;
