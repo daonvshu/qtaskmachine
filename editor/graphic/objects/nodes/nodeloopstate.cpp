@@ -108,7 +108,7 @@ void NodeLoopState::drawObject() {
     drawPropertyRow(itemExitFunctionRow, exitCheckFunction, itemFontSize, loopStateData->outputLinkPointColors.first(), true);
 
     // draw property rows
-    renderPropertyItems(bodyRect, itemExitRow.bottom() + itemHeight * branchStrings.size(), bindStrings);
+    renderPropertyItems(bodyRect, itemExitFunctionRow.bottom(), bindStrings);
 
     GraphicRenderInterface::drawObject();
 }
