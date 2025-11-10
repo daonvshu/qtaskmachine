@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(qtask_machines VERSION 1.1.1)
+project(qtask_machines VERSION 1.1.2)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
-find_package(ProtocolCodecEngine QUIET)
+find_package(ProtocolCodecEngine 1.0.0 QUIET)
 
 if (Qt6_FOUND)
     find_package(Qt6 REQUIRED COMPONENTS StateMachine)
@@ -64,8 +64,8 @@ if (Qt6_FOUND)
     target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::StateMachine)
 endif ()
 
-if (ProtocolCodecEngine_FOUND)
-    target_link_libraries(${PROJECT_NAME} protocol_codec_engine Qt${QT_VERSION_MAJOR}::Network)
+if (TARGET ProtocolCodec::ProtocolCodecEngine)
+    target_link_libraries(${PROJECT_NAME} ProtocolCodec::ProtocolCodecEngine Qt${QT_VERSION_MAJOR}::Network)
 endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC

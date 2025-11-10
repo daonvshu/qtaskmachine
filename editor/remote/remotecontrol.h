@@ -2,7 +2,7 @@
 
 #include <qobject.h>
 #include <qtcpsocket.h>
-#include <protocolcodecengine.h>
+#include <protocolcodec/protocolcodecengine.h>
 
 #include "protocol.h"
 

@@ -31,8 +31,8 @@ RemoteControl::RemoteControl(QObject* parent)
         protocolEngine.appendBuffer(tcpSocket->readAll());
     });
 
-    protocolEngine.frameDeclare("H(7E3E3F)S2CV(CRC16)E(FE)");
-    protocolEngine.setVerifyFlags("SC");
+    protocolEngine.frameDeclare("H(7E3E3F)S2T2CV(CRC16)E(FE)");
+    protocolEngine.setVerifyFlags("STC");
     protocolEngine.registerType<CompressCodec<ReceiveFlowState, JsonCodec>>(this, &RemoteControl::onReceiveFlowState);
     protocolEngine.registerType<JsonCodec<ReceiveNewLog>>(this, &RemoteControl::onReceiveNewLog);
     protocolEngine.registerType<JsonCodec<ReceiveActiveNode>>(this, &RemoteControl::onReceiveActiveNode);

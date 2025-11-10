@@ -17,8 +17,8 @@ namespace TaskMachine {
         connect(this, &RemoteDebugListener::flowBegin, this, &RemoteDebugListener::onFlowBegin);
         connect(this, &RemoteDebugListener::flowFinished, this, &RemoteDebugListener::onFlowFinished);
 
-        protocolEngine.frameDeclare("H(7E3E3F)S2CV(CRC16)E(FE)");
-        protocolEngine.setVerifyFlags("SC");
+        protocolEngine.frameDeclare("H(7E3E3F)S2T2CV(CRC16)E(FE)");
+        protocolEngine.setVerifyFlags("STC");
         protocolEngine.registerType<GetFlowStateRequest>(this, &RemoteDebugListener::onReceiveStateReadRequest);
         protocolEngine.registerCompressEncoder<SendFlowState, JsonCodec>();
         protocolEngine.registerType<SendNewLog, JsonCodec>();

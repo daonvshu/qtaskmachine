@@ -6,7 +6,7 @@
 
 #include "protocol.h"
 
-#include <protocolcodecengine.h>
+#include <protocolcodec/protocolcodecengine.h>
 
 class TaskMachineRunner;
 namespace TaskMachine {

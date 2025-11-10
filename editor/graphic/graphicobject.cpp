@@ -1,6 +1,6 @@
 #include "graphicobject.h"
 
-#include <styledstring.h>
+#include <qlogcollector/server/colors/styledstring.h>
 
 class ObjectMemoryLeakDetector {
 public:

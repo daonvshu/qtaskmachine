@@ -15,12 +15,12 @@ endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Network REQUIRED)
+find_package(ProtocolCodecEngine 1.0.0 REQUIRED)
+find_package(QLogCollector 1.0.6 REQUIRED COMPONENTS Server)
 
 include(CPM.cmake)
 
-CPMAddPackage("gh:daonvshu/qlogcollector@1.0.5")
 CPMAddPackage("gh:daonvshu/QtDao@2.2.3")
-CPMAddPackage("gh:daonvshu/ProtocolCodecEngine@0.0.7")
 CPMAddPackage("gh:stdware/qwindowkit#1.2")
 
 add_compile_definitions(ROOT_PROJECT_PATH="${CMAKE_SOURCE_DIR}")
@@ -170,8 +170,8 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Network
 
-    qlogcollectorserver
     qtdao
-    protocol_codec_engine
+    QLogCollector::Server
+    ProtocolCodec::ProtocolCodecEngine
     QWindowKit::Widgets
 )

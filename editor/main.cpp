@@ -8,10 +8,12 @@
 #include "app.h"
 #include "myapplication.h"
 
-#include <qlogcollector.h>
+#include <qlogcollector/server/logcollector.h>
 #include <qloggingcategory.h>
 #include <dao.h>
 #include <qmessagebox.h>
+
+QLOGCOLLECTOR_USE_NAMESPACE
 
 int main(int argc, char* argv[]) {
     QGuiApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
@@ -35,13 +37,12 @@ int main(int argc, char* argv[]) {
     }
 #endif
 
-    logcollector::styleConfig
-            .windowApp()
-            .ide_clion(false)
-            .wordWrap(180)
-            .projectSourceCodeRootPath(ROOT_PROJECT_PATH)
-            ;
-    logcollector::QLogCollector::instance().registerLog();
+    LogCollector::styleConfig
+        .wordWrap(180)
+        .projectSourceCodeRootPath(ROOT_PROJECT_PATH)
+    ;
+    LogCollector::addOutputTarget(OutputTarget::currentConsoleOutput(Ide::clion));
+    LogCollector::registerLog();
 
     try {
         dao::_config<dao::ConfigSqliteBuilder>()
