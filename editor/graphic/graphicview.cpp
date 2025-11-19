@@ -35,6 +35,12 @@ GraphicView::GraphicView(QWidget *parent)
     connect(controls->get<MouseActionControl>(), &MouseActionControl::positionChanged, this, &GraphicView::savePosition);
 
     setMouseTracking(true);
+
+    auto autoRefreshTimer = new QTimer(this);
+    connect(autoRefreshTimer, &QTimer::timeout, this, [this] {
+        update();
+    });
+    autoRefreshTimer->start(16);
 }
 
 void GraphicView::resizeEvent(QResizeEvent *event) {
@@ -178,7 +184,6 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
 
     if (flow == nullptr) {
         ignoreSaveState = true;
-        repaint();
         return;
     }
     int version = flow->version();
@@ -300,14 +305,11 @@ void GraphicView::updateFlow(ConfigFlow *flow) {
 
     controls->getObjects()->push(new QUndoCommand("DocumentLoad"));
 
-    repaint();
-
     ignoreSaveState = false;
 
     auto offset = ViewCenterManager::getViewCenter(currentFlow->name());
     QTimer::singleShot(200, this, [&, offset] {
         controls->get<TransformControl>()->resetTransform(offset.x(), offset.y());
-        repaint();
     });
 }
 
@@ -330,7 +332,6 @@ void GraphicView::makeStateRunning(const QString& flowName, const QString& state
         }
     }
     controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
-    repaint();
 }
 
 void GraphicView::clearRunningState() {
@@ -345,7 +346,6 @@ void GraphicView::clearRunningState() {
         }
     }
     controls->get<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Node);
-    repaint();
 }
 
 void GraphicView::searchText(const QString& text) {
@@ -380,7 +380,6 @@ void GraphicView::findNext() {
         if (node->nodeData->propData.nodeId() == targetId) {
             auto targetNodeCenter = node->nodeData->boundingRect.center();
             controls->get<TransformControl>()->moveToCenter(targetNodeCenter);
-            repaint();
             break;
         }
     }

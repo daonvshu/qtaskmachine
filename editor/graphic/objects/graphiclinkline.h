@@ -28,6 +28,9 @@ public:
 
 public:
     QSharedPointer<GraphicLinkLineData> linkData;
+
+private:
+    qreal animDrawPercent = 0;
 };
 
 typedef QList<QSharedPointer<GraphicLinkLine>> GraphicLinkLineList;

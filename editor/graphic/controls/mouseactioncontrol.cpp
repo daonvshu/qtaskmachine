@@ -94,8 +94,6 @@ void MouseActionControl::mouseMove(QMouseEvent *e) {
             }
         }
     }
-
-    d->view->repaint();
 }
 
 void MouseActionControl::mouseRelease(QMouseEvent *) {
@@ -113,13 +111,11 @@ void MouseActionControl::mouseRelease(QMouseEvent *) {
         d->getControl<GraphicLayerControl>()->endMultiSelect();
         d->getControl<GraphicObjCreateControl>()->createMultiSelect(selectArea);
     }
-    d->view->repaint();
 }
 
 void MouseActionControl::wheelEvent(QWheelEvent *e) {
     d->getControl<TransformControl>()->scale(e->angleDelta().y() < 0, e->position());
     d->getControl<GraphicLayerControl>()->graphLayerReload();
-    d->view->repaint();
 }
 
 void MouseActionControl::selectObjPress(const QPoint &mousePos) {
@@ -165,7 +161,6 @@ void MouseActionControl::selectObjMove(const QPoint &mousePos) {
     auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
     auto delta = currentMousePoint - lastMousePoint;
     d->getControl<GraphicObjCreateControl>()->objTranslate(delta);
-    d->view->repaint();
     lastMousePoint = currentMousePoint;
 }
 
@@ -235,7 +230,6 @@ void MouseActionControl::installShortcut() {
     new QShortcut(QKeySequence("Del"), d->view, [&] {
         if (!d->multiSelectData.selectedNodes.isEmpty()) {
             d->getControl<GraphicObjCreateControl>()->removeMultiSelectedObjects();
-            d->view->repaint();
         } else {
             auto activeNode = d->getControl<GraphicObjCreateControl>()->getSelectedNodeObj();
             if (activeNode != nullptr) {
@@ -359,7 +353,6 @@ void MouseActionControl::editNodeObject(const GraphicObject* obj) const {
             d->getControl<GraphicObjCreateControl>()->removeLinkLineOutOfIndex(obj);
             d->getControl<GraphicObjCreateControl>()->graphicObjectChanged();
             d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node | GraphicLayerType::Layer_Active_Link);
-            d->view->repaint();
         }
     };
 
@@ -476,7 +469,6 @@ void MouseActionControl::pasteNodeObject(const QPoint& mousePos) const {
         return;
     }
     d->getControl<GraphicObjCreateControl>()->copyNodeToMousePoint(preCopyObjects, mousePos);
-    d->view->repaint();
 }
 
 void MouseActionControl::deleteNodeObject(const GraphicObject* obj) const {
@@ -484,7 +476,6 @@ void MouseActionControl::deleteNodeObject(const GraphicObject* obj) const {
         return;
     }
     d->getControl<GraphicObjCreateControl>()->removeNodeObject(obj);
-    d->view->repaint();
 }
 
 void MouseActionControl::removeLinkLine(const GraphicObject* obj) const {

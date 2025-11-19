@@ -66,7 +66,6 @@ void GraphicObjCreateControl::addObject(GraphicObjectType type, const QPointF& r
         d->graphicObjects.push(newObject);
     }
     d->getControl<GraphicLayerControl>()->setActiveNode(newObject);
-    d->view->repaint();
     emit graphicObjectChanged();
 }
 
