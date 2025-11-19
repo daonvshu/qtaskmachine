@@ -6,6 +6,8 @@
 struct GraphicObjectData {
     QPointF renderPosition; // 绘图位置
     QPointF oldRenderPosition; // 旧的绘图位置
+    QPointF tmpMoveRenderPoint; // 临时移动位置
+    bool tmpMoveSaved = false; // 临时移动位置是否已保存
     bool selected = false;  // 是否选中
     bool isChanged = true;  // 是否有修改
     bool isRunning = false; // 是否正在运行该状态

@@ -16,8 +16,9 @@ enum class GraphicLayerType {
     Layer_Active_Node  = 1 << 3,   //动态节点
     Layer_Active_Link  = 1 << 4,   //动态连线
     Layer_Multi_Select = 1 << 5,   //多选状态
+    Layer_Assist_Line  = 1 << 6,   //对齐辅助线
 
-    Layer_All = Layer_Grid | Layer_Static_Node | Layer_Static_Link | Layer_Active_Node | Layer_Active_Link | Layer_Multi_Select,
+    Layer_All = Layer_Grid | Layer_Static_Node | Layer_Static_Link | Layer_Active_Node | Layer_Active_Link | Layer_Multi_Select | Layer_Assist_Line,
 };
 Q_DECLARE_FLAGS(GraphicLayerTypes, GraphicLayerType)
 Q_DECLARE_OPERATORS_FOR_FLAGS(GraphicLayerTypes)
@@ -109,6 +110,12 @@ public:
      * @brief 通知多选对象改变
      */
     void multiSelectObjectsChanged();
+
+    /**
+     * @brief 更新对齐辅助线
+     * @param lines
+     */
+    void updateAssistAlignmentLines(const QList<QLineF>& lines) const;
 
 private:
     QList<QPair<GraphicLayerType, class GraphicLayer*>> layers; //绘制缓冲层

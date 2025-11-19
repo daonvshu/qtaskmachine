@@ -6,6 +6,7 @@
 #include "../layer/staticnodelayer.h"
 #include "../layer/staticlinklinelayer.h"
 #include "../layer/multiselectlayer.h"
+#include "../layer/assistalignmentlayer.h"
 
 #include <qelapsedtimer.h>
 #include <qdebug.h>
@@ -19,6 +20,7 @@ GraphicLayerControl::GraphicLayerControl(const QSharedPointer<GraphicControlShar
     layers << qMakePair(GraphicLayerType::Layer_Active_Node, new ActiveNodeLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Active_Link, new ActiveLinkLineLayer(this));
     layers << qMakePair(GraphicLayerType::Layer_Multi_Select, new MultiSelectLayer(this));
+    layers << qMakePair(GraphicLayerType::Layer_Assist_Line, new AssistAlignmentLayer(this));
     graphLayerReload();
 
     layer<StaticNodeLayer>(GraphicLayerType::Layer_Static_Node)->graphicEntries = &d->graphicObjects;
@@ -132,4 +134,8 @@ QRectF GraphicLayerControl::getMultiSelectRect() const {
 
 void GraphicLayerControl::multiSelectObjectsChanged() {
     reloadLayer(GraphicLayerType::Layer_Active_Node);
+}
+
+void GraphicLayerControl::updateAssistAlignmentLines(const QList<QLineF>& lines) const {
+    layer<AssistAlignmentLayer>(GraphicLayerType::Layer_Assist_Line)->lines = lines;
 }

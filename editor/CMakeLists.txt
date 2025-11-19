@@ -112,6 +112,8 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/layer/commonnodelayer.cpp
     graphic/layer/multiselectlayer.h
     graphic/layer/multiselectlayer.cpp
+    graphic/layer/assistalignmentlayer.h
+    graphic/layer/assistalignmentlayer.cpp
 
     graphic/objects/graphicnode.h
     graphic/objects/graphicnode.cpp

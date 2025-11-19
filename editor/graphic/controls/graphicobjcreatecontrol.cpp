@@ -16,6 +16,7 @@
 #include "../objects/actions/objectcopyaction.h"
 
 #include "graphiclayercontrol.h"
+#include "appsettings.h"
 
 GraphicObjCreateControl::GraphicObjCreateControl(const QSharedPointer<GraphicControlSharedData> &data, QObject *parent)
     : GraphicControl(data, parent)
@@ -146,15 +147,35 @@ void GraphicObjCreateControl::setObjectSelected(const GraphicObject* object) {
 
 void GraphicObjCreateControl::objTranslate(const QPointF& delta) {
     if (editingNodeObject) {
-        editingNodeObject->data->renderPosition += delta;
+        if (!editingNodeObject->data->tmpMoveSaved) {
+            editingNodeObject->data->tmpMoveRenderPoint = editingNodeObject->data->renderPosition;
+            editingNodeObject->data->tmpMoveSaved = true;
+        }
+        auto nodeObj = dynamic_cast<const GraphicNode*>(editingNodeObject);
+        if (AppSettings::snapEnabled() && nodeObj != nullptr) {
+            snapNodesToOther({ nodeObj }, delta);
+        } else {
+            editingNodeObject->data->renderPosition = editingNodeObject->data->tmpMoveRenderPoint + delta;
+        }
         editingNodeObject->data->isChanged = true;
     }
+
     for (const auto& selectNode : d->multiSelectData.selectedNodes) {
-        if (selectNode == editingNodeObject) {
-            continue;
+        if (!selectNode->data->tmpMoveSaved) {
+            selectNode->data->tmpMoveRenderPoint = selectNode->data->renderPosition;
+            selectNode->data->tmpMoveSaved = true;
         }
-        selectNode->data->renderPosition += delta;
-        selectNode->data->isChanged = true;
+    }
+    if (AppSettings::snapEnabled()) {
+        snapNodesToOther(d->multiSelectData.selectedNodes, delta);
+    } else {
+        for (const auto& selectNode : d->multiSelectData.selectedNodes) {
+            if (selectNode == editingNodeObject) {
+                continue;
+            }
+            selectNode->data->renderPosition = selectNode->data->tmpMoveRenderPoint + delta;
+            selectNode->data->isChanged = true;
+        }
     }
     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Active_Node |
         GraphicLayerType::Layer_Active_Link | GraphicLayerType::Layer_Static_Node);
@@ -174,7 +195,12 @@ void GraphicObjCreateControl::objTranslateFinished() {
                 editingNodeObject = nullptr;
             }
         }
+        editingNodeObject->data->tmpMoveSaved = false;
     }
+    for (const auto& selectNode : d->multiSelectData.selectedNodes) {
+        selectNode->data->tmpMoveSaved = false;
+    }
+    d->getControl<GraphicLayerControl>()->updateAssistAlignmentLines({});
     emit graphicObjectChanged();
 }
 
@@ -367,4 +393,182 @@ void GraphicObjCreateControl::removeMultiSelectedObjects() {
     d->multiSelectData.selectedNodes.clear();
     d->getControl<GraphicLayerControl>()->reloadLayer(GraphicLayerType::Layer_Static_Link | GraphicLayerType::Layer_Active_Node);
     emit graphicObjectChanged();
+}
+
+namespace {
+
+enum Side { S_Left, S_Right, S_CenterX, S_Top, S_Bottom, S_CenterY };
+
+struct SnapCandidate {
+    QPointF delta;
+    QLineF line;
+    qreal length;
+};
+
+/**
+ * 根据 currentRect 对齐所有 otherRects，返回 X/Y 方向的候选
+ */
+void collectSnapCandidates(
+    const QRectF& currentRect,
+    const QList<QRectF>& otherRects,
+    int tolerance,
+    QList<SnapCandidate>& outX,
+    QList<SnapCandidate>& outY)
+{
+    const std::pair<Side, Side> xRules[] = {
+        {S_Left,   S_Left},
+        {S_Left,   S_Right},
+        {S_Right,  S_Right},
+        {S_Right,  S_Left},
+        {S_CenterX,S_CenterX}
+    };
+
+    const std::pair<Side, Side> yRules[] = {
+        {S_Top,    S_Top},
+        {S_Top,    S_Bottom},
+        {S_Bottom, S_Bottom},
+        {S_Bottom, S_Top},
+        {S_CenterY,S_CenterY}
+    };
+
+    auto getValue = [](const QRectF& r, Side s) {
+        switch (s) {
+            case S_Left:    return r.left();
+            case S_Right:   return r.right();
+            case S_CenterX: return r.center().x();
+            case S_Top:     return r.top();
+            case S_Bottom:  return r.bottom();
+            case S_CenterY: return r.center().y();
+        }
+        return 0.0;
+    };
+
+    for (const QRectF& other : otherRects) {
+
+        // ---------- X ----------
+        for (auto& rule : xRules) {
+            qreal c = getValue(currentRect, rule.first);
+            qreal o = getValue(other, rule.second);
+            if (qAbs(c - o) > tolerance) continue;
+
+            qreal y1 = qMin(currentRect.top(), other.top());
+            qreal y2 = qMax(currentRect.bottom(), other.bottom());
+
+            qreal dx = o - c;
+
+            outX.append({
+                QPointF(dx, 0.0),
+                QLineF(QPointF(o, y1), QPointF(o, y2)),
+                y2 - y1
+            });
+            break;
+        }
+
+        // ---------- Y ----------
+        for (auto& rule : yRules) {
+            qreal c = getValue(currentRect, rule.first);
+            qreal o = getValue(other, rule.second);
+            if (qAbs(c - o) > tolerance) continue;
+
+            qreal x1 = qMin(currentRect.left(), other.left());
+            qreal x2 = qMax(currentRect.right(), other.right());
+
+            qreal dy = o - c;
+
+            outY.append({
+                QPointF(0.0, dy),
+                QLineF(QPointF(x1, o), QPointF(x2, o)),
+                x2 - x1
+            });
+            break;
+        }
+    }
+}
+
+QPointF pickBestCandidate(
+    const QList<SnapCandidate>& list,
+    QLineF* outLine)
+{
+    if (list.isEmpty()) return QPointF(0, 0);
+
+    const SnapCandidate* best = &list.first();
+    for (const SnapCandidate& c : list) {
+        if (c.length < best->length)
+            best = &c;
+    }
+
+    if (outLine) *outLine = best->line;
+    return best->delta;
+}
+
+} // namespace
+
+void GraphicObjCreateControl::snapNodesToOther(const QList<const GraphicNode*>& nodeObjs, const QPointF& delta) const {
+    if (nodeObjs.isEmpty()) return;
+
+    const int tolerance = d->getGraphicTransform().toGuiDx(5);
+
+    // ================================
+    // 1. 计算多个节点的合并 currentRect
+    // ================================
+    QRectF mergedRect;
+
+    for (const GraphicNode* node : nodeObjs) {
+        QRectF r(
+            node->data->tmpMoveRenderPoint.x() - node->nodeData->boundingRect.width() / 2.f + delta.x(),
+            node->data->tmpMoveRenderPoint.y() + delta.y(),
+            node->nodeData->boundingRect.width(),
+            node->nodeData->boundingRect.height()
+        );
+        if (mergedRect.isNull())
+            mergedRect = r;
+        else
+            mergedRect = mergedRect.united(r);
+    }
+
+    // ===================================================
+    // 2. 准备所有 otherRects（同样过滤 nodeObjs 本身）
+    // ===================================================
+    QList<QRectF> otherRects;
+    auto allNodes = GraphicObject::getVisibleObjects<GraphicNode>(&d->graphicObjects);
+
+    for (const auto& other : allNodes) {
+        if (nodeObjs.contains(other)) continue;
+        otherRects.append(other->nodeData->boundingRect);
+    }
+
+    // ==========================
+    // 3. 计算吸附候选项
+    // ==========================
+    QList<SnapCandidate> xcands;
+    QList<SnapCandidate> ycands;
+
+    collectSnapCandidates(mergedRect, otherRects, tolerance, xcands, ycands);
+
+    // ==========================
+    // 4. 选出最佳 X/Y 候选项
+    // ==========================
+    QList<QLineF> alignmentLines;
+    QPointF finalDelta(0, 0);
+
+    QLineF lineX, lineY;
+
+    QPointF dx = pickBestCandidate(xcands, &lineX);
+    QPointF dy = pickBestCandidate(ycands, &lineY);
+
+    finalDelta += dx;
+    finalDelta += dy;
+
+    if (dx != QPointF(0,0)) alignmentLines.append(lineX);
+    if (dy != QPointF(0,0)) alignmentLines.append(lineY);
+
+    // ==========================
+    // 5. 应用到所有节点
+    // ==========================
+    for (const GraphicNode* node : nodeObjs) {
+        node->data->renderPosition = node->data->tmpMoveRenderPoint + delta + finalDelta;
+        node->data->isChanged = true;
+    }
+
+    d->getControl<GraphicLayerControl>()->updateAssistAlignmentLines(alignmentLines);
 }

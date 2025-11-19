@@ -32,6 +32,15 @@ App::App(QWidget *parent)
         menuExpandBtn->setVisible(false);
     });
 
+    snapBtn = new QPushButton(ui.horizontalWidget);
+    snapBtn->setCheckable(true);
+    snapBtn->resize(32, 32);
+    snapBtn->setStyleSheet("QPushButton{border:none;border-radius:4px;icon:url(:/res/snap.svg);background:#4C4E56;} QPushButton:checked{background:#777A87;}");
+    snapBtn->raise();
+    connect(snapBtn, &QPushButton::clicked, this, [&] {
+        AppSettings::snapEnabled = snapBtn->isChecked();
+    });
+
     ui.btn_next_search_result->installEventFilter(this);
     searchNextPopLabel = new QLabel(this);
     searchNextPopLabel->setFixedSize(60, 24);
@@ -62,6 +71,7 @@ App::App(QWidget *parent)
             openExistConfig(lastOpenFilePath);
         });
     }
+    snapBtn->setChecked(AppSettings::snapEnabled());
 
     bindRemoteState();
 }
@@ -69,6 +79,7 @@ App::App(QWidget *parent)
 void App::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     menuExpandBtn->move(0, ui.graphic_list_body->mapTo(this, QPoint(0, 0)).y() + 1);
+    snapBtn->move(ui.horizontalWidget->width() - snapBtn->width() - 8, 8);
 
     QTimer::singleShot(0, this, [=]() {
         ui.btn_max->setIcon(isMaximized() ? QIcon(":/res/maxsize2.svg") : QIcon(":/res/maxsize1.svg"));

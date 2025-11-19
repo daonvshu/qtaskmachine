@@ -164,4 +164,7 @@ private:
     const GraphicLinkLine* selectedLinkLine = nullptr;
 
     friend class GraphicView;
+
+private:
+    void snapNodesToOther(const QList<const GraphicNode*>& nodeObjs, const QPointF& delta) const;
 };

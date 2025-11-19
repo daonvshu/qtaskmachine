@@ -21,6 +21,7 @@ private:
     QPointer<class MonitorDlg> monitorDlg;
     QPushButton* menuExpandBtn;
     QLabel* searchNextPopLabel;
+    QPushButton* snapBtn;
 
 private slots:
     void on_btn_min_clicked();

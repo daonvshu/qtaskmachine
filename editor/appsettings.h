@@ -8,7 +8,7 @@
 template<typename T>
 class SettingOperator {
 public:
-    explicit SettingOperator(QString key);
+    explicit SettingOperator(QString key, T defaultValue = T());
 
     T& operator()() {
         return value;
@@ -23,6 +23,7 @@ public:
 private:
     QString key;
     T value;
+    T defaultValue;
 };
 
 class AppSettings {
@@ -32,7 +33,7 @@ public:
     static SettingOperator<QString> lastExportLogPath;
     static SettingOperator<QString> lastConnectTarget;
     static SettingOperator<int> lastConnectPort;
-
+    static SettingOperator<bool> snapEnabled;
 
     static void init();
 
@@ -45,8 +46,8 @@ private:
 };
 
 template<typename T>
-SettingOperator<T>::SettingOperator(QString key)
-    : key(std::move(key)), value(T())
+SettingOperator<T>::SettingOperator(QString key, T defaultValue)
+    : key(std::move(key)), value(defaultValue), defaultValue(defaultValue)
 {}
 
 template<typename T>
@@ -63,5 +64,5 @@ void SettingOperator<T>::save() {
 
 template<typename T>
 void SettingOperator<T>::load() {
-    value = AppSettings::loadValue(key, T()).template value<T>();
+    value = AppSettings::loadValue(key, defaultValue).template value<T>();
 }

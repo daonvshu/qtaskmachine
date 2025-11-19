@@ -22,6 +22,7 @@
         <file>res/menu_hide.svg</file>
         <file>res/arrow-right.svg</file>
         <file>res/search.svg</file>
+        <file>res/snap.svg</file>
         <file>res/logo.ico</file>
     </qresource>
 </RCC>

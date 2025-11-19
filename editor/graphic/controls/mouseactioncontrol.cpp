@@ -161,7 +161,7 @@ void MouseActionControl::selectObjMove(const QPoint &mousePos) {
     auto currentMousePoint = d->getGraphicTransform().toRealPoint(mousePos);
     auto delta = currentMousePoint - lastMousePoint;
     d->getControl<GraphicObjCreateControl>()->objTranslate(delta);
-    lastMousePoint = currentMousePoint;
+    //lastMousePoint = currentMousePoint;
 }
 
 void MouseActionControl::selectObjRelease() {
