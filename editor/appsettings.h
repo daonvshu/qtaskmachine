@@ -34,6 +34,7 @@ public:
     static SettingOperator<QString> lastConnectTarget;
     static SettingOperator<int> lastConnectPort;
     static SettingOperator<bool> snapEnabled;
+    static SettingOperator<bool> animDirEnabled;
 
     static void init();
 

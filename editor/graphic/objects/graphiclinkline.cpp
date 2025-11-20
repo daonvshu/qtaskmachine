@@ -2,6 +2,8 @@
 
 #include "../utils/bezierdistancecalculator.h"
 
+#include "appsettings.h"
+
 #include <qpainterpath.h>
 #include <qdebug.h>
 
@@ -88,16 +90,18 @@ void GraphicLinkLine::drawObject() {
     renderPainter->setPen(pen);
     renderPainter->drawPath(path);
 
-    auto pos = path.pointAtPercent(qMin(1.0, animDrawPercent));
-    animDrawPercent += 0.00833;
-    if (animDrawPercent > 1.5) {
-        animDrawPercent = 0;
+    if (AppSettings::animDirEnabled()) {
+        auto pos = path.pointAtPercent(qMin(1.0, animDrawPercent));
+        animDrawPercent += 0.00833;
+        if (animDrawPercent > 1.5) {
+            animDrawPercent = 0;
+        }
+        linkColor = linkColor.lighter();
+        pen.setColor(linkColor);
+        pen.setWidthF(graphicTransform.toGuiDx(3));
+        renderPainter->setPen(pen);
+        renderPainter->drawPoint(pos);
     }
-    linkColor = linkColor.lighter();
-    pen.setColor(linkColor);
-    pen.setWidthF(graphicTransform.toGuiDx(3));
-    renderPainter->setPen(pen);
-    renderPainter->drawPoint(pos);
 
     renderPainter->restore();
 }

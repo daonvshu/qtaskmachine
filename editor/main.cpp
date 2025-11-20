@@ -7,6 +7,7 @@
 
 #include "app.h"
 #include "myapplication.h"
+#include "appsettings.h"
 
 #include <qlogcollector/server/logcollector.h>
 #include <qloggingcategory.h>
@@ -56,6 +57,8 @@ int main(int argc, char* argv[]) {
     }
 
     QLoggingCategory::setFilterRules(QStringLiteral("qeventbus.*.info=false"));
+
+    AppSettings::init();
 
     App app;
     app.show();

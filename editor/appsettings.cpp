@@ -11,6 +11,7 @@ SettingOperator<QString> AppSettings::lastExportLogPath("last_export_log_path");
 SettingOperator<QString> AppSettings::lastConnectTarget("last_connect_target");
 SettingOperator<int> AppSettings::lastConnectPort("last_connect_port");
 SettingOperator<bool> AppSettings::snapEnabled("snap_enabled", true);
+SettingOperator<bool> AppSettings::animDirEnabled("anim_dir_enabled", true);
 
 static QSettings& getSetting() {
     static QSettings setting([] () -> QString {
@@ -40,4 +41,5 @@ void AppSettings::init() {
     lastConnectTarget.load();
     lastConnectPort.load();
     snapEnabled.load();
+    animDirEnabled.load();
 }

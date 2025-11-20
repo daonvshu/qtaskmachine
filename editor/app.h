@@ -7,6 +7,7 @@
 
 #include "data/configflows.h"
 #include "remote/remotecontrol.h"
+#include "widgets/floatingtoolbar.h"
 
 class App : public QWidget {
     Q_OBJECT
@@ -21,7 +22,7 @@ private:
     QPointer<class MonitorDlg> monitorDlg;
     QPushButton* menuExpandBtn;
     QLabel* searchNextPopLabel;
-    QPushButton* snapBtn;
+    FloatingToolbar* floatingToolbar;
 
 private slots:
     void on_btn_min_clicked();

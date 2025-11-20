@@ -153,6 +153,9 @@ add_executable(${PROJECT_NAME} WIN32
     graphic/utils/bezierdistancecalculator.h
     graphic/utils/bezierdistancecalculator.cpp
 
+    widgets/floatingtoolbar.h
+    widgets/floatingtoolbar.cpp
+
     db/viewcentermanager.h
     db/viewcentermanager.cpp
 
