@@ -8,11 +8,21 @@ DelayState::DelayState(int delayMs, QState *parent)
 {
 }
 
+DelayState::DelayState(const std::function<int()>& delayReader, QState* parent)
+    : LinearState(parent)
+    , delayMs(0)
+    , delayReader(delayReader)
+{
+}
+
 void DelayState::onEntry(QEvent *event) {
     LinearState::onEntry(event);
 
     clearTransitions();
 
+    if (delayReader) {
+        delayMs = delayReader();
+    }
     if (delayMs <= 0) {
         auto target = getTargetState();
         Q_ASSERT(target != this);

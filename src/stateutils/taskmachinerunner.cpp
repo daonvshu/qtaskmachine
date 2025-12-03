@@ -154,11 +154,15 @@ QAbstractState* TaskMachineRunner::createDirectState(const ConfigFlowExecutor* e
 QAbstractState* TaskMachineRunner::createDelayState(const ConfigFlowExecutor* executor, QState* parent) {
     int delayMs = executor->delay();
     auto delayProp = executor->delayProperty();
-    if (!delayProp.isEmpty()) {
-        delayMs = currentBindContext->property(delayProp.toLatin1()).toInt();
-    }
 
-    auto state = new DelayState(delayMs, parent);
+    DelayState* state;
+    if (!delayProp.isEmpty()) {
+        state = new DelayState([this, delayProp] {
+            return currentBindContext->property(delayProp.toLatin1()).toInt();
+        }, parent);
+    } else {
+        state = new DelayState(delayMs, parent);
+    }
     createdState[executor->id()] = state;
     bindExecutorBaseInfo(state, executor);
 
